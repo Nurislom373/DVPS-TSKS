@@ -26,6 +26,7 @@ import java.util.stream.Stream;
 public class TransactionService {
 
     private final TransactionRepository repository;
+
     private final CacheHelper cacheHelper;
 
     public TransactionService(TransactionRepository repository, CacheHelper cacheHelper) {
@@ -84,30 +85,35 @@ public class TransactionService {
             int compareFrom = timeMap.get(FromToEnum.FROM).compareTo(from);
             int compareTo = timeMap.get(FromToEnum.TO).compareTo(to);
 
+            boolean check = compareFrom < compareTo;
+
             boolean isCache = (timeMap.get(FromToEnum.FROM).isBefore(from) && timeMap.get(FromToEnum.TO).isAfter(from)) ||
                     (timeMap.get(FromToEnum.FROM).isBefore(to) && timeMap.get(FromToEnum.TO).isAfter(to));
 
-            boolean isCacheBetween = (timeMap.get(FromToEnum.FROM).isAfter(from) && timeMap.get(FromToEnum.TO).isBefore(to));
-
-            int cacheCheckFrom2 = from.compareTo(to);
-            int cacheCheckTo2 = to.compareTo(from);
+            boolean isBetweenCache = (timeMap.get(FromToEnum.FROM).isAfter(from) && timeMap.get(FromToEnum.TO).isBefore(to));
 
             if (compareFrom <= 0 && compareTo >= 0) {
 
                 return cacheHelper.getAllTransactions(from, to).stream()
                         .sorted(Comparator.comparing(TransactionEntity::getId)).toList();
 
-            } else if ((!isCache && !isCacheBetween) && ((compareFrom < 0 && cacheCheckFrom2 < 0) || (compareTo > 0 && cacheCheckTo2 > 0))) {
+            } else if ((!isCache && !isBetweenCache)) {
 
-                List<TransactionEntity> list = repository.findAllByCreatedAtIsBetween(from, to);
+                List<TransactionEntity> list;
+
+                if (compareFrom < 0) {
+                    list = repository.findAllByCreatedAtIsBetween(timeMap.get(FromToEnum.TO), to);
+                } else {
+                    list = repository.findAllByCreatedAtIsBetween(from, timeMap.get(FromToEnum.FROM));
+                }
 
                 if (list != null && !list.isEmpty()) {
                     cacheHelper.addAllTransactionCache(list);
                 }
 
-                return list;
+                return cacheHelper.getAllTransactions(from, to);
 
-            } else if (compareFrom <= 0 && compareTo <= 0) {
+            } else if (compareFrom <= 0) {
 
                 List<TransactionEntity> cacheList = cacheHelper.getAllTransactions(from, timeMap.get(FromToEnum.TO));
 
@@ -122,7 +128,7 @@ public class TransactionService {
                         .flatMap(Collection::stream).sorted(Comparator.comparing(TransactionEntity::getId))
                         .toList();
 
-            } else if (compareFrom >= 0 && compareTo >= 0) {
+            } else if (compareTo >= 0) {
 
                 List<TransactionEntity> cacheList = cacheHelper.getAllTransactions(
                         timeMap.get(FromToEnum.FROM), to);

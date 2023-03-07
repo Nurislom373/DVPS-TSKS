@@ -13,9 +13,11 @@
     <version>0.0.1-SNAPSHOT</version>
     <name>UiCaching</name>
     <description>UiCaching</description>
+
     <properties>
         <java.version>17</java.version>
     </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
