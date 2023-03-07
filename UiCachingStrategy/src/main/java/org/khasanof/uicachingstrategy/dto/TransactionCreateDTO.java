@@ -1,0 +1,31 @@
+package org.khasanof.uicachingstrategy.dto;
+
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
+import org.khasanof.uicachingstrategy.enums.Status;
+
+import java.math.BigDecimal;
+
+/**
+ * Author: Nurislom
+ * <br/>
+ * Date: 2/28/2023
+ * <br/>
+ * Time: 6:43 PM
+ * <br/>
+ * Package: org.khasanof.uicaching.dto
+ */
+@Getter
+@Setter
+@ToString
+@AllArgsConstructor
+@NoArgsConstructor
+public class TransactionCreateDTO {
+
+    @NotNull
+    @Min(1)
+    private BigDecimal amount;
+    @NotNull
+    private Status status;
+}
