@@ -29,6 +29,7 @@ public class GetTransactionsService {
     private final TransactionRepository transactionRepository;
 
     public List<TransactionEntity> getAllTransactionByDate(String cardNumber, LocalDateTime from, LocalDateTime to) {
+        checkParameters(cardNumber, from, to);
 
         if (transactionRepository.getCardCacheCount(cardNumber) == 0) {
             List<TransactionEntity> list = contextTransactionService.getService(cardNumber)

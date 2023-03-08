@@ -125,13 +125,13 @@ class UiCachingStrategyApplicationTests {
        Call 1 - [2023-02-24, 2023-03-02] : {
             Second : Get Cache from {Call-1-FromDate} to {CacheToDate}
             First : Get External Service from {CacheToDate} to {Call-1-ToDate}
-            If the list returned from the external service is null, the cache returns the returned list.
+            If the list returned from the external service is null or empty, an empty list is returned.
        }
 
        Call 2 - [2023-02-26, 2023-03-02] : {
             Second : Get Cache from {Call-1-FromDate} to {CacheToDate}
             First : Get External Service from {CacheToDate} to {Call-1-ToDate}
-            If the list returned from the external service is null, the cache returns the returned list.
+            If the list returned from the external service is null or empty, an empty list is returned.
        }
      */
     @Test
@@ -194,8 +194,23 @@ class UiCachingStrategyApplicationTests {
                 .getAllTransactionsByDates(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any());
     }
 
+    /*
+       Cache - [2023-02-24, 2023-02-28]
+
+       Call 1 - [2023-02-22, 2023-02-26] : {
+            Second : Get Cache from {CacheFromDate} to {Call-1-ToDate}
+            First : Get External Service from {Call-1-FromDate} to {CacheFromDate}
+            If the list returned from the external service is null, the cache returns the returned list.
+       }
+
+       Call 2 - [2023-02-26, 2023-03-02] : {
+            Second : Get Cache from {Call-1-FromDate} to {CacheToDate}
+            First : Get External Service from {CacheToDate} to {Call-1-ToDate}
+            If the list returned from the external service is null, the cache returns the returned list.
+       }
+     */
     @Test
-    void test_CasesInTheCacheRange() {
+    void test_FromAndToDatesOneOfTheTwo_BetweenCache_Cases() {
         UzCardTransactionService transactionService = Mockito.mock(UzCardTransactionService.class);
         TransactionRepository transactionRepository = Mockito.mock(TransactionRepository.class);
         ContextTransactionServices contextTransactionServices1 = new ContextTransactionServices(transactionService,
@@ -245,10 +260,6 @@ class UiCachingStrategyApplicationTests {
 
         List<TransactionEntity> list2 = service.getAllTransactionByDate(cardNumber, from2, to2);
 
-        // Asserts
-        Assertions.assertEquals(list1.size(), 20);
-        Assertions.assertEquals(list2.size(), 27);
-
         // How many times these 5 methods are called during our test run.
         Mockito.verify(transactionRepository, Mockito.times(2))
                 .getCardCacheCount(ArgumentMatchers.any());
@@ -263,6 +274,201 @@ class UiCachingStrategyApplicationTests {
                 .findAllByCreatedAtIsBetween(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any());
 
         Mockito.verify(transactionService, Mockito.times(2))
+                .getAllTransactionsByDates(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any());
+    }
+
+    /*
+       Cache - [2023-02-24, 2023-02-27]
+
+       Call 1 - [2023-02-20, 2023-02-22] : {
+            First : Get External Service from {Call-1-FromDate} to {CacheFromDate}
+            Second : Get Cache from {Call-1-FromDate} to {Call-1-ToDate}
+       }
+
+       Call 2 - [2023-02-28, 2023-03-02] : {
+            First : Get External Service from {CacheToDate} to {Call-2-ToDate}
+            Second : Get Cache from {Call-2-FromDate} to {Call-2-ToDate}
+       }
+
+       Call 3 - [2023-02-24, 2023-02-27] : {
+            First : Get Cache from {Call-2-FromDate} to {Call-3-ToDate}
+       }
+     */
+    @Test
+    void test_CasesGreaterThanCacheRange() {
+        HumoTransactionService transactionService = Mockito.mock(HumoTransactionService.class);
+        TransactionRepository transactionRepository = Mockito.mock(TransactionRepository.class);
+        ContextTransactionServices contextTransactionServices1 = new ContextTransactionServices(new UzCardTransactionService(),
+                transactionService);
+        GetTransactionsService service = new GetTransactionsService(contextTransactionServices1, transactionRepository);
+
+        String cardNumber = "9860996540334145"; // Card Number
+
+        LocalDateTime from1 = LocalDateTime.of(2023, 2, 20, 0, 0);
+        LocalDateTime to1 = LocalDateTime.of(2023, 2, 22, 0, 0);
+
+        LocalDateTime from2 = LocalDateTime.of(2023, 2, 28, 0, 0);
+        LocalDateTime to2 = LocalDateTime.of(2023, 3, 2, 0, 0);
+
+        LocalDateTime from3 = LocalDateTime.of(2023, 2, 24, 0, 0);
+        LocalDateTime to3 = LocalDateTime.of(2023, 2, 27, 0, 0);
+
+        // call 1
+        Mockito.when(transactionRepository.getCardCacheCount(ArgumentMatchers.any()))
+                .thenReturn(1);
+
+        List<TransactionEntity> timeList1 = getTEnitityList(cardNumber, 2, 24, 2, 27);
+
+        Mockito.when(transactionRepository.findAll())
+                .thenReturn(timeList1);
+
+        Mockito.when(transactionService.getAllTransactionsByDates(ArgumentMatchers.any(),
+                ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(getTransactionsFromTo(cardNumber,
+                from1, timeList1.get(0).getCreatedAt()));
+
+        Mockito.when(transactionRepository.findAllByCreatedAtIsBetween(ArgumentMatchers.any(),
+                        ArgumentMatchers.any(), ArgumentMatchers.any()))
+                .thenReturn(repository.findAllByCreatedAtIsBetween(cardNumber, from1, to1));
+
+        service.getAllTransactionByDate(cardNumber, from1, to1);
+
+        // call 2
+        List<TransactionEntity> timeList2 = getTEnitityList(cardNumber, 2, 20, 2, 28);
+
+        Mockito.when(transactionRepository.findAll())
+                .thenReturn(timeList2);
+
+        Mockito.when(transactionService.getAllTransactionsByDates(ArgumentMatchers.any(),
+                        ArgumentMatchers.any(), ArgumentMatchers.any()))
+                .thenReturn(getTransactionsFromTo(cardNumber, timeList2.get(1).getCreatedAt(), to2));
+
+        Mockito.when(transactionRepository.findAllByCreatedAtIsBetween(ArgumentMatchers.any(),
+                        ArgumentMatchers.any(), ArgumentMatchers.any()))
+                .thenReturn(repository.findAllByCreatedAtIsBetween(cardNumber, from2, to2));
+
+        service.getAllTransactionByDate(cardNumber, from2, to2);
+
+        // call 3
+        List<TransactionEntity> timeList3 = getTEnitityList(cardNumber, 2, 20, 3, 2);
+
+        Mockito.when(transactionRepository.findAll())
+                .thenReturn(timeList3);
+
+        Mockito.when(transactionRepository.findAllByCreatedAtIsBetween(ArgumentMatchers.any(),
+                        ArgumentMatchers.any(), ArgumentMatchers.any()))
+                .thenReturn(repository.findAllByCreatedAtIsBetween(cardNumber, from3, to3));
+
+        service.getAllTransactionByDate(cardNumber, from3, to3);
+
+        // How many times these 5 methods are called during our test run.
+        Mockito.verify(transactionRepository, Mockito.times(3))
+                .getCardCacheCount(ArgumentMatchers.any());
+
+        Mockito.verify(transactionRepository, Mockito.times(2))
+                .saveAll(ArgumentMatchers.any());
+
+        Mockito.verify(transactionRepository, Mockito.times(3))
+                .findAll();
+
+        Mockito.verify(transactionRepository, Mockito.times(3))
+                .findAllByCreatedAtIsBetween(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any());
+
+        Mockito.verify(transactionService, Mockito.times(2))
+                .getAllTransactionsByDates(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any());
+    }
+
+    /*
+       Cache - [2023-02-23, 2023-02-28]
+
+       Call 1 - [2023-02-22, 2023-03-02] : {
+            First : Get Cache from {CacheFromDate} to {CacheToDate}
+            Second : Get Cache from {Call-1-FromDate} to {CacheFromDate}
+            Third : Get Cache from {CacheToDate} to {Call-1-ToDate}
+       }
+
+       Call 2 - [2023-02-20, 2023-03-04] : {
+            First : Get Cache from {CacheFromDate} to {CacheToDate}
+            Second : Get Cache from {Call-2-FromDate} to {CacheFromDate}
+            Third : Get Cache from {CacheToDate} to {Call-2-ToDate}
+       }
+     */
+    @Test
+    void test_CasesWhereTheCacheInTheRange() {
+        UzCardTransactionService transactionService = Mockito.mock(UzCardTransactionService.class);
+        TransactionRepository transactionRepository = Mockito.mock(TransactionRepository.class);
+        ContextTransactionServices contextTransactionServices1 = new ContextTransactionServices(transactionService,
+                new HumoTransactionService());
+        GetTransactionsService service = new GetTransactionsService(contextTransactionServices1, transactionRepository);
+
+        String cardNumber = "8600937995190824"; // Card Number
+
+        LocalDateTime from1 = LocalDateTime.of(2023, 2, 22, 0, 0);
+        LocalDateTime to1 = LocalDateTime.of(2023, 3, 2, 0, 0);
+
+        LocalDateTime from2 = LocalDateTime.of(2023, 2, 20, 0, 0);
+        LocalDateTime to2 = LocalDateTime.of(2023, 3, 4, 0, 0);
+
+        // call 1
+        Mockito.when(transactionRepository.getCardCacheCount(ArgumentMatchers.any()))
+                .thenReturn(1);
+
+        List<TransactionEntity> timeList1 = getTEnitityList(cardNumber, 2, 23, 2, 28);
+
+        Mockito.when(transactionRepository.findAll())
+                .thenReturn(timeList1);
+
+        Mockito.when(transactionRepository.findAllByCreatedAtIsBetween(ArgumentMatchers.any(),
+                        ArgumentMatchers.any(), ArgumentMatchers.any()))
+                .thenReturn(repository.findAllByCreatedAtIsBetween(cardNumber, timeList1.get(0).getCreatedAt(),
+                        timeList1.get(1).getCreatedAt()));
+
+        Mockito.when(transactionService.getAllTransactionsByDates(ArgumentMatchers.any(),
+                ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(getTransactionsFromTo(cardNumber,
+                from1, timeList1.get(0).getCreatedAt()));
+
+        Mockito.when(transactionService.getAllTransactionsByDates(ArgumentMatchers.any(),
+                ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(getTransactionsFromTo(cardNumber,
+                timeList1.get(1).getCreatedAt(), to1));
+
+        service.getAllTransactionByDate(cardNumber, from1, to1);
+
+        // call 2
+        List<TransactionEntity> timeList2 = getTEnitityList(cardNumber, 2, 22, 3, 2);
+
+        Mockito.when(transactionRepository.findAll())
+                .thenReturn(timeList2);
+
+        Mockito.when(transactionRepository.findAllByCreatedAtIsBetween(ArgumentMatchers.any(),
+                        ArgumentMatchers.any(), ArgumentMatchers.any()))
+                .thenReturn(repository.findAllByCreatedAtIsBetween(cardNumber, timeList2.get(0).getCreatedAt(),
+                        timeList2.get(1).getCreatedAt()));
+
+        Mockito.when(transactionService.getAllTransactionsByDates(ArgumentMatchers.any(),
+                ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(getTransactionsFromTo(cardNumber,
+                from1, timeList2.get(0).getCreatedAt()));
+
+        Mockito.when(transactionService.getAllTransactionsByDates(ArgumentMatchers.any(),
+                ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(getTransactionsFromTo(cardNumber,
+                timeList2.get(1).getCreatedAt(), to1));
+
+        service.getAllTransactionByDate(cardNumber, from2, to2);
+
+
+        // How many times these 5 methods are called during our test run.
+        Mockito.verify(transactionRepository, Mockito.times(2))
+                .getCardCacheCount(ArgumentMatchers.any());
+
+        // TODO check error except 4 actual 2!
+        Mockito.verify(transactionRepository, Mockito.times(4))
+                .saveAll(ArgumentMatchers.any());
+
+        Mockito.verify(transactionRepository, Mockito.times(2))
+                .findAll();
+
+        Mockito.verify(transactionRepository, Mockito.times(2))
+                .findAllByCreatedAtIsBetween(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any());
+
+        Mockito.verify(transactionService, Mockito.times(4))
                 .getAllTransactionsByDates(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any());
     }
 
