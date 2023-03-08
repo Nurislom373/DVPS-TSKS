@@ -20,14 +20,5 @@ public abstract class BaseUtils {
         return LocalDateTime.now().minusDays(new Random().nextLong(from, to));
     }
 
-    public static boolean isValid(String var, DateTimeFormatter formatter) {
-        try {
-            formatter.parse(var);
-        } catch (DateTimeParseException e) {
-            return false;
-        }
-        return true;
-    }
-
 
 }

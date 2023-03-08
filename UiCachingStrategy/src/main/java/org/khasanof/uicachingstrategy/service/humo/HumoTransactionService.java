@@ -31,15 +31,11 @@ public class HumoTransactionService implements TransactionService {
     @PostConstruct
     public void postConstruct() {
         List<TransactionEntity> mockList = data.getMockList("/data/transaction2.json", "9860");
-        System.out.println("mockList = " + mockList);
         list.addAll(mockList);
     }
 
     @Override
     public List<TransactionEntity> getAllTransactionsByDates(String cardNumber, LocalDateTime from, LocalDateTime to) {
-
-        list.forEach(System.out::println);
-
         Predicate<TransactionEntity> equalPredicate = (f) -> f.getFromCard().equals(cardNumber)
                 || f.getToCard().equals(cardNumber);
 

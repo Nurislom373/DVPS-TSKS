@@ -49,7 +49,7 @@ public class TransactionData {
         }
     }
 
-    public static String[] getTwoDifferentCards(List<String> cards) {
+    public String[] getTwoDifferentCards(List<String> cards) {
         int from = RandomUtils.nextInt(0, 10);
         int to = RandomUtils.nextInt(0, 10);
 
@@ -64,7 +64,7 @@ public class TransactionData {
         return res;
     }
 
-    private static List<String> cardNumberGenerate(String cardNumber, int count) {
+    private List<String> cardNumberGenerate(String cardNumber, int count) {
         List<String> numbers = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             numbers.add(cardNumber.concat(RandomStringUtils.random(12, false, true)));
@@ -72,7 +72,7 @@ public class TransactionData {
         return numbers;
     }
 
-    private static void writeCardNumbers(List<String> list) {
+    private void writeCardNumbers(List<String> list) {
 
         try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("UiCachingStrategy/src/main/resources/data/9860CardNumbers.txt"))) {
             list.forEach(o -> {
@@ -87,15 +87,20 @@ public class TransactionData {
         }
     }
 
-    private static List<String> readFileCardNumbers(String cardNumber) {
+    private List<String> readFileCardNumbers(String cardNumber) throws FileNotFoundException {
         String path;
 
         if (cardNumber.equals("8600")) {
-            path = "UiCachingStrategy/src/main/resources/data/8600CardNumbers.txt";
+//            path = "UiCachingStrategy/src/test/resources/data/8600CardNumbers.txt";
+            path = "D:\\Nurislom\\Projects\\DVPS-TSKS\\UiCachingStrategy\\src\\test\\resources\\data\\8600CardNumbers.txt";
         } else {
-            path = "UiCachingStrategy/src/main/resources/data/9860CardNumbers.txt";
+            path = "D:\\Nurislom\\Projects\\DVPS-TSKS\\UiCachingStrategy\\src\\test\\resources\\data\\9860CardNumbers.txt";
         }
 
+        return getStrings(path);
+    }
+
+    private List<String> getStrings(String path) {
         try (BufferedReader reader = new BufferedReader(new FileReader(path))) {
             List<String> numbers = new ArrayList<>();
             String line;

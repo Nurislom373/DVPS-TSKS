@@ -1,6 +1,7 @@
 package org.khasanof.uicachingstrategy.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.khasanof.uicachingstrategy.domain.TransactionEntity;
 import org.khasanof.uicachingstrategy.enums.FromToEnum;
 import org.khasanof.uicachingstrategy.repository.TransactionRepository;
@@ -21,16 +22,15 @@ import java.util.stream.Stream;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class GetTransactionsService {
 
     private final ContextTransactionServices contextTransactionService;
-
     private final TransactionRepository transactionRepository;
 
     public List<TransactionEntity> getAllTransactionByDate(String cardNumber, LocalDateTime from, LocalDateTime to) {
 
-        if (transactionRepository.count() == 0) {
-
+        if (transactionRepository.getCardCacheCount(cardNumber) == 0) {
             List<TransactionEntity> list = contextTransactionService.getService(cardNumber)
                     .getAllTransactionsByDates(cardNumber, from, to);
 
@@ -41,7 +41,7 @@ public class GetTransactionsService {
 
             return new ArrayList<>();
         } else {
-            Map<FromToEnum, LocalDateTime> timeMap = getFromToDateRepository();
+            Map<FromToEnum, LocalDateTime> timeMap = getFromToDateRepository(cardNumber);
 
             int compareFrom = timeMap.get(FromToEnum.FROM).compareTo(from);
             int compareTo = timeMap.get(FromToEnum.TO).compareTo(to);
@@ -131,8 +131,9 @@ public class GetTransactionsService {
         }
     }
 
-    private Map<FromToEnum, LocalDateTime> getFromToDateRepository() {
+    private Map<FromToEnum, LocalDateTime> getFromToDateRepository(String cardNumber) {
         List<TransactionEntity> list = transactionRepository.findAll().stream()
+                .filter(t -> t.getToCard().equals(cardNumber) || t.getFromCard().equals(cardNumber))
                 .sorted(Comparator.comparing(TransactionEntity::getCreatedAt))
                 .toList();
         return new HashMap<>() {{

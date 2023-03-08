@@ -24,4 +24,6 @@ public interface TransactionRepository extends JpaRepository<TransactionEntity, 
     @Query(value = "select t from TransactionEntity t where t.fromCard = ?1 or t.toCard = ?1 and t.createdAt between ?2 and ?3")
     List<TransactionEntity> findAllByCreatedAtIsBetween(String cardNumber, LocalDateTime createdAt, LocalDateTime createdAt2);
 
+    @Query(value = "select count(t) from TransactionEntity t where t.fromCard = ?1 or t.toCard = ?1")
+    int getCardCacheCount(String cardNumber);
 }
