@@ -76,7 +76,8 @@ public class GetTransactionsService {
 
             } else if (compareFrom <= 0) {
 
-                List<TransactionEntity> cacheList = transactionRepository.findAllByCreatedAtIsBetween(cardNumber, from, timeMap.get(FromToEnum.TO));
+                List<TransactionEntity> cacheList = transactionRepository.findAllByCreatedAtIsBetween(cardNumber,
+                        from, timeMap.get(FromToEnum.TO));
 
                 List<TransactionEntity> repositoryList = contextTransactionService.getService(cardNumber)
                         .getAllTransactionsByDates(cardNumber, timeMap.get(FromToEnum.TO), to);
