@@ -604,7 +604,7 @@ class UiCachingStrategyApplicationTests {
         Mockito.when(transactionService.getAllTransactionsByDates(ArgumentMatchers.any(),
                 ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(null);
 
-        service.getAllTransactionByDate(cardNumber, from1, to1);
+        List<TransactionEntity> list1 = service.getAllTransactionByDate(cardNumber, from1, to1);
 
         // call 2
         List<TransactionEntity> timeList2 = getTEnitityList(cardNumber, 2, 23, 2, 28);
@@ -623,8 +623,11 @@ class UiCachingStrategyApplicationTests {
         Mockito.when(transactionService.getAllTransactionsByDates(ArgumentMatchers.any(),
                 ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(new ArrayList<>());
 
-        service.getAllTransactionByDate(cardNumber, from2, to2);
+        List<TransactionEntity> list2 = service.getAllTransactionByDate(cardNumber, from2, to2);
 
+        // Asserts
+        Assertions.assertEquals(list1.size(), 27);
+        Assertions.assertEquals(list2.size(), 27);
 
         // How many times these 5 methods are called during our test run.
         Mockito.verify(transactionRepository, Mockito.times(2))

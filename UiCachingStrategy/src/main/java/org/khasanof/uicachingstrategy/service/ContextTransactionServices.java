@@ -1,9 +1,9 @@
 package org.khasanof.uicachingstrategy.service;
 
 import lombok.AllArgsConstructor;
+import org.khasanof.uicachingstrategy.enums.CardType;
 import org.khasanof.uicachingstrategy.service.humo.HumoTransactionService;
 import org.khasanof.uicachingstrategy.service.uzcard.UzCardTransactionService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -23,21 +23,13 @@ public class ContextTransactionServices {
     private HumoTransactionService humoTransactionService;
 
     public TransactionService getService(String cardNumber) {
-        if (cardNumber.startsWith("8600")) {
-            return getUzCardTransactionServiceInstance();
-        } else if (cardNumber.startsWith("9860")) {
-            return getHumoTransactionServiceInstance();
+        if (cardNumber.startsWith(CardType.UZCARD.getCardNumber())) {
+            return uzCardTransactionService;
+        } else if (cardNumber.startsWith(CardType.HUMO.getCardNumber())) {
+            return humoTransactionService;
         } else {
             throw new RuntimeException("Invalid Card Number!");
         }
-    }
-
-    private HumoTransactionService getHumoTransactionServiceInstance() {
-        return humoTransactionService;
-    }
-
-    private UzCardTransactionService getUzCardTransactionServiceInstance() {
-        return uzCardTransactionService;
     }
 
 }
