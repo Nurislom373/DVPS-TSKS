@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import org.khasanof.uicachingstrategy.data.TransactionData;
 import org.khasanof.uicachingstrategy.domain.TransactionEntity;
 import org.khasanof.uicachingstrategy.service.TransactionService;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -21,7 +22,7 @@ import java.util.function.Predicate;
  * <br/>
  * Package: org.khasanof.uicachingstrategy.service.humo
  */
-@Service
+@Component
 public class HumoTransactionService implements TransactionService {
 
     private List<TransactionEntity> list = new ArrayList<>();

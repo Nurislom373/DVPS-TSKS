@@ -32,15 +32,9 @@ public class GetTransactionsService {
         checkParameters(cardNumber, from, to);
 
         if (transactionRepository.getCardCacheCount(cardNumber) == 0) {
-            List<TransactionEntity> list = contextTransactionService.getService(cardNumber)
-                    .getAllTransactionsByDates(cardNumber, from, to);
 
-            if (list != null && !list.isEmpty()) {
-                transactionRepository.saveAll(list);
-                return list;
-            }
+            return getTransactionsExternalServiceWhenCacheIsEmpty(cardNumber, from, to);
 
-            return new ArrayList<>();
         } else {
             Map<FromToEnum, LocalDateTime> timeMap = getFromToDateRepository(cardNumber);
 
@@ -54,83 +48,115 @@ public class GetTransactionsService {
 
             if (compareFrom <= 0 && compareTo >= 0) {
 
-                return transactionRepository.findAllByCreatedAtIsBetween(cardNumber, from, to).stream()
-                        .sorted(Comparator.comparing(TransactionEntity::getId)).toList();
+                return getTransactionsOnlyCache(cardNumber, from, to);
 
             } else if ((!isCache && !isBetweenCache)) {
 
-                List<TransactionEntity> list;
-
-                if (compareFrom < 0) {
-                    list = contextTransactionService.getService(cardNumber)
-                            .getAllTransactionsByDates(cardNumber, timeMap.get(FromToEnum.TO), to);
-                } else {
-                    list = contextTransactionService.getService(cardNumber)
-                            .getAllTransactionsByDates(cardNumber, from, timeMap.get(FromToEnum.FROM));
-                }
-
-                if (list != null && !list.isEmpty()) {
-                    transactionRepository.saveAll(list);
-                }
-
-                return transactionRepository.findAllByCreatedAtIsBetween(cardNumber, from, to);
+                return getTransactionOnlyExternalServiceWhenCacheRangeGreaterThan(cardNumber, from, to, timeMap, compareFrom);
 
             } else if (compareFrom <= 0) {
 
-                List<TransactionEntity> cacheList = transactionRepository.findAllByCreatedAtIsBetween(cardNumber,
-                        from, timeMap.get(FromToEnum.TO));
-
-                List<TransactionEntity> repositoryList = contextTransactionService.getService(cardNumber)
-                        .getAllTransactionsByDates(cardNumber, timeMap.get(FromToEnum.TO), to);
-
-                if (repositoryList != null && !repositoryList.isEmpty()) {
-                    transactionRepository.saveAll(repositoryList);
-                }
-
-                return Stream.of(cacheList, repositoryList).filter(Objects::nonNull)
-                        .flatMap(Collection::stream).sorted(Comparator.comparing(TransactionEntity::getId))
-                        .toList();
+                return getTransactionWhenCacheRangeToGreaterThanRequestTo(cardNumber, from, to, timeMap);
 
             } else if (compareTo >= 0) {
 
-                List<TransactionEntity> cacheList = transactionRepository.findAllByCreatedAtIsBetween(cardNumber,
-                        timeMap.get(FromToEnum.FROM), to);
-
-                List<TransactionEntity> repositoryList = contextTransactionService.getService(cardNumber)
-                        .getAllTransactionsByDates(cardNumber, from, timeMap.get(FromToEnum.FROM));
-
-                if (repositoryList != null && !repositoryList.isEmpty()) {
-                    transactionRepository.saveAll(repositoryList);
-                }
-
-                return Stream.of(cacheList, repositoryList).filter(Objects::nonNull)
-                        .flatMap(Collection::stream).sorted(Comparator.comparing(TransactionEntity::getId))
-                        .toList();
+                return getTransactionsWhenCacheRangeFromGreaterThanRequestFrom(cardNumber, from, to, timeMap);
 
             } else {
 
-                List<TransactionEntity> cacheTransactions = transactionRepository.findAllByCreatedAtIsBetween(
-                        cardNumber, timeMap.get(FromToEnum.FROM), timeMap.get(FromToEnum.TO));
-
-                List<TransactionEntity> fromTimeMap = contextTransactionService.getService(cardNumber)
-                        .getAllTransactionsByDates(cardNumber, from, timeMap.get(FromToEnum.FROM));
-
-                List<TransactionEntity> toTimeMap = contextTransactionService.getService(cardNumber)
-                        .getAllTransactionsByDates(cardNumber, timeMap.get(FromToEnum.TO), to);
-
-                if (fromTimeMap != null && !fromTimeMap.isEmpty()) {
-                    transactionRepository.saveAll(fromTimeMap);
-                }
-
-                if (toTimeMap != null && !toTimeMap.isEmpty()) {
-                    transactionRepository.saveAll(toTimeMap);
-                }
-
-                return Stream.of(cacheTransactions, fromTimeMap, toTimeMap).filter(Objects::nonNull)
-                        .flatMap(Collection::stream).sorted(Comparator.comparing(TransactionEntity::getId))
-                        .toList();
+                return getTransactionsWhenCacheBetweenFromAndToDates(cardNumber, from, to, timeMap);
             }
         }
+    }
+
+    private List<TransactionEntity> getTransactionsWhenCacheBetweenFromAndToDates(String cardNumber, LocalDateTime from, LocalDateTime to, Map<FromToEnum, LocalDateTime> timeMap) {
+        List<TransactionEntity> cacheTransactions = transactionRepository.findAllByCreatedAtIsBetween(
+                cardNumber, timeMap.get(FromToEnum.FROM), timeMap.get(FromToEnum.TO));
+
+        List<TransactionEntity> fromTimeMap = contextTransactionService.getService(cardNumber)
+                .getAllTransactionsByDates(cardNumber, from, timeMap.get(FromToEnum.FROM));
+
+        List<TransactionEntity> toTimeMap = contextTransactionService.getService(cardNumber)
+                .getAllTransactionsByDates(cardNumber, timeMap.get(FromToEnum.TO), to);
+
+        if (fromTimeMap != null && !fromTimeMap.isEmpty()) {
+            transactionRepository.saveAll(fromTimeMap);
+        }
+
+        if (toTimeMap != null && !toTimeMap.isEmpty()) {
+            transactionRepository.saveAll(toTimeMap);
+        }
+
+        return Stream.of(cacheTransactions, fromTimeMap, toTimeMap).filter(Objects::nonNull)
+                .flatMap(Collection::stream).sorted(Comparator.comparing(TransactionEntity::getId))
+                .toList();
+    }
+
+    private List<TransactionEntity> getTransactionWhenCacheRangeToGreaterThanRequestTo(String cardNumber, LocalDateTime from, LocalDateTime to, Map<FromToEnum, LocalDateTime> timeMap) {
+        List<TransactionEntity> cacheList = transactionRepository.findAllByCreatedAtIsBetween(cardNumber,
+                from, timeMap.get(FromToEnum.TO));
+
+        List<TransactionEntity> repositoryList = contextTransactionService.getService(cardNumber)
+                .getAllTransactionsByDates(cardNumber, timeMap.get(FromToEnum.TO), to);
+
+        if (repositoryList != null && !repositoryList.isEmpty()) {
+            transactionRepository.saveAll(repositoryList);
+        }
+
+        return Stream.of(cacheList, repositoryList).filter(Objects::nonNull)
+                .flatMap(Collection::stream).sorted(Comparator.comparing(TransactionEntity::getId))
+                .toList();
+    }
+
+    private List<TransactionEntity> getTransactionsWhenCacheRangeFromGreaterThanRequestFrom(String cardNumber, LocalDateTime from, LocalDateTime to, Map<FromToEnum, LocalDateTime> timeMap) {
+        List<TransactionEntity> cacheList = transactionRepository.findAllByCreatedAtIsBetween(cardNumber,
+                timeMap.get(FromToEnum.FROM), to);
+
+        List<TransactionEntity> repositoryList = contextTransactionService.getService(cardNumber)
+                .getAllTransactionsByDates(cardNumber, from, timeMap.get(FromToEnum.FROM));
+
+        if (repositoryList != null && !repositoryList.isEmpty()) {
+            transactionRepository.saveAll(repositoryList);
+        }
+
+        return Stream.of(cacheList, repositoryList).filter(Objects::nonNull)
+                .flatMap(Collection::stream).sorted(Comparator.comparing(TransactionEntity::getId))
+                .toList();
+    }
+
+    private List<TransactionEntity> getTransactionOnlyExternalServiceWhenCacheRangeGreaterThan(String cardNumber, LocalDateTime from, LocalDateTime to, Map<FromToEnum, LocalDateTime> timeMap, int compareFrom) {
+        List<TransactionEntity> list;
+
+        if (compareFrom < 0) {
+            list = contextTransactionService.getService(cardNumber)
+                    .getAllTransactionsByDates(cardNumber, timeMap.get(FromToEnum.TO), to);
+        } else {
+            list = contextTransactionService.getService(cardNumber)
+                    .getAllTransactionsByDates(cardNumber, from, timeMap.get(FromToEnum.FROM));
+        }
+
+        if (list != null && !list.isEmpty()) {
+            transactionRepository.saveAll(list);
+        }
+
+        return transactionRepository.findAllByCreatedAtIsBetween(cardNumber, from, to);
+    }
+
+    private List<TransactionEntity> getTransactionsOnlyCache(String cardNumber, LocalDateTime from, LocalDateTime to) {
+        return transactionRepository.findAllByCreatedAtIsBetween(cardNumber, from, to).stream()
+                .sorted(Comparator.comparing(TransactionEntity::getId)).toList();
+    }
+
+    private List<TransactionEntity> getTransactionsExternalServiceWhenCacheIsEmpty(String cardNumber, LocalDateTime from, LocalDateTime to) {
+        List<TransactionEntity> list = contextTransactionService.getService(cardNumber)
+                .getAllTransactionsByDates(cardNumber, from, to);
+
+        if (list != null && !list.isEmpty()) {
+            transactionRepository.saveAll(list);
+            return list;
+        }
+
+        return new ArrayList<>();
     }
 
     private Map<FromToEnum, LocalDateTime> getFromToDateRepository(String cardNumber) {
