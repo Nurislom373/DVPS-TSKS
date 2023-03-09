@@ -1,6 +1,7 @@
 package org.khasanof.uicachingstrategy.service.uzcard;
 
 import jakarta.annotation.PostConstruct;
+import org.khasanof.uicachingstrategy.annotation.TransactionType;
 import org.khasanof.uicachingstrategy.data.TransactionData;
 import org.khasanof.uicachingstrategy.domain.TransactionEntity;
 import org.khasanof.uicachingstrategy.service.TransactionService;
@@ -22,6 +23,7 @@ import java.util.function.Predicate;
  * Package: org.khasanof.uicachingstrategy.service.uzcard
  */
 @Component
+@TransactionType(cardNumber = "8600", name = "Humo")
 public class UzCardTransactionService implements TransactionService {
 
     private List<TransactionEntity> list = new ArrayList<>();

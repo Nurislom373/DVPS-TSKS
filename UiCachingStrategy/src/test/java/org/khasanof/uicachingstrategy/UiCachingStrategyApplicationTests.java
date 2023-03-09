@@ -66,21 +66,25 @@ class UiCachingStrategyApplicationTests {
     void test_CacheIsEmpty() {
         HumoTransactionService humoTransactionService = Mockito.mock(HumoTransactionService.class);
         TransactionRepository transactionRepository = Mockito.mock(TransactionRepository.class);
-        ContextTransactionServices contextTransactionServices1 = new ContextTransactionServices(
-                new UzCardTransactionService(), humoTransactionService);
+        ContextTransactionServices contextTransactionServices1 = Mockito.mock(ContextTransactionServices.class);
         GetTransactionsService service = new GetTransactionsService(contextTransactionServices1, transactionRepository);
 
         LocalDateTime from1 = LocalDateTime.of(2023, 2, 25, 0, 0);
         LocalDateTime to1 = LocalDateTime.of(2023, 2, 27, 0, 0);
+
+        // card Number
         String cardNumber = "9860996540334145";
+
+        Mockito.when(contextTransactionServices1.getService(ArgumentMatchers.any()))
+                .thenReturn(humoTransactionService);
 
         // call 1
         Mockito.when(transactionRepository.getCardCacheCount(ArgumentMatchers.any()))
                 .thenReturn(0);
 
         Mockito.when(humoTransactionService.getAllTransactionsByDates(ArgumentMatchers.any(),
-                ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(
-                repository.findAllByCreatedAtIsBetween("9860996540334145", from1, to1));
+                        ArgumentMatchers.any(), ArgumentMatchers.any()))
+                .thenReturn(repository.findAllByCreatedAtIsBetween(cardNumber, from1, to1));
 
         List<TransactionEntity> list1 = service.getAllTransactionByDate(cardNumber, from1, to1);
 
@@ -88,17 +92,18 @@ class UiCachingStrategyApplicationTests {
         Mockito.when(humoTransactionService.getAllTransactionsByDates(ArgumentMatchers.any(),
                 ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(null);
 
-        List<TransactionEntity> list2 = service.getAllTransactionByDate("9860996540334145", from1, to1);
+        List<TransactionEntity> list2 = service.getAllTransactionByDate(cardNumber, from1, to1);
 
         // call 3
         Mockito.when(humoTransactionService.getAllTransactionsByDates(ArgumentMatchers.any(),
                 ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(new ArrayList<>());
 
-        List<TransactionEntity> list3 = service.getAllTransactionByDate("9860996540334145", from1, to1);
+        List<TransactionEntity> list3 = service.getAllTransactionByDate(cardNumber, from1, to1);
 
         // Asserts
         /*
-            from_card = '9860996540334145' or to_card = '9860996540334145' and created_at between '2023-02-25 00:00:00' and '2023-02-27 00:00:00'
+            from_card = '9860996540334145' or to_card = '9860996540334145' and
+            created_at between '2023-02-25 00:00:00' and '2023-02-27 00:00:00'
          */
         Assertions.assertEquals(list1.size(), 4);
         Assertions.assertEquals(list2.size(), 0);
@@ -135,10 +140,10 @@ class UiCachingStrategyApplicationTests {
     @Test
     void test_CasesWhereThereIsNoCacheAndThenThereIsCache() {
         HumoTransactionService humoTransactionService = Mockito.mock(HumoTransactionService.class);
-        ContextTransactionServices contextTransactionServices1 = new ContextTransactionServices(
-                new UzCardTransactionService(), humoTransactionService);
+        ContextTransactionServices contextTransactionServices1 = Mockito.mock(ContextTransactionServices.class);
         GetTransactionsService service = new GetTransactionsService(contextTransactionServices1, repository);
 
+        // Card Number
         String cardNumber = "9860996540334145";
 
         LocalDateTime from1 = LocalDateTime.of(2023, 2, 20, 0, 0);
@@ -151,6 +156,9 @@ class UiCachingStrategyApplicationTests {
         LocalDateTime to3 = LocalDateTime.of(2023, 2, 26, 0, 0);
 
         // call 1
+        Mockito.when(contextTransactionServices1.getService(ArgumentMatchers.any()))
+                .thenReturn(humoTransactionService);
+
         Mockito.when(humoTransactionService.getAllTransactionsByDates(ArgumentMatchers.any(),
                 ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(
                 repository.findAllByCreatedAtIsBetween(cardNumber, from1, to1));
@@ -199,8 +207,7 @@ class UiCachingStrategyApplicationTests {
     void test_ThereIsACache_ThereIsNotExternalService() {
         UzCardTransactionService transactionService = Mockito.mock(UzCardTransactionService.class);
         TransactionRepository transactionRepository = Mockito.mock(TransactionRepository.class);
-        ContextTransactionServices contextTransactionServices1 = new ContextTransactionServices(transactionService,
-                new HumoTransactionService());
+        ContextTransactionServices contextTransactionServices1 = Mockito.mock(ContextTransactionServices.class);
         GetTransactionsService service = new GetTransactionsService(contextTransactionServices1, transactionRepository);
 
         String cardNumber = "8600937995190824"; // Card Number
@@ -212,6 +219,9 @@ class UiCachingStrategyApplicationTests {
         LocalDateTime to2 = LocalDateTime.of(2023, 3, 2, 0, 0);
 
         // call 1
+        Mockito.when(contextTransactionServices1.getService(ArgumentMatchers.any()))
+                .thenReturn(transactionService);
+
         Mockito.when(transactionRepository.findAll())
                 .thenReturn(getTEnitityList(cardNumber, 2, 23, 2, 28));
 
@@ -274,8 +284,7 @@ class UiCachingStrategyApplicationTests {
     void test_FromAndToDatesOneOfTheTwo_BetweenCache_Cases() {
         UzCardTransactionService transactionService = Mockito.mock(UzCardTransactionService.class);
         TransactionRepository transactionRepository = Mockito.mock(TransactionRepository.class);
-        ContextTransactionServices contextTransactionServices1 = new ContextTransactionServices(transactionService,
-                new HumoTransactionService());
+        ContextTransactionServices contextTransactionServices1 = Mockito.mock(ContextTransactionServices.class);
         GetTransactionsService service = new GetTransactionsService(contextTransactionServices1, transactionRepository);
 
         String cardNumber = "8600937995190824"; // Card Number
@@ -287,6 +296,9 @@ class UiCachingStrategyApplicationTests {
         LocalDateTime to2 = LocalDateTime.of(2023, 3, 2, 0, 0);
 
         // call 1
+        Mockito.when(contextTransactionServices1.getService(ArgumentMatchers.any()))
+                .thenReturn(transactionService);
+
         Mockito.when(transactionRepository.getCardCacheCount(ArgumentMatchers.any()))
                 .thenReturn(1);
 
@@ -303,7 +315,7 @@ class UiCachingStrategyApplicationTests {
                         ArgumentMatchers.any(), ArgumentMatchers.any()))
                 .thenReturn(repository.findAllByCreatedAtIsBetween(cardNumber, timeList1.get(0).getCreatedAt(), to1));
 
-        List<TransactionEntity> list1 = service.getAllTransactionByDate(cardNumber, from1, to1);
+        service.getAllTransactionByDate(cardNumber, from1, to1);
 
         // call 2
         List<TransactionEntity> timeList2 = getTEnitityList(cardNumber, 2, 22, 2, 28);
@@ -319,7 +331,7 @@ class UiCachingStrategyApplicationTests {
                         ArgumentMatchers.any(), ArgumentMatchers.any()))
                 .thenReturn(repository.findAllByCreatedAtIsBetween(cardNumber, timeList2.get(1).getCreatedAt(), to2));
 
-        List<TransactionEntity> list2 = service.getAllTransactionByDate(cardNumber, from2, to2);
+        service.getAllTransactionByDate(cardNumber, from2, to2);
 
         // How many times these 5 methods are called during our test run.
         Mockito.verify(transactionRepository, Mockito.times(2))
@@ -359,8 +371,7 @@ class UiCachingStrategyApplicationTests {
     void test_CasesGreaterThanCacheRange() {
         HumoTransactionService transactionService = Mockito.mock(HumoTransactionService.class);
         TransactionRepository transactionRepository = Mockito.mock(TransactionRepository.class);
-        ContextTransactionServices contextTransactionServices1 = new ContextTransactionServices(new UzCardTransactionService(),
-                transactionService);
+        ContextTransactionServices contextTransactionServices1 = Mockito.mock(ContextTransactionServices.class);
         GetTransactionsService service = new GetTransactionsService(contextTransactionServices1, transactionRepository);
 
         String cardNumber = "9860996540334145"; // Card Number
@@ -375,6 +386,9 @@ class UiCachingStrategyApplicationTests {
         LocalDateTime to3 = LocalDateTime.of(2023, 2, 27, 0, 0);
 
         // call 1
+        Mockito.when(contextTransactionServices1.getService(ArgumentMatchers.any()))
+                .thenReturn(transactionService);
+
         Mockito.when(transactionRepository.getCardCacheCount(ArgumentMatchers.any()))
                 .thenReturn(1);
 
@@ -457,8 +471,7 @@ class UiCachingStrategyApplicationTests {
     void test_CasesWhereTheCacheInTheRange() {
         UzCardTransactionService transactionService = Mockito.mock(UzCardTransactionService.class);
         TransactionRepository transactionRepository = Mockito.mock(TransactionRepository.class);
-        ContextTransactionServices contextTransactionServices1 = new ContextTransactionServices(transactionService,
-                new HumoTransactionService());
+        ContextTransactionServices contextTransactionServices1 = Mockito.mock(ContextTransactionServices.class);
         GetTransactionsService service = new GetTransactionsService(contextTransactionServices1, transactionRepository);
 
         String cardNumber = "8600937995190824"; // Card Number
@@ -470,6 +483,9 @@ class UiCachingStrategyApplicationTests {
         LocalDateTime to2 = LocalDateTime.of(2023, 3, 4, 0, 0);
 
         // call 1
+        Mockito.when(contextTransactionServices1.getService(ArgumentMatchers.any()))
+                .thenReturn(transactionService);
+
         Mockito.when(transactionRepository.getCardCacheCount(ArgumentMatchers.any()))
                 .thenReturn(1);
 
@@ -549,8 +565,7 @@ class UiCachingStrategyApplicationTests {
     void test_AddCacheTransaction_And_GetTransactionCache() {
         HumoTransactionService transactionService = Mockito.mock(HumoTransactionService.class);
         TransactionRepository transactionRepository = Mockito.mock(TransactionRepository.class);
-        ContextTransactionServices contextTransactionServices1 = new ContextTransactionServices(
-                new UzCardTransactionService(), transactionService);
+        ContextTransactionServices contextTransactionServices1 = Mockito.mock(ContextTransactionServices.class);
         GetTransactionsService service = new GetTransactionsService(contextTransactionServices1, transactionRepository);
 
         String cardNumber = "9860996540334145"; // Card Number
@@ -562,6 +577,9 @@ class UiCachingStrategyApplicationTests {
         LocalDateTime to2 = LocalDateTime.of(2023, 2, 26, 0, 0);
 
         // call 1
+        Mockito.when(contextTransactionServices1.getService(ArgumentMatchers.any()))
+                .thenReturn(transactionService);
+
         Mockito.when(transactionRepository.getCardCacheCount(ArgumentMatchers.any()))
                 .thenReturn(1);
 
@@ -635,8 +653,7 @@ class UiCachingStrategyApplicationTests {
     void test_ExternalServicesAreNull_CasesGreaterThanTheCacheRange() {
         UzCardTransactionService transactionService = Mockito.mock(UzCardTransactionService.class);
         TransactionRepository transactionRepository = Mockito.mock(TransactionRepository.class);
-        ContextTransactionServices contextTransactionServices1 = new ContextTransactionServices(
-                transactionService, new HumoTransactionService());
+        ContextTransactionServices contextTransactionServices1 = Mockito.mock(ContextTransactionServices.class);
         GetTransactionsService service = new GetTransactionsService(contextTransactionServices1, transactionRepository);
 
         String cardNumber = "8600937995190824"; // Card Number
@@ -648,6 +665,9 @@ class UiCachingStrategyApplicationTests {
         LocalDateTime to2 = LocalDateTime.of(2023, 3, 3, 0, 0);
 
         // call 1
+        Mockito.when(contextTransactionServices1.getService(ArgumentMatchers.any()))
+                .thenReturn(transactionService);
+
         Mockito.when(transactionRepository.getCardCacheCount(ArgumentMatchers.any()))
                 .thenReturn(1);
 
@@ -738,8 +758,7 @@ class UiCachingStrategyApplicationTests {
         UzCardTransactionService uzCardTransactionService1 = Mockito.mock(UzCardTransactionService.class);
         HumoTransactionService humoTransactionService1 = Mockito.mock(HumoTransactionService.class);
         TransactionRepository transactionRepository = Mockito.mock(TransactionRepository.class);
-        ContextTransactionServices contextTransactionServices1 = new ContextTransactionServices(
-                uzCardTransactionService1, humoTransactionService1);
+        ContextTransactionServices contextTransactionServices1 = Mockito.mock(ContextTransactionServices.class);
         GetTransactionsService service = new GetTransactionsService(contextTransactionServices1, transactionRepository);
 
         String uzCardNumber = "8600937995190824"; // UzCard Number
@@ -756,6 +775,12 @@ class UiCachingStrategyApplicationTests {
 
         LocalDateTime humoCardFrom2 = LocalDateTime.of(2023, 2, 26, 0, 0);
         LocalDateTime humoCardTo2 = LocalDateTime.of(2023, 3, 1, 0, 0);
+
+        Mockito.when(contextTransactionServices1.getService(uzCardNumber))
+                .thenReturn(uzCardTransactionService1);
+
+        Mockito.when(contextTransactionServices1.getService(humoCardNumber))
+                .thenReturn(humoTransactionService1);
 
         // UzCard Call 1
         Mockito.when(transactionRepository.getCardCacheCount(ArgumentMatchers.any()))

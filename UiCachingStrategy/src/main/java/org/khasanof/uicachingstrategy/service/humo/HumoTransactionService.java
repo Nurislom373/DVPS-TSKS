@@ -2,9 +2,11 @@ package org.khasanof.uicachingstrategy.service.humo;
 
 import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
+import org.khasanof.uicachingstrategy.annotation.TransactionType;
 import org.khasanof.uicachingstrategy.data.TransactionData;
 import org.khasanof.uicachingstrategy.domain.TransactionEntity;
 import org.khasanof.uicachingstrategy.service.TransactionService;
+import org.khasanof.uicachingstrategy.service.uzcard.UzCardTransactionService;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +25,7 @@ import java.util.function.Predicate;
  * Package: org.khasanof.uicachingstrategy.service.humo
  */
 @Component
+@TransactionType(cardNumber = "9860", name = "UzCard")
 public class HumoTransactionService implements TransactionService {
 
     private List<TransactionEntity> list = new ArrayList<>();

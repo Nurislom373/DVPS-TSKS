@@ -1,10 +1,12 @@
 package org.khasanof.uicachingstrategy.service;
 
-import lombok.AllArgsConstructor;
-import org.khasanof.uicachingstrategy.enums.CardType;
-import org.khasanof.uicachingstrategy.service.humo.HumoTransactionService;
-import org.khasanof.uicachingstrategy.service.uzcard.UzCardTransactionService;
+import org.khasanof.uicachingstrategy.annotation.TransactionType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Author: Nurislom
@@ -16,20 +18,35 @@ import org.springframework.stereotype.Service;
  * Package: org.khasanof.uicachingstrategy.service
  */
 @Service
-@AllArgsConstructor
 public class ContextTransactionServices {
 
-    private UzCardTransactionService uzCardTransactionService;
-    private HumoTransactionService humoTransactionService;
+    @Autowired
+    private ApplicationContext context;
 
     public TransactionService getService(String cardNumber) {
-        if (cardNumber.startsWith(CardType.UZCARD.getCardNumber())) {
-            return uzCardTransactionService;
-        } else if (cardNumber.startsWith(CardType.HUMO.getCardNumber())) {
-            return humoTransactionService;
-        } else {
-            throw new RuntimeException("Invalid Card Number!");
-        }
+        return (TransactionService) context.getBean(getClassBean(cardNumber));
     }
 
+    public List<TransactionService> getServices() {
+        return getTransactionTypes().stream().map(Object::getClass)
+                .map(o -> (TransactionService) context.getBean(o))
+                .toList();
+    }
+
+    private Class<?> getClassBean(String cardNumber) {
+        return getTransactionTypes().stream()
+                .filter(o -> cardNumber.startsWith(getCardNumber(o)))
+                .map(Object::getClass).findFirst()
+                .orElseThrow(RuntimeException::new);
+    }
+
+    private List<Object> getTransactionTypes() {
+        return context.getBeansWithAnnotation(TransactionType.class).values()
+                .stream().toList();
+    }
+
+    private String getCardNumber(Object o) {
+        return o.getClass().getAnnotation(TransactionType.class)
+                .cardNumber();
+    }
 }
