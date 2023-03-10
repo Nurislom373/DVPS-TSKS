@@ -5,8 +5,8 @@ import org.khasanof.uicachingstrategy.annotation.TransactionType;
 import org.khasanof.uicachingstrategy.data.TransactionData;
 import org.khasanof.uicachingstrategy.domain.TransactionEntity;
 import org.khasanof.uicachingstrategy.service.TransactionService;
+import org.khasanof.uicachingstrategy.service.context.FieldContextTransactionService;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -23,8 +23,10 @@ import java.util.function.Predicate;
  * Package: org.khasanof.uicachingstrategy.service.uzcard
  */
 @Component
-@TransactionType(cardNumber = "8600", name = "Humo")
-public class UzCardTransactionService implements TransactionService {
+@TransactionType(cardNumber = "8600", name = "UzCard")
+public class UzCardTransactionService implements TransactionService, FieldContextTransactionService {
+
+    private final String cardNumber = "8600";
 
     private List<TransactionEntity> list = new ArrayList<>();
 
@@ -45,8 +47,9 @@ public class UzCardTransactionService implements TransactionService {
         Predicate<TransactionEntity> betweenPredicate = (f) -> f.getCreatedAt().isAfter(from)
                 && f.getCreatedAt().isBefore(to);
 
-        return list.stream()
-                .filter(equalPredicate.and(betweenPredicate))
+        if (cardNumber.equals("*"))
+            return list.stream().filter(betweenPredicate).toList();
+        return list.stream().filter(equalPredicate.and(betweenPredicate))
                 .toList();
     }
 

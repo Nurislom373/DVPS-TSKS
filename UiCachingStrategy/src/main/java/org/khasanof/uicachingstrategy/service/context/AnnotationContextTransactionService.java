@@ -1,11 +1,13 @@
-package org.khasanof.uicachingstrategy.service;
+package org.khasanof.uicachingstrategy.service.context;
 
 import org.khasanof.uicachingstrategy.annotation.TransactionType;
+import org.khasanof.uicachingstrategy.service.TransactionService;
+import org.khasanof.uicachingstrategy.service.composite.CompositeTransactionService;
+import org.khasanof.uicachingstrategy.service.context.ContextTransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -18,17 +20,21 @@ import java.util.List;
  * Package: org.khasanof.uicachingstrategy.service
  */
 @Service
-public class ContextTransactionServices {
+public class AnnotationContextTransactionService implements ContextTransactionService {
 
     @Autowired
     private ApplicationContext context;
 
+    @Override
     public TransactionService getService(String cardNumber) {
+        if (cardNumber.equals("*")) return context.getBean(CompositeTransactionService.class);
         return (TransactionService) context.getBean(getClassBean(cardNumber));
     }
 
+    @Override
     public List<TransactionService> getServices() {
-        return getTransactionTypes().stream().map(Object::getClass)
+        return getTransactionTypes().stream()
+                .map(Object::getClass)
                 .map(o -> (TransactionService) context.getBean(o))
                 .toList();
     }
@@ -41,8 +47,8 @@ public class ContextTransactionServices {
     }
 
     private List<Object> getTransactionTypes() {
-        return context.getBeansWithAnnotation(TransactionType.class).values()
-                .stream().toList();
+        return context.getBeansWithAnnotation(TransactionType.class)
+                .values().stream().toList();
     }
 
     private String getCardNumber(Object o) {
