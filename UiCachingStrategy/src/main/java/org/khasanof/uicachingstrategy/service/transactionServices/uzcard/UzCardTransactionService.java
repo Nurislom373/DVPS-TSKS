@@ -1,11 +1,12 @@
-package org.khasanof.uicachingstrategy.service.uzcard;
+package org.khasanof.uicachingstrategy.service.transactionServices.uzcard;
 
 import jakarta.annotation.PostConstruct;
 import org.khasanof.uicachingstrategy.annotation.TransactionType;
-import org.khasanof.uicachingstrategy.data.TransactionData;
+import org.khasanof.uicachingstrategy.data.TransactionMockData;
 import org.khasanof.uicachingstrategy.domain.TransactionEntity;
 import org.khasanof.uicachingstrategy.service.TransactionService;
 import org.khasanof.uicachingstrategy.service.context.FieldContextTransactionService;
+import org.khasanof.uicachingstrategy.service.context.MethodContextTransactionService;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -24,17 +25,19 @@ import java.util.function.Predicate;
  */
 @Component
 @TransactionType(cardNumber = "8600", name = "UzCard")
-public class UzCardTransactionService implements TransactionService, FieldContextTransactionService {
+public class UzCardTransactionService implements TransactionService,
+        FieldContextTransactionService, MethodContextTransactionService {
 
     private final String cardNumber = "8600";
 
     private List<TransactionEntity> list = new ArrayList<>();
 
-    private final TransactionData data = new TransactionData();
+    private final TransactionMockData data = new TransactionMockData();
 
     @PostConstruct
     public void postConstruct() {
-        List<TransactionEntity> mockList = data.getMockList("/data/transaction1.json", "8600");
+        final String path = "/data/mock_transactions_uzcard.json";
+        List<TransactionEntity> mockList = data.getMockList(path, cardNumber);
         list.addAll(mockList);
     }
 
@@ -57,4 +60,8 @@ public class UzCardTransactionService implements TransactionService, FieldContex
         return list.isEmpty();
     }
 
+    @Override
+    public String getCardNumber() {
+        return cardNumber;
+    }
 }

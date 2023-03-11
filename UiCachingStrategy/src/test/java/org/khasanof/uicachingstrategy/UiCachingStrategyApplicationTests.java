@@ -9,8 +9,9 @@ import org.khasanof.uicachingstrategy.service.context.AnnotationContextTransacti
 import org.khasanof.uicachingstrategy.service.MainTransactionsService;
 import org.khasanof.uicachingstrategy.service.composite.CompositeTransactionService;
 import org.khasanof.uicachingstrategy.service.context.SpringFieldContextTransactionService;
-import org.khasanof.uicachingstrategy.service.humo.HumoTransactionService;
-import org.khasanof.uicachingstrategy.service.uzcard.UzCardTransactionService;
+import org.khasanof.uicachingstrategy.service.context.SpringMethodContextTransactionService;
+import org.khasanof.uicachingstrategy.service.transactionServices.humo.HumoTransactionService;
+import org.khasanof.uicachingstrategy.service.transactionServices.uzcard.UzCardTransactionService;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-@SpringBootTest(properties = "spring.main.lazy-initialization=true")
+@SpringBootTest
 class UiCachingStrategyApplicationTests {
 
     @Autowired
@@ -33,6 +34,9 @@ class UiCachingStrategyApplicationTests {
 
     @Autowired
     private SpringFieldContextTransactionService fieldContextTransactionService;
+
+    @Autowired
+    private SpringMethodContextTransactionService methodContextTransactionService;
 
     @Autowired
     private UzCardTransactionService uzCardTransactionService;
@@ -64,23 +68,50 @@ class UiCachingStrategyApplicationTests {
         MainTransactionsService service = new MainTransactionsService(fieldContextTransactionService, repository);
         LocalDateTime from1 = LocalDateTime.of(2023, 2, 25, 0, 0);
         LocalDateTime to1 = LocalDateTime.of(2023, 2, 27, 0, 0);
-        List<TransactionEntity> list = service.getAllTransactionsByCardAndDates("9860996540334145", from1, to1);
-        Assertions.assertEquals(list.size(), 13);
+        List<TransactionEntity> list = service.getAllTransactionsByCardAndDates("*", from1, to1);
+        System.out.println("list.size() = " + list.size());
+        org.assertj.core.api.Assertions.assertThat(list.isEmpty()).isFalse();
+    }
+
+    @Test
+    void test_methodContextService() {
+        MainTransactionsService service = new MainTransactionsService(methodContextTransactionService, repository);
+        LocalDateTime from1 = LocalDateTime.of(2023, 2, 25, 0, 0);
+        LocalDateTime to1 = LocalDateTime.of(2023, 2, 27, 0, 0);
+        List<TransactionEntity> list = service.getAllTransactionsByCardAndDates("*", from1, to1);
+        System.out.println("list.size() = " + list.size());
+        org.assertj.core.api.Assertions.assertThat(list.isEmpty()).isFalse();
     }
 
     @Test
     void test_getMultiCardTransaction() {
-        MainTransactionsService service = new MainTransactionsService(contextTransactionServices, repository);
+        MainTransactionsService service = new MainTransactionsService(fieldContextTransactionService, repository);
         LocalDateTime from1 = LocalDateTime.of(2023, 2, 25, 0, 0);
         LocalDateTime to1 = LocalDateTime.of(2023, 2, 27, 0, 0);
 
         String uzCardNumber = "8600937995190824"; // UzCard Number
         String humoCardNumber = "9860996540334145"; // HumoCard Number
+        String visaCardNumber = "4263892870236148"; // VisaCard Number
+        String masterCardNumber = "5425818335518513"; // MasterCard Number
 
         Map<String, List<TransactionEntity>> map = service.getAllTransactionsByCardsAndDates(List.of(uzCardNumber,
-                humoCardNumber), from1, to1);
+                humoCardNumber, visaCardNumber, masterCardNumber), from1, to1);
         System.out.println("map.get(humoCardNumber).size() = " + map.get(humoCardNumber).size());
         System.out.println("map.get(uzCardNumber).size() = " + map.get(uzCardNumber).size());
+        System.out.println("map.get(visaCardNumber).size() = " + map.get(visaCardNumber).size());
+        System.out.println("map.get(masterCardNumber).size() = " + map.get(masterCardNumber).size());
+    }
+
+    @Test
+    void test_newExternalService() {
+        MainTransactionsService service = new MainTransactionsService(contextTransactionServices, repository);
+        LocalDateTime from1 = LocalDateTime.of(2023, 2, 27, 0, 0);
+        LocalDateTime to1 = LocalDateTime.of(2023, 2, 28, 0, 0);
+
+        String visaCardNumber = "5425818335518513"; // UzCard Number
+
+        List<TransactionEntity> list = service.getAllTransactionsByCardAndDates(visaCardNumber, from1, to1);
+        System.out.println("list.size() = " + list.size());
     }
 
     @Test

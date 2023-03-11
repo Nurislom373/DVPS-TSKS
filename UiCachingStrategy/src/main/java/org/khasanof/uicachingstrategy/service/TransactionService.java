@@ -5,6 +5,7 @@ import org.khasanof.uicachingstrategy.domain.TransactionEntity;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
 /**
  * Author: Nurislom
@@ -18,5 +19,4 @@ import java.util.Map;
 public interface TransactionService {
 
     List<TransactionEntity> getAllTransactionsByDates(String cardNumber, LocalDateTime from, LocalDateTime to);
-
 }

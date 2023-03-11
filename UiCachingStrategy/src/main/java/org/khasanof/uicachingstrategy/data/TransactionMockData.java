@@ -7,6 +7,8 @@ import org.apache.commons.lang3.RandomUtils;
 import org.khasanof.uicachingstrategy.domain.TransactionEntity;
 import org.khasanof.uicachingstrategy.enums.Status;
 import org.khasanof.uicachingstrategy.utils.BaseUtils;
+import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -21,7 +23,8 @@ import java.util.List;
  * <br/>
  * Package: org.khasanof.uicaching.data
  */
-public class TransactionData {
+@Component
+public class TransactionMockData {
 
     public List<TransactionEntity> getMockList(String jsonPath, String cardNumber) {
 
@@ -72,9 +75,13 @@ public class TransactionData {
         return numbers;
     }
 
-    private void writeCardNumbers(List<String> list) {
+    private void writeCardNumbers(List<String> list, String cardNum) {
 
-        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("UiCachingStrategy/src/main/resources/data/9860CardNumbers.txt"))) {
+        String absolutePath = "D:\\Nurislom\\Projects\\DVPS-TSKS\\UiCachingStrategy\\src\\test\\resources\\data\\";
+        String extension = "CardNumbers.txt";
+
+        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(absolutePath.concat(cardNum)
+                .concat(extension)))) {
             list.forEach(o -> {
                 try {
                     bufferedWriter.write(o.concat("\n"));
@@ -88,15 +95,13 @@ public class TransactionData {
     }
 
     private List<String> readFileCardNumbers(String cardNumber) throws FileNotFoundException {
-        String path;
+        Assert.notNull(cardNumber, "CardNumber Must Be Not Null!");
 
-        if (cardNumber.equals("8600")) {
-//            path = "UiCachingStrategy/src/test/resources/data/8600CardNumbers.txt";
-            path = "D:\\Nurislom\\Projects\\DVPS-TSKS\\UiCachingStrategy\\src\\test\\resources\\data\\8600CardNumbers.txt";
-        } else {
-            path = "D:\\Nurislom\\Projects\\DVPS-TSKS\\UiCachingStrategy\\src\\test\\resources\\data\\9860CardNumbers.txt";
-        }
+        String absolutePath = "D:\\Nurislom\\Projects\\DVPS-TSKS\\UiCachingStrategy\\src\\test\\resources\\data\\";
+        String extension = "CardNumbers.txt";
 
+        String path = absolutePath.concat(cardNumber)
+                .concat(extension);
         return getStrings(path);
     }
 

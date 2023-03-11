@@ -31,7 +31,9 @@ public class CompositeTransactionService implements TransactionService {
 
     @PostConstruct
     public void afterPropertiesSet() {
-        services.addAll(contextTransactionServices.getServices());
+        List<TransactionService> list = contextTransactionServices.getServices();
+        System.out.println("list = " + list);
+        services.addAll(list);
     }
 
     @Override

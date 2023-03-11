@@ -11,6 +11,6 @@ package org.khasanof.uicachingstrategy.service.context;
  */
 public interface MethodContextTransactionService {
 
-    String getCardNum();
+    String getCardNumber();
 
 }

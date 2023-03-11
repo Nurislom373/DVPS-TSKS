@@ -7,6 +7,7 @@ import org.khasanof.uicachingstrategy.service.context.FieldContextTransactionSer
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -21,7 +22,7 @@ import java.util.List;
  * <br/>
  * Package: org.khasanof.uicachingstrategy.service
  */
-@Component
+@Service
 public class SpringFieldContextTransactionService implements ContextTransactionService {
 
     @Autowired
@@ -30,7 +31,7 @@ public class SpringFieldContextTransactionService implements ContextTransactionS
     @Override
     public TransactionService getService(String cardNumber) {
         if (cardNumber.equals("*")) return context.getBean(CompositeTransactionService.class);
-        return (TransactionService) context.getBean(getClassBeanDeclarative(cardNumber));
+        return (TransactionService) context.getBean(getClassBeanImperative(cardNumber));
     }
 
     @Override
@@ -42,9 +43,11 @@ public class SpringFieldContextTransactionService implements ContextTransactionS
     private Class<?> getClassBeanDeclarative(String cardNumber) {
         return getBeans().stream().flatMap(o -> Arrays.stream(o.getClass().getDeclaredFields())
                         .filter(field -> field.getName().equals("cardNumber"))
-                .peek(f -> f.setAccessible(true)).map(f -> getFieldValue(f, o))
-                .filter(cardNumber::startsWith).map(l -> o.getClass()))
-                .findFirst().orElseThrow();
+                        .peek(f -> f.setAccessible(true))
+                        .map(f -> getFieldValue(f, o))
+                        .filter(cardNumber::startsWith)
+                        .map(Object::getClass))
+                .findFirst().orElseThrow(RuntimeException::new);
     }
 
     private Class<?> getClassBeanImperative(String cardNumber) {
@@ -66,9 +69,7 @@ public class SpringFieldContextTransactionService implements ContextTransactionS
     }
 
     private List<Object> getBeans() {
-        String[] beanDefinitionNames = context.getBeanDefinitionNames();
-        System.out.println("beanDefinitionNames = " + Arrays.toString(beanDefinitionNames));
-        return Arrays.stream(beanDefinitionNames).map(b -> context.getBean(b))
+        return Arrays.stream(context.getBeanDefinitionNames()).map(b -> context.getBean(b))
                 .filter(f -> f instanceof FieldContextTransactionService)
                 .toList();
     }

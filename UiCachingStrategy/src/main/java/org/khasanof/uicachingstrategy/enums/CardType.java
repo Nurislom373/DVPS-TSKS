@@ -2,8 +2,8 @@ package org.khasanof.uicachingstrategy.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.khasanof.uicachingstrategy.service.humo.HumoTransactionService;
-import org.khasanof.uicachingstrategy.service.uzcard.UzCardTransactionService;
+import org.khasanof.uicachingstrategy.service.transactionServices.humo.HumoTransactionService;
+import org.khasanof.uicachingstrategy.service.transactionServices.uzcard.UzCardTransactionService;
 
 import java.util.stream.Stream;
 
