@@ -1,7 +1,7 @@
 package org.khasanof.reactiveuicaching.service.context;
 
-import org.khasanof.uicachingstrategy.service.TransactionService;
-import org.khasanof.uicachingstrategy.service.composite.CompositeTransactionService;
+import org.khasanof.reactiveuicaching.service.TransactionService;
+import org.khasanof.reactiveuicaching.service.composite.CompositeTransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
