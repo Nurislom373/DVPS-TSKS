@@ -13,6 +13,7 @@ import reactor.core.scheduler.Schedulers;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 /**
@@ -31,7 +32,7 @@ public class MainTransactionsService {
     private final ContextTransactionService contextTransactionService;
     private final TransactionRepository transactionRepository;
 
-    public MainTransactionsService(@Qualifier("springMethodContextTransactionService") ContextTransactionService contextTransactionService, TransactionRepository transactionRepository) {
+    public MainTransactionsService(@Qualifier("annotationContextTransactionService") ContextTransactionService contextTransactionService, TransactionRepository transactionRepository) {
         this.contextTransactionService = contextTransactionService;
         this.transactionRepository = transactionRepository;
     }
@@ -59,21 +60,30 @@ public class MainTransactionsService {
                                                                       LocalDateTime from, LocalDateTime to) {
         boolean isComposite = cardNumber.equals("*");
         return transactionRepository.count()
-                .publishOn(Schedulers.boundedElastic())
+                .log("Enter getAllTransactionsByService() Method", Level.ALL)
                 .flatMap((c) -> {
                     if (c == 0) {
                         return getTransactionsExternalServiceWhenCacheIsEmpty(service, cardNumber, from, to);
-                    } else if (!isComposite && transactionRepository.getCardCacheCount(cardNumber)
-                            .blockOptional().orElse(0L) == 0) {
-                        return getTransactionsExternalServiceWhenCacheIsEmpty(service, cardNumber, from, to);
-                    } else {
-                        return getListMono(service, cardNumber, from, to, isComposite);
                     }
+                    return Mono.just(transactionRepository.getCardCacheCount(cardNumber))
+                            .log("Enter Inner FlatMap()")
+                            .doOnNext((v) -> v.doOnNext((var) -> log.info("Get Value getCardCacheCount()"))
+                                    .subscribe())
+                            .flatMap(var -> var.log("Enter Conditional State")
+                                    .flatMap((v) -> {
+                                        if (!isComposite && v == 0)
+                                            return getTransactionsExternalServiceWhenCacheIsEmpty(
+                                                    service, cardNumber, from, to)
+                                                    .log("Return External Service");
+                                        return getListMono(service, cardNumber, from, to, isComposite)
+                                                .log("Get Cache Call getListMono() method");
+                                    }));
                 });
     }
 
     private Mono<List<TransactionEntity>> getListMono(TransactionService service, String cardNumber, LocalDateTime from,
                                                       LocalDateTime to, boolean isComposite) {
+        log.info("Enter getListMono() Method");
         return getFromToDateRepository(cardNumber, isComposite)
                 .flatMap(timeMap -> {
                     int compareFrom = timeMap.get(FromToEnum.FROM).compareTo(from);
@@ -117,6 +127,7 @@ public class MainTransactionsService {
 
     private Mono<List<TransactionEntity>> getTransactionsWhenCacheBetweenFromAndToDates(TransactionService service, String cardNumber, boolean isComposite, LocalDateTime from, LocalDateTime to, Map<FromToEnum, LocalDateTime> timeMap) {
         return Mono.just(isComposite)
+                .log("Enter getTransactionsWhenCacheBetweenFromAndToDates()")
                 .flatMap((var) -> {
                     if (isComposite)
                         return transactionRepository.findAllByCreatedAtIsBetween(timeMap.get(FromToEnum.FROM),
@@ -124,18 +135,21 @@ public class MainTransactionsService {
                     return transactionRepository.findAllByCreatedAtIsBetween(
                                     cardNumber, timeMap.get(FromToEnum.FROM), timeMap.get(FromToEnum.TO))
                             .collectList();
-                }).flatMap((var) -> Flux.concat(service.getAllTransactionsByDates(cardNumber,
-                                        from, timeMap.get(FromToEnum.FROM)),
-                                service.getAllTransactionsByDates(cardNumber, timeMap.get(FromToEnum.TO), to))
-                        .publishOn(Schedulers.boundedElastic())
-                        .mapNotNull(o -> {
-                            Mono.just(o).subscribe(transactionRepository::save);
-                            return o;
-                        })
+                }).log("Get Cache Transaction")
+                .flatMap((var) -> Flux.concat(service.getAllTransactionsByDates(cardNumber,
+                                        from, timeMap.get(FromToEnum.FROM))
+                                        .log("Get Transaction With Service 1"),
+                                service.getAllTransactionsByDates(cardNumber, timeMap.get(FromToEnum.TO), to)
+                                        .log("Get Transaction With Service 2"))
                         .collectList()
-                        .map(list -> {
-                            list.addAll(var);
-                            return list;
+                        .doOnNext((list) -> log.info("Two Service List Size : " + list.size()))
+                        .publishOn(Schedulers.boundedElastic())
+                        .map(o -> {
+                            if (!o.isEmpty()) {
+                                transactionRepository.saveAll(o).subscribe();
+                                return o;
+                            }
+                            return var;
                         }));
     }
 
@@ -146,7 +160,7 @@ public class MainTransactionsService {
                             .collectList();
                     return transactionRepository.findAllByCreatedAtIsBetween(cardNumber,
                             from, timeMap.get(FromToEnum.TO)).collectList();
-                }).flatMap((var) -> service.getAllTransactionsByDates(cardNumber, from, to)
+                }).flatMap((var) -> service.getAllTransactionsByDates(cardNumber, timeMap.get(FromToEnum.TO), to)
                         .collectList()
                         .publishOn(Schedulers.boundedElastic())
                         .mapNotNull(list -> {
@@ -165,7 +179,7 @@ public class MainTransactionsService {
                     if (isComposite) return transactionRepository.findAllByCreatedAtIsBetween(from, to).collectList();
                     return transactionRepository.findAllByCreatedAtIsBetween(cardNumber,
                             timeMap.get(FromToEnum.FROM), to).collectList();
-                }).flatMap((var) -> service.getAllTransactionsByDates(cardNumber, from, to)
+                }).flatMap((var) -> service.getAllTransactionsByDates(cardNumber, from, timeMap.get(FromToEnum.FROM))
                         .collectList()
                         .publishOn(Schedulers.boundedElastic())
                         .mapNotNull(list -> {
@@ -180,6 +194,7 @@ public class MainTransactionsService {
 
     private Mono<List<TransactionEntity>> getTransactionOnlyExternalServiceWhenCacheRangeGreaterThan(TransactionService service, String cardNumber, boolean isComposite, LocalDateTime from, LocalDateTime to, Map<FromToEnum, LocalDateTime> timeMap, int compareFrom) {
         return Mono.just(compareFrom)
+                .log("Enter getTransactionOnly..()")
                 .flatMap((var1) -> {
                     if (var1 < 0) return service.getAllTransactionsByDates(cardNumber,
                                     timeMap.get(FromToEnum.TO), to)
@@ -187,9 +202,16 @@ public class MainTransactionsService {
                     return service.getAllTransactionsByDates(cardNumber, from, timeMap.get(FromToEnum.FROM))
                             .collectList();
                 })
-                .publishOn(Schedulers.boundedElastic()).doOnNext((var2) -> {
-                    if (var2 != null && !var2.isEmpty())
-                        Mono.just(var2).subscribe(transactionRepository::saveAll);
+                .doOnNext((list) -> log.info("External Returned List Size : " + list.size()))
+                .publishOn(Schedulers.boundedElastic())
+                .doOnNext((var2) -> {
+                    System.out.println("var2 = " + var2);
+                    if (!var2.isEmpty())
+                        Mono.just(var2).map(transactionRepository::saveAll)
+                                .subscribe(saved -> {
+                                    System.out.println("Saved transactions:");
+                                    saved.subscribe(System.out::println);
+                                });
                 }).flatMap((var) -> {
                     if (isComposite) return transactionRepository.findAllByCreatedAtIsBetween(from, to)
                             .collectList();
@@ -199,43 +221,52 @@ public class MainTransactionsService {
     }
 
     private Mono<List<TransactionEntity>> getTransactionsOnlyCache(String cardNumber, boolean isComposite, LocalDateTime from, LocalDateTime to) {
+        log.info("Enter Only Get Cache Method");
         if (isComposite) {
+            log.info("No CardNumber!");
             return transactionRepository.findAllByCreatedAtIsBetween(from, to)
                     .sort(Comparator.comparing(TransactionEntity::getId))
                     .collectList();
         }
+        log.info("With CardNumber!");
         return transactionRepository.findAllByCreatedAtIsBetween(cardNumber, from, to)
                 .sort(Comparator.comparing(TransactionEntity::getId))
                 .collectList();
     }
 
     private Mono<List<TransactionEntity>> getTransactionsExternalServiceWhenCacheIsEmpty(TransactionService service, String cardNumber, LocalDateTime from, LocalDateTime to) {
+        log.info("Enter getTransactionsExternalServiceWhenCacheIsEmpty() Method");
         return service.getAllTransactionsByDates(cardNumber, from, to)
+                .log("Debug Get Cache")
                 .collectList()
+                .doOnNext((var) -> log.info("External Service Return List Size : " + var.size()))
                 .flatMap(list -> {
-                    if (list != null && !list.isEmpty()) {
-                        Mono.just(list).subscribe(transactionRepository::saveAll);
-                        return Mono.just(list);
+                    log.info("List Size : " + list.size());
+                    if (!list.isEmpty()) {
+                        return transactionRepository.saveAll(list)
+                                .collectList().doOnNext((l) -> log.info("L Size : " + l.size()));
                     }
                     return Mono.empty();
                 });
     }
 
     private Mono<Map<FromToEnum, LocalDateTime>> getFromToDateRepository(String cardNumber, boolean isComposite) {
-        return Mono.just(isComposite).map(any -> {
-            if (isComposite) {
-                return transactionRepository.findAll();
-            } else {
-                return transactionRepository.findAll()
-                        .filter(t -> t.getToCard().equals(cardNumber) || t.getFromCard().equals(cardNumber));
-            }
-        }).map(Flux::toStream).flatMap(o -> {
-            List<TransactionEntity> list = o.toList();
-            return Mono.just(new HashMap<>() {{
-                put(FromToEnum.FROM, list.get(0).getCreatedAt());
-                put(FromToEnum.TO, list.get(list.size() - 1).getCreatedAt());
-            }});
-        });
+        return Mono.just(isComposite)
+                .log("Enter getFromToDateRepository()")
+                .map(any -> {
+                    if (isComposite) {
+                        return transactionRepository.findAll().sort(Comparator.comparing(TransactionEntity::getCreatedAt));
+                    } else {
+                        return transactionRepository.findAll()
+                                .filter(t -> t.getToCard().equals(cardNumber) || t.getFromCard().equals(cardNumber))
+                                .sort(Comparator.comparing(TransactionEntity::getCreatedAt));
+                    }
+                }).log("Debug Get Count")
+                .flatMap(o -> o.collectList()
+                        .map(m -> new HashMap<FromToEnum, LocalDateTime>() {{
+                            put(FromToEnum.FROM, m.get(0).getCreatedAt());
+                            put(FromToEnum.TO, m.get(m.size() - 1).getCreatedAt());
+                        }}));
     }
 
     private void checkParametersGetAllTransactionsByCardAndDates(String cardNumber, LocalDateTime from, LocalDateTime to) {

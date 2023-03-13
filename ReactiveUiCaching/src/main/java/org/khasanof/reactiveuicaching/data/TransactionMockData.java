@@ -29,14 +29,14 @@ public class TransactionMockData {
     public List<TransactionEntity> getMockList(String jsonPath, String cardNumber) {
 
         ObjectMapper objectMapper = new ObjectMapper();
-        TypeReference<List<TransactionEntity>> reference = new TypeReference<>() {
-        };
+        TypeReference<List<TransactionEntity>> reference = new TypeReference<>(){};
         try (InputStream inputStream = getClass().getResourceAsStream(jsonPath)) {
             List<TransactionEntity> list = objectMapper.readValue(inputStream, reference);
 
             List<String> numbers = readFileCardNumbers(cardNumber);
 
             list.forEach(obj -> {
+                obj.setId(null);
                 String[] cards = getTwoDifferentCards(numbers);
                 obj.setFromCard(cards[0]);
                 obj.setToCard(cards[1]);

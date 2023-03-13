@@ -2,6 +2,7 @@ package org.khasanof.reactiveuicaching.repository;
 
 import org.khasanof.reactiveuicaching.domain.TransactionEntity;
 import org.springframework.data.r2dbc.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
@@ -22,11 +23,11 @@ import java.util.List;
 @Repository
 public interface TransactionRepository extends ReactiveCrudRepository<TransactionEntity, Integer> {
 
-    @Query(value = "select t from TransactionEntity t where t.fromCard = ?1 or t.toCard = ?1 and t.createdAt between ?2 and ?3")
-    Flux<TransactionEntity> findAllByCreatedAtIsBetween(String cardNumber, LocalDateTime createdAt, LocalDateTime createdAt2);
+    @Query("select * from transaction t where t.from_card = $1 or t.to_card = $1 and created_at between $2 and $3")
+    Flux<TransactionEntity> findAllByCreatedAtIsBetween(String cardNumber, LocalDateTime createdAt1, LocalDateTime createdAt2);
 
     Flux<TransactionEntity> findAllByCreatedAtIsBetween(LocalDateTime createdAt, LocalDateTime createdAt2);
 
-    @Query(value = "select count(t) from TransactionEntity t where t.fromCard = ?1 or t.toCard = ?1")
+    @Query("select count(*) from transaction t where t.from_card = $1 or t.to_card = $1")
     Mono<Long> getCardCacheCount(String cardNumber);
 }

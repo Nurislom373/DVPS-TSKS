@@ -30,14 +30,16 @@ public abstract class AbstractTransactionService {
     protected abstract void afterPropertiesSet();
 
     protected List<TransactionEntity> getAllTransactions(String cardNumber, LocalDateTime from, LocalDateTime to) {
+        System.out.println("list.size() = " + list.size());
         Predicate<TransactionEntity> equalPredicate = (f) -> f.getFromCard().equals(cardNumber)
                 || f.getToCard().equals(cardNumber);
 
         Predicate<TransactionEntity> betweenPredicate = (f) -> f.getCreatedAt().isAfter(from)
                 && f.getCreatedAt().isBefore(to);
 
-        if (cardNumber.equals("*"))
+        if (cardNumber.equals("*")) {
             return list.stream().filter(betweenPredicate).toList();
+        }
         return list.stream().filter(equalPredicate.and(betweenPredicate))
                 .toList();
     }

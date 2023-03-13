@@ -6,6 +6,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
+import javax.annotation.processing.Generated;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
