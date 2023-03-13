@@ -136,6 +136,22 @@ public class MainTransactionsService {
                                     cardNumber, timeMap.get(FromToEnum.FROM), timeMap.get(FromToEnum.TO))
                             .collectList();
                 }).log("Get Cache Transaction")
+                .flatMap((var) -> service.getAllTransactionsByDates(cardNumber, from, timeMap.get(FromToEnum.FROM))
+                        .collectList()
+                        .zipWith(service.getAllTransactionsByDates(cardNumber, timeMap.get(FromToEnum.TO), to)
+                                .collectList(), (one, two) -> {
+                            one.addAll(two);
+                            return one;
+                        }).doOnNext((list) -> log.info("Two Service List Size : " + list.size()))
+                        .publishOn(Schedulers.boundedElastic())
+                        .mapNotNull((list) -> {
+                            if (!list.isEmpty()) {
+                                transactionRepository.saveAll(list).subscribe();
+                            }
+                            return list;
+                        })
+                )
+                // Old Example PipeLine
                 .flatMap((var) -> Flux.concat(service.getAllTransactionsByDates(cardNumber,
                                         from, timeMap.get(FromToEnum.FROM))
                                         .log("Get Transaction With Service 1"),
