@@ -13,7 +13,6 @@ import reactor.core.scheduler.Schedulers;
 
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Author: Nurislom
@@ -45,6 +44,7 @@ public class MainTransactionsService {
      * @return Returns a list of transactions returned from the getAllTransactionsByService method
      */
     public Mono<List<TransactionEntity>> getAllTransactionsByCardAndDates(String cardNumber, LocalDateTime from, LocalDateTime to) {
+        checkParametersGetAllTransactionsByCardAndDates(cardNumber, from, to);
         if (cardNumber.equals("*")) {
             return Flux.fromIterable(contextTransactionService.getServices().entrySet())
                     .flatMap(e -> getAllTransactionsByService(e.getValue(), e.getKey(), from, to))
@@ -61,16 +61,15 @@ public class MainTransactionsService {
      * between several card numbers.
      *
      * @param cards - You must enter a 16-digit card numbers List
-     * @param from - You must enter the interval from how many to how many
-     * @param to - You must enter the interval to how many to how many
+     * @param from  - You must enter the interval from how many to how many
+     * @param to    - You must enter the interval to how many to how many
      * @return returns a list of transactions returned from multiple getAllTransactionsByService methods
      */
     public Mono<Map<String, List<TransactionEntity>>> getAllTransactionsByCardsAndDates(List<String> cards, LocalDateTime from, LocalDateTime to) {
         checkParametersGetAllTransactionsByCardsAndDates(cards, from, to);
-
-        return  Flux.fromIterable(cards)
-                            .flatMap(c -> getAllTransactionsByService(contextTransactionService.getService(c), c, from, to)
-                                    .flatMap(list -> Mono.just(new AbstractMap.SimpleEntry<>(c, list))))
+        return Flux.fromIterable(cards)
+                .flatMap(c -> getAllTransactionsByService(contextTransactionService.getService(c), c, from, to)
+                        .flatMap(list -> Mono.just(new AbstractMap.SimpleEntry<>(c, list))))
                 .collectMap(Map.Entry::getKey, Map.Entry::getValue);
     }
 
@@ -122,8 +121,10 @@ public class MainTransactionsService {
 
     private Mono<List<TransactionEntity>> getTransactionCacheAndExternal(TransactionService service, String cardNumber, LocalDateTime from, LocalDateTime to, boolean isComposite, Map<FromToEnum, LocalDateTime> timeMap, int compareFrom, int compareTo, boolean isCache, boolean isBetweenCache) {
         if (compareFrom <= 0 && compareTo >= 0) {
+            // Fixed
             return getTransactionsOnlyCache(cardNumber, isComposite, from, to);
         } else if ((!isCache && !isBetweenCache)) {
+            // Fixed
             return getTransactionOnlyExternalServiceWhenCacheRangeGreaterThan(service, cardNumber, isComposite, from, to,
                     timeMap, compareFrom);
         } else if (compareFrom <= 0) {
@@ -133,6 +134,7 @@ public class MainTransactionsService {
             // Fixed
             return getTransactionsWhenCacheRangeFromGreaterThanRequestFrom(service, cardNumber, isComposite, from, to, timeMap);
         } else {
+            // Fixed
             return getTransactionsWhenCacheBetweenFromAndToDates(service, cardNumber, isComposite, from, to, timeMap);
         }
     }
@@ -168,26 +170,9 @@ public class MainTransactionsService {
                                     }
                                     return var;
                                 }))
-                )
-                // Old Example PipeLine
-                /*.flatMap((var) -> Flux.concat(service.getAllTransactionsByDates(cardNumber,
-                                        from, timeMap.get(FromToEnum.FROM))
-                                        .log("Get Transaction With Service 1"),
-                                service.getAllTransactionsByDates(cardNumber, timeMap.get(FromToEnum.TO), to)
-                                        .log("Get Transaction With Service 2"))
-                        .collectList()
-                        .doOnNext((list) -> log.info("Two Service List Size : " + list.size()))
-                        .publishOn(Schedulers.boundedElastic())
-                        .map(o -> {
-                            if (!o.isEmpty()) {
-                                transactionRepository.saveAll(o).subscribe();
-                                return o;
-                            }
-                            return var;
-                        }))*/;
+                );
     }
 
-    // This Method Works Well
     private Mono<List<TransactionEntity>> getTransactionWhenCacheRangeToGreaterThanRequestTo(TransactionService service, String cardNumber, boolean isComposite, LocalDateTime from, LocalDateTime to, Map<FromToEnum, LocalDateTime> timeMap) {
         log.info("getTransactionWhenCacheRangeToGreaterThanRequestTo");
         return Mono.just(isComposite)
@@ -214,8 +199,6 @@ public class MainTransactionsService {
                         ));
     }
 
-    // Fixed
-    // TODO database don't save all entities
     private Mono<List<TransactionEntity>> getTransactionsWhenCacheRangeFromGreaterThanRequestFrom(TransactionService service, String cardNumber, boolean isComposite, LocalDateTime from, LocalDateTime to, Map<FromToEnum, LocalDateTime> timeMap) {
         log.info("getTransactionsWhenCacheRangeFromGreaterThanRequestFrom()");
         return Mono.just(isComposite)
@@ -241,10 +224,9 @@ public class MainTransactionsService {
                 );
     }
 
-    // This Method Works Well
     private Mono<List<TransactionEntity>> getTransactionOnlyExternalServiceWhenCacheRangeGreaterThan(TransactionService service, String cardNumber, boolean isComposite, LocalDateTime from, LocalDateTime to, Map<FromToEnum, LocalDateTime> timeMap, int compareFrom) {
         return Mono.just(compareFrom)
-                .log("Enter getTransactionOnly..()")
+                .log("getTransactionOnlyExternalServiceWhenCacheRangeGreaterThan()")
                 .flatMap((var1) -> {
                     if (var1 < 0) return service.getAllTransactionsByDates(cardNumber,
                                     timeMap.get(FromToEnum.TO), to)
@@ -263,7 +245,6 @@ public class MainTransactionsService {
                         .switchIfEmpty(Mono.empty()));
     }
 
-    // This Method Works Well
     private Mono<List<TransactionEntity>> getTransactionsOnlyCache(String cardNumber, boolean isComposite, LocalDateTime from, LocalDateTime to) {
         log.info("Enter Only Get Cache Method");
         if (isComposite) {
@@ -339,6 +320,10 @@ public class MainTransactionsService {
                 .anyMatch(any -> any.length() != 16);
         if (anyMatch) {
             throw new RuntimeException("Invalid CardNumber!");
+        }
+        HashSet<String> set = new HashSet<>(cards);
+        if (cards.size() != set.size()) {
+            throw new RuntimeException("Duplicate Card Numbers!");
         }
     }
 
