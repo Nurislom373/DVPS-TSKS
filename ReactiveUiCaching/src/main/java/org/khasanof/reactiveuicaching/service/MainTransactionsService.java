@@ -104,6 +104,7 @@ public class MainTransactionsService {
         log.info("Enter getListMono() Method");
         return getFromToDateRepository(cardNumber, isComposite)
                 .flatMap(timeMap -> {
+                    System.out.println("timeMap = " + timeMap);
                     int compareFrom = timeMap.get(FromToEnum.FROM).compareTo(from);
                     int compareTo = timeMap.get(FromToEnum.TO).compareTo(to);
 
