@@ -23,11 +23,19 @@ import java.util.List;
 @Repository
 public interface TransactionRepository extends ReactiveCrudRepository<TransactionEntity, Integer> {
 
-    @Query("select * from transaction t where t.from_card = $1 or t.to_card = $1 and created_at between $2 and $3")
-    Flux<TransactionEntity> findAllByCreatedAtIsBetween(String cardNumber, LocalDateTime createdAt1, LocalDateTime createdAt2);
+    @Query("select * from transaction t where created_at between :createdAt1 and :createdAt2 and " +
+            "(from_card = :cardNumber or to_card = :cardNumber)")
+    Flux<TransactionEntity> findAllByQuery(String cardNumber, LocalDateTime createdAt1, LocalDateTime createdAt2);
+
+    @Query("select * from transaction t where created_at between :createdAt1 and :createdAt2 and " +
+            "(from_card like :cardNumber or to_card like :cardNumber)")
+    Flux<TransactionEntity> findAllByStartQuery(String cardNumber, LocalDateTime createdAt1, LocalDateTime createdAt2);
 
     Flux<TransactionEntity> findAllByCreatedAtIsBetween(LocalDateTime createdAt, LocalDateTime createdAt2);
 
     @Query("select count(*) from transaction t where t.from_card = $1 or t.to_card = $1")
     Mono<Long> getCardCacheCount(String cardNumber);
+
+    @Query("select count(*) from transaction t where t.from_card like $1 or t.to_card like $1")
+    Mono<Long> getCardCacheCountStart(String cardStart);
 }

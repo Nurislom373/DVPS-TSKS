@@ -4,6 +4,7 @@ package org.khasanof.reactiveuicaching.service.context;
 import org.khasanof.reactiveuicaching.service.TransactionService;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Author: Nurislom
@@ -18,6 +19,6 @@ public interface ContextTransactionService {
 
     TransactionService getService(String cardNumber);
 
-    List<TransactionService> getServices();
+    Map<String, TransactionService> getServices();
 
 }

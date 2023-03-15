@@ -7,7 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
+import java.util.AbstractMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Author: Nurislom
@@ -26,16 +29,16 @@ public class AnnotationContextTransactionService implements ContextTransactionSe
 
     @Override
     public TransactionService getService(String cardNumber) {
-        if (cardNumber.equals("*")) return context.getBean(CompositeTransactionService.class);
         return (TransactionService) context.getBean(getClassBean(cardNumber));
     }
 
     @Override
-    public List<TransactionService> getServices() {
+    public Map<String, TransactionService> getServices() {
         return getTransactionTypes().stream()
                 .map(Object::getClass)
-                .map(o -> (TransactionService) context.getBean(o))
-                .toList();
+                .map(o -> new AbstractMap.SimpleEntry<>(getCardNumberObject(o),
+                        (TransactionService) context.getBean(o)))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     private Class<?> getClassBean(String cardNumber) {
@@ -53,5 +56,9 @@ public class AnnotationContextTransactionService implements ContextTransactionSe
     private String getCardNumber(Object o) {
         return o.getClass().getAnnotation(TransactionType.class)
                 .cardNumber();
+    }
+
+    private String getCardNumberObject(Class<?> aClass) {
+        return aClass.getAnnotation(TransactionType.class).cardNumber();
     }
 }

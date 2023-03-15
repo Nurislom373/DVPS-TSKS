@@ -6,8 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
+import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Author: Nurislom
@@ -31,9 +34,11 @@ public class SpringMethodContextTransactionService implements ContextTransaction
     }
 
     @Override
-    public List<TransactionService> getServices() {
+    public Map<String, TransactionService> getServices() {
         return getBeans().stream()
-                .map(o -> (TransactionService) o).toList();
+                .map(s -> new AbstractMap.SimpleEntry<>(getMethodValue((MethodContextTransactionService) s),
+                        (TransactionService) s))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     private Class<?> getClassBean(String cardNumber) {
@@ -48,6 +53,10 @@ public class SpringMethodContextTransactionService implements ContextTransaction
         return Arrays.stream(context.getBeanDefinitionNames()).map(b -> context.getBean(b))
                 .filter(f -> f instanceof MethodContextTransactionService)
                 .toList();
+    }
+
+    private String getMethodValue(MethodContextTransactionService service) {
+        return service.getCardNumber();
     }
 
     private boolean methodEqualCardNumber(String cardNumber, MethodContextTransactionService service) {

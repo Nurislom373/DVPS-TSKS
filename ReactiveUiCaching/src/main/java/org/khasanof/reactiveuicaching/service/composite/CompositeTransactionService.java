@@ -11,6 +11,7 @@ import reactor.core.publisher.Flux;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Author: Nurislom
@@ -31,9 +32,8 @@ public class CompositeTransactionService implements TransactionService {
 
     @PostConstruct
     public void afterPropertiesSet() {
-        List<TransactionService> list = contextTransactionServices.getServices();
-        System.out.println("list = " + list);
-        services.addAll(list);
+        Map<String, TransactionService> map = contextTransactionServices.getServices();
+        services.addAll(map.values());
     }
 
     @Override

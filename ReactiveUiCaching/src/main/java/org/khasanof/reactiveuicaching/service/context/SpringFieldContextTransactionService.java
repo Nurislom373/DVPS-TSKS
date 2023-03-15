@@ -7,8 +7,11 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
+import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Author: Nurislom
@@ -32,9 +35,10 @@ public class SpringFieldContextTransactionService implements ContextTransactionS
     }
 
     @Override
-    public List<TransactionService> getServices() {
+    public Map<String, TransactionService> getServices() {
         return getBeans().stream()
-                .map(o -> (TransactionService) o).toList();
+                .map(o -> new AbstractMap.SimpleEntry<>(getValue(o), (TransactionService) o))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     private Class<?> getClassBeanDeclarative(String cardNumber) {
@@ -63,6 +67,17 @@ public class SpringFieldContextTransactionService implements ContextTransactionS
         }
 
         throw new RuntimeException("Class Not Found Exception!");
+    }
+
+    private String getValue(Object o) {
+        Field[] declaredFields = o.getClass().getDeclaredFields();
+        for (Field declaredField : declaredFields) {
+            if (declaredField.getName().equals("cardNumber")) {
+                declaredField.setAccessible(true);
+                return getFieldValue(declaredField, o);
+            }
+        }
+        throw new RuntimeException();
     }
 
     private List<Object> getBeans() {
