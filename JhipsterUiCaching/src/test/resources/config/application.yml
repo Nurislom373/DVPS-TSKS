@@ -13,19 +13,9 @@
 # http://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html
 # ===================================================================
 
-eureka:
-  client:
-    enabled: false
-  instance:
-    appname: JhipsterUiCaching
-    instanceId: JhipsterUiCaching:${spring.application.instance-id:${random.value}}
-
 spring:
   application:
     name: JhipsterUiCaching
-  cloud:
-    config:
-      enabled: false
   # Replace by 'prod, faker' to add the faker context and have sample data loaded in production
   liquibase:
     contexts: test
@@ -79,7 +69,7 @@ jhipster:
     authentication:
       jwt:
         # This token must be encoded using Base64 (you can type `echo 'secret-key'|base64` on your command line)
-        base64-secret: MDUyYzExYTFlMDNhZDdlNzFlOGMzMDc3MmFhYTRjMDdmZTRiNTBkZWQxNzQ3MjcwZTliZTViOGVkOWY4YjEwZTUyY2Y0ZWRhZDM0Y2EyY2QwODFiZDU4YzQ3MGNjN2UzNjNhMGJkZGI2YTUxZTRjZjU2OTIzMjdkMTM5NTU4ZGU=
+        base64-secret: ZmUwYWRiYzNjZmQxZTllMWVmYTQyM2JhOWI2ZGVlMzIxOWM3YzIzMGJiMDUyYzFlN2QyODU3ZjM1M2FkZmE2M2Y3OTk4MTkxOGFkMzM3ZWI2ZDA1YTFkMDcyYWQ1MWE2YzZlMmNhMDkzN2I5NDQwMDdlN2Q5MDNmYzE5NzNhZTY=
         # Token is valid 24 hours
         token-validity-in-seconds: 86400
 

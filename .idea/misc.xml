@@ -8,6 +8,7 @@
         <option value="$PROJECT_DIR$/UiCaching/pom.xml" />
         <option value="$PROJECT_DIR$/UiCachingStrategy/pom.xml" />
         <option value="$PROJECT_DIR$/ReactiveUiCaching/pom.xml" />
+        <option value="$PROJECT_DIR$/JhipsterUiCaching/pom.xml" />
       </list>
     </option>
   </component>

@@ -36,7 +36,7 @@ public class MainTransactionsService {
     }
 
     /**
-     * This method is used to retrieve the transactions in the given interval.
+     * This method is used to get all transactions in the given interval.
      *
      * @param cardNumber You must enter a 16-digit card number
      * @param from       You must enter the interval from how many to how many
@@ -57,7 +57,7 @@ public class MainTransactionsService {
     }
 
     /**
-     * This method is similar to the above method, the only difference is that we can receive transactions
+     * This method is similar to the above method, the only difference is that we can get all transactions
      * between several card numbers.
      *
      * @param cards - You must enter a 16-digit card numbers List

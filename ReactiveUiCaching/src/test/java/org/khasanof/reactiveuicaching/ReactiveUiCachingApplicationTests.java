@@ -25,6 +25,7 @@ import reactor.test.StepVerifier;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -39,6 +40,59 @@ class ReactiveUiCachingApplicationTests {
 
     @Autowired
     private AnnotationContextTransactionService annotationContextTransactionService;
+
+    /*
+        Cache - [] : Empty
+
+        Call 1 - [2023-03-02, 2023-03-04] : {
+            First : Get External Service from {Call-1-FromDate} to {Call-1-ToDate}
+        }
+     */
+    @Test
+    void test_shouldCacheIsNull() {
+        var annotationContextTransactionService1 = Mockito.mock(AnnotationContextTransactionService.class);
+        var transactionRepository1 = Mockito.mock(TransactionRepository.class);
+        var masterCardTransactionService = Mockito.mock(MasterCardTransactionService.class);
+
+        MainTransactionsService service = new MainTransactionsService(annotationContextTransactionService1,
+                transactionRepository1);
+        LocalDateTime from1 = LocalDateTime.of(2023, 3, 2, 0, 0);
+        LocalDateTime to1 = LocalDateTime.of(2023, 3, 4, 0, 0);
+        String cardNumber = "5425764309411081";
+
+        Mockito.when(annotationContextTransactionService1.getService(ArgumentMatchers.any()))
+                .thenReturn(masterCardTransactionService);
+
+        Mockito.when(transactionRepository1.count()).thenReturn(Mono.just(0L));
+
+        Mockito.when(masterCardTransactionService.getAllTransactionsByDates(ArgumentMatchers.any(), ArgumentMatchers.any(),
+                ArgumentMatchers.any())).thenReturn(Flux.fromIterable(getTransactions(cardNumber, from1, to1)));
+
+        Mockito.when(transactionRepository1.saveAll(ArgumentMatchers.anyCollection()))
+                .thenReturn(Flux.fromIterable(getTransactions(cardNumber, from1, to1)));
+
+        Mono<List<TransactionEntity>> mono = service.getAllTransactionsByCardAndDates(cardNumber, from1, to1);
+
+        StepVerifier.create(mono)
+                .assertNext(list -> {
+                    Assertions.assertThat(list).isNotNull();
+                    org.junit.jupiter.api.Assertions.assertEquals(list.size(), 2);
+                })
+                .expectComplete()
+                .verify();
+
+        Mockito.verify(transactionRepository1, Mockito.times(1))
+                .count();
+
+        Mockito.verify(transactionRepository1, Mockito.times(1))
+                .saveAll(ArgumentMatchers.anyCollection());
+
+        Mockito.verify(annotationContextTransactionService1, Mockito.times(1))
+                .getService(ArgumentMatchers.any());
+
+        Mockito.verify(masterCardTransactionService, Mockito.times(1))
+                .getAllTransactionsByDates(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any());
+    }
 
     @Test
     void contextLoads() {
@@ -236,6 +290,29 @@ class ReactiveUiCachingApplicationTests {
         list.forEach(System.out::println);
     }
 
+    private List<TransactionEntity> getTransactions(String cardNumber, LocalDateTime from, LocalDateTime to) {
+        return List.of(
+                new TransactionEntity(1L, new BigDecimal("6783243.748352"), Status.SUCCESS,
+                        "5425195488749646", cardNumber, from, LocalDateTime.now()),
+                new TransactionEntity(2L, new BigDecimal("758943.748352"), Status.FAIL,
+                        "5425195488749646", cardNumber, to, LocalDateTime.now())
+        );
+    }
+
+    // Fixed
+    private List<TransactionEntity> getTransactionsWithService(String card, int count) {
+        Map<String, String> map = new HashMap<>() {{
+            put("5425", "/data/mock_transactions_mastercard.json");
+            put("9860", "/data/mock_transactions_humo.json");
+            put("8600", "/data/mock_transactions_uzcard.json");
+            put("4263", "/data/mock_transactions_visa.json");
+        }};
+
+        String cardSub = card.substring(0, 4);
+        System.out.println("cardSub = " + cardSub);
+        return data.getMockList(map.get(cardSub), cardSub)
+                .stream().limit(count).toList();
+    }
 
 
 }

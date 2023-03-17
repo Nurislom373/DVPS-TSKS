@@ -9,3 +9,7 @@
 # ===================================================================
 
 spring:
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/cache_data
+    username: postgres
+    password: 2004

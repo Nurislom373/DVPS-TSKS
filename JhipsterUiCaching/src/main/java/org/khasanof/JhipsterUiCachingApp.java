@@ -6,6 +6,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
 import javax.annotation.PostConstruct;
+
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import org.apache.commons.lang3.StringUtils;
 import org.khasanof.config.ApplicationProperties;
 import org.khasanof.config.CRLFLogConverter;
@@ -20,6 +22,7 @@ import tech.jhipster.config.DefaultProfileUtil;
 import tech.jhipster.config.JHipsterConstants;
 
 @SpringBootApplication
+@OpenAPIDefinition
 @EnableConfigurationProperties({ LiquibaseProperties.class, ApplicationProperties.class })
 public class JhipsterUiCachingApp {
 
