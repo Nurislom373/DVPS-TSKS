@@ -1,9 +1,8 @@
-package org.khasanof.service.composite;
+package org.khasanof.service.v2.composite;
 
 import org.khasanof.domain.transaction.Transaction;
-import org.khasanof.service.TransactionService;
-import org.khasanof.service.context.AnnotationContextTransactionService;
-import org.khasanof.service.context.SpringFieldContextTransactionService;
+import org.khasanof.service.v2.transactionServices.TransactionService;
+import org.khasanof.service.v2.context.AnnotationContextTransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -29,7 +28,7 @@ public class CompositeTransactionService implements TransactionService {
     private final List<TransactionService> services = new ArrayList<>();
 
     @Autowired
-    private SpringFieldContextTransactionService contextTransactionServices;
+    private AnnotationContextTransactionService contextTransactionServices;
 
     @PostConstruct
     public void afterPropertiesSet() {

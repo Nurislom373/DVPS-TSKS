@@ -1,13 +1,12 @@
-package org.khasanof.service;
+package org.khasanof.service.v2;
 
-import lombok.extern.slf4j.Slf4j;
 import org.khasanof.domain.transaction.Transaction;
 import org.khasanof.dto.transaction.TransactionCardGetDTO;
 import org.khasanof.dto.transaction.TransactionMultiCardGetDTO;
 import org.khasanof.enums.FromToEnum;
 import org.khasanof.repository.TransactionRepository;
-import org.khasanof.service.context.ContextTransactionService;
-import org.khasanof.web.rest.TransactionResource;
+import org.khasanof.service.v2.context.ContextTransactionService;
+import org.khasanof.service.v2.transactionServices.TransactionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -29,7 +28,7 @@ import java.util.*;
  * Package: org.khasanof.uicachingstrategy.service
  */
 @Service
-public class MainTransactionsService {
+public class SpringMainTransactionsService implements MainTransactionService {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -37,7 +36,7 @@ public class MainTransactionsService {
 
     private final TransactionRepository transactionRepository;
 
-    public MainTransactionsService(@Qualifier("springFieldContextTransactionService") ContextTransactionService contextTransactionService, TransactionRepository transactionRepository) {
+    public SpringMainTransactionsService(@Qualifier("annotationContextTransactionService") ContextTransactionService contextTransactionService, TransactionRepository transactionRepository) {
         this.contextTransactionService = contextTransactionService;
         this.transactionRepository = transactionRepository;
     }
@@ -48,6 +47,7 @@ public class MainTransactionsService {
      * @param dto Enter {@link TransactionCardGetDTO}
      * @return Returns a list of transactions returned from the getAllTransactionsByService method
      */
+    @Override
     public Mono<List<Transaction>> getAllTransactionsByCardAndDates(TransactionCardGetDTO dto) {
         checkParametersGetAllTransactionsByCardAndDates(dto.getCardNumber(), dto.getFrom(), dto.getTo());
         if (dto.getCardNumber().equals("*")) {
@@ -69,6 +69,7 @@ public class MainTransactionsService {
      * @param dto Enter {@link TransactionMultiCardGetDTO}
      * @return returns a list of transactions returned from multiple getAllTransactionsByService methods
      */
+    @Override
     public Mono<Map<String, List<Transaction>>> getAllTransactionsByCardsAndDates(TransactionMultiCardGetDTO dto) {
         checkParametersGetAllTransactionsByCardsAndDates(dto.getCards(), dto.getFrom(), dto.getTo());
         return Flux.fromIterable(dto.getCards())
@@ -79,7 +80,7 @@ public class MainTransactionsService {
     }
 
     private Mono<List<Transaction>> getAllTransactionsByService(TransactionService service, String cardNumber,
-                                                                      LocalDateTime from, LocalDateTime to) {
+                                                                LocalDateTime from, LocalDateTime to) {
         boolean isComposite = cardNumber.length() == 4;
         return transactionRepository.count()
                 .log("Enter getAllTransactionsByService() Method")

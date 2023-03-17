@@ -1,4 +1,4 @@
-package org.khasanof.service.transactionServices;
+package org.khasanof.service.v2.transactionServices;
 
 import org.khasanof.data.TransactionMockData;
 import org.khasanof.domain.transaction.Transaction;

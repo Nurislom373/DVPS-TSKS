@@ -1,14 +1,13 @@
-package org.khasanof.service.transactionServices.visa;
+package org.khasanof.service.v2.transactionServices.visa;
 
 import org.khasanof.annotation.TransactionType;
 import org.khasanof.data.TransactionMockData;
 import org.khasanof.domain.transaction.Transaction;
-import org.khasanof.service.TransactionService;
-import org.khasanof.service.context.FieldContextTransactionService;
-import org.khasanof.service.context.MethodContextTransactionService;
-import org.khasanof.service.transactionServices.AbstractTransactionService;
+import org.khasanof.service.v2.transactionServices.TransactionService;
+import org.khasanof.service.v2.context.FieldContextTransactionService;
+import org.khasanof.service.v2.context.MethodContextTransactionService;
+import org.khasanof.service.v2.transactionServices.AbstractTransactionService;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
 import java.time.LocalDateTime;

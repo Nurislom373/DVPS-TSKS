@@ -17,12 +17,12 @@ import java.time.LocalDateTime;
 @Repository
 public interface TransactionRepository extends ReactiveCrudRepository<Transaction, Long>, TransactionRepositoryInternal {
 
-    @Query("select * from transaction t where created_at between :createdAt1 and :createdAt2 and " +
-        "(from_card = :cardNumber or to_card = :cardNumber)")
+    @Query("select * from transaction t where created_at between $2 and $3 and " +
+        "(from_card = $1 or to_card = $1)")
     Flux<Transaction> findAllByQuery(String cardNumber, LocalDateTime createdAt1, LocalDateTime createdAt2);
 
-    @Query("select * from transaction t where created_at between :createdAt1 and :createdAt2 and " +
-        "(from_card like :cardNumber or to_card like :cardNumber)")
+    @Query("select * from transaction t where created_at between $2 and $3 and " +
+        "(from_card like $1 or to_card like $1)")
     Flux<Transaction> findAllByStartQuery(String cardNumber, LocalDateTime createdAt1, LocalDateTime createdAt2);
 
     Flux<Transaction> findAllByCreatedAtIsBetween(LocalDateTime createdAt, LocalDateTime createdAt2);

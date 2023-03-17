@@ -1,12 +1,12 @@
-package org.khasanof.service.transactionServices.uzcard;
+package org.khasanof.service.v2.transactionServices.uzcard;
 
 import org.khasanof.annotation.TransactionType;
 import org.khasanof.data.TransactionMockData;
 import org.khasanof.domain.transaction.Transaction;
-import org.khasanof.service.TransactionService;
-import org.khasanof.service.context.FieldContextTransactionService;
-import org.khasanof.service.context.MethodContextTransactionService;
-import org.khasanof.service.transactionServices.AbstractTransactionService;
+import org.khasanof.service.v2.context.FieldContextTransactionService;
+import org.khasanof.service.v2.transactionServices.AbstractTransactionService;
+import org.khasanof.service.v2.transactionServices.TransactionService;
+import org.khasanof.service.v2.context.MethodContextTransactionService;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 
@@ -25,7 +25,7 @@ import java.util.List;
 @Component
 @TransactionType(cardNumber = "8600", name = "UzCard")
 public class UzCardTransactionService extends AbstractTransactionService implements TransactionService,
-        FieldContextTransactionService, MethodContextTransactionService {
+    FieldContextTransactionService, MethodContextTransactionService {
 
     private final String cardNumber = "8600";
 

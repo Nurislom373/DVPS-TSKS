@@ -1,7 +1,7 @@
-package org.khasanof.service.context;
+package org.khasanof.service.v2.context;
 
 import org.khasanof.annotation.TransactionType;
-import org.khasanof.service.TransactionService;
+import org.khasanof.service.v2.transactionServices.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.reactive.context.GenericReactiveWebApplicationContext;
 import org.springframework.stereotype.Service;

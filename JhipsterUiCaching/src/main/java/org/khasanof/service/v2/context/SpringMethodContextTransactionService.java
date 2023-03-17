@@ -1,7 +1,7 @@
-package org.khasanof.service.context;
+package org.khasanof.service.v2.context;
 
-import org.khasanof.service.TransactionService;
-import org.khasanof.service.composite.CompositeTransactionService;
+import org.khasanof.service.v2.transactionServices.TransactionService;
+import org.khasanof.service.v2.composite.CompositeTransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
