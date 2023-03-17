@@ -36,19 +36,20 @@ public class SpringFieldContextTransactionService implements ContextTransactionS
 
     @Override
     public Map<String, TransactionService> getServices() {
+        System.out.println(context);
         return getBeans().stream()
-                .map(o -> new AbstractMap.SimpleEntry<>(getValue(o), (TransactionService) o))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+            .map(o -> new AbstractMap.SimpleEntry<>(getValue(o), (TransactionService) o))
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     private Class<?> getClassBeanDeclarative(String cardNumber) {
         return getBeans().stream().flatMap(o -> Arrays.stream(o.getClass().getDeclaredFields())
-                        .filter(field -> field.getName().equals("cardNumber"))
-                        .peek(f -> f.setAccessible(true))
-                        .map(f -> getFieldValue(f, o))
-                        .filter(cardNumber::startsWith)
-                        .map(Object::getClass))
-                .findFirst().orElseThrow(RuntimeException::new);
+                .filter(field -> field.getName().equals("cardNumber"))
+                .peek(f -> f.setAccessible(true))
+                .map(f -> getFieldValue(f, o))
+                .filter(cardNumber::startsWith)
+                .map(Object::getClass))
+            .findFirst().orElseThrow(RuntimeException::new);
     }
 
     private Class<?> getClassBeanImperative(String cardNumber) {
@@ -69,24 +70,33 @@ public class SpringFieldContextTransactionService implements ContextTransactionS
     }
 
     private String getValue(Object o) {
+        System.out.println("-------------------------------------------------------------");
+        System.out.println("                    " + o.getClass().getSimpleName());
         Field[] declaredFields = o.getClass().getDeclaredFields();
         for (Field declaredField : declaredFields) {
+            System.out.println("declaredField = " + declaredField);
             if (declaredField.getName().equals("cardNumber")) {
                 declaredField.setAccessible(true);
+                System.out.println("declaredField = " + declaredField);
+                System.out.println("o = " + o);
                 return getFieldValue(declaredField, o);
             }
         }
+        System.out.println("I have no CARD NUMBER: " + o.getClass().getSimpleName());
         throw new RuntimeException();
     }
 
     private List<Object> getBeans() {
-        return Arrays.stream(context.getBeanDefinitionNames()).map(b -> context.getBean(b))
-                .filter(f -> f instanceof FieldContextTransactionService)
-                .collect(Collectors.toList());
+        return Arrays.stream(context.getBeanNamesForType(FieldContextTransactionService.class))
+            .peek(System.out::println)
+            .map(b -> context.getBean(b))
+            .collect(Collectors.toList());
     }
 
     private String getFieldValue(Field field, Object target) {
         try {
+            System.out.println("f = " + field);
+            System.out.println("t = " + target);
             return (String) field.get(target);
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);

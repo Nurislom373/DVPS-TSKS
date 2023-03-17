@@ -3,6 +3,7 @@ package org.khasanof.service.composite;
 import org.khasanof.domain.transaction.Transaction;
 import org.khasanof.service.TransactionService;
 import org.khasanof.service.context.AnnotationContextTransactionService;
+import org.khasanof.service.context.SpringFieldContextTransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -28,7 +29,7 @@ public class CompositeTransactionService implements TransactionService {
     private final List<TransactionService> services = new ArrayList<>();
 
     @Autowired
-    private AnnotationContextTransactionService contextTransactionServices;
+    private SpringFieldContextTransactionService contextTransactionServices;
 
     @PostConstruct
     public void afterPropertiesSet() {

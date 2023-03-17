@@ -7,6 +7,7 @@ import org.khasanof.domain.transaction.Transaction;
 import org.khasanof.service.context.FieldContextTransactionService;
 import org.khasanof.service.context.MethodContextTransactionService;
 import org.khasanof.service.transactionServices.AbstractTransactionService;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
@@ -20,9 +21,9 @@ import java.util.List;
  * <br/>
  * Time: 9:48 AM
  * <br/>
- * Package: org.khasanof.uicachingstrategy.service.transactionServices.masterCard
+ * Package: org.khasanof.service.transactionServices.masterCard
  */
-@Service
+@Component
 @TransactionType(cardNumber = "5425", name = "MasterCard")
 public class MasterCardTransactionService extends AbstractTransactionService
         implements TransactionService, FieldContextTransactionService, MethodContextTransactionService {

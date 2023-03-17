@@ -7,6 +7,7 @@ import org.khasanof.service.TransactionService;
 import org.khasanof.service.context.FieldContextTransactionService;
 import org.khasanof.service.context.MethodContextTransactionService;
 import org.khasanof.service.transactionServices.AbstractTransactionService;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
@@ -22,7 +23,7 @@ import java.util.List;
  * <br/>
  * Package: org.khasanof.uicachingstrategy.service.transactionServices.visa
  */
-@Service
+@Component
 @TransactionType(cardNumber = "4263", name = "Visa")
 public class VisaTransactionService extends AbstractTransactionService implements TransactionService,
         FieldContextTransactionService, MethodContextTransactionService {

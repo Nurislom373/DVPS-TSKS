@@ -9,12 +9,12 @@ import org.khasanof.enums.Status;
 import org.khasanof.repository.TransactionRepository;
 import org.khasanof.service.MainTransactionsService;
 import org.khasanof.service.context.AnnotationContextTransactionService;
+import org.khasanof.service.context.SpringFieldContextTransactionService;
 import org.khasanof.service.transactionServices.masterCard.MasterCardTransactionService;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Profile;
 import org.springframework.test.context.ActiveProfiles;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -69,7 +69,7 @@ public class MainTransactionServiceMockTest {
      */
     @Test
     void test_shouldCacheIsNull() {
-        var annotationContextTransactionService1 = Mockito.mock(AnnotationContextTransactionService.class);
+        var annotationContextTransactionService1 = Mockito.mock(SpringFieldContextTransactionService.class);
         var transactionRepository1 = Mockito.mock(TransactionRepository.class);
         var masterCardTransactionService = Mockito.mock(MasterCardTransactionService.class);
 

@@ -37,7 +37,7 @@ public class MainTransactionsService {
 
     private final TransactionRepository transactionRepository;
 
-    public MainTransactionsService(@Qualifier("springMethodContextTransactionService") ContextTransactionService contextTransactionService, TransactionRepository transactionRepository) {
+    public MainTransactionsService(@Qualifier("springFieldContextTransactionService") ContextTransactionService contextTransactionService, TransactionRepository transactionRepository) {
         this.contextTransactionService = contextTransactionService;
         this.transactionRepository = transactionRepository;
     }

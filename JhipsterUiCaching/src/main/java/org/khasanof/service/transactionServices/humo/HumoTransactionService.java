@@ -45,10 +45,6 @@ public class HumoTransactionService extends AbstractTransactionService implement
         return Flux.fromIterable(super.getAllTransactions(cardNumber, from, to));
     }
 
-    public boolean isEmpty() {
-        return super.isEmpty();
-    }
-
     @Override
     public String getCardNumber() {
         return cardNumber;
