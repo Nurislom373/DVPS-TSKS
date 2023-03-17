@@ -1,4 +1,4 @@
-package org.khasanof.service.v2.context;
+package org.khasanof.service.context;
 
 /**
  * Author: Nurislom

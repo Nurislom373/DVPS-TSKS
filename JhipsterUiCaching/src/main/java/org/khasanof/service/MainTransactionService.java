@@ -1,4 +1,4 @@
-package org.khasanof.service.v2;
+package org.khasanof.service;
 
 import org.khasanof.domain.transaction.Transaction;
 import org.khasanof.dto.transaction.TransactionCardGetDTO;

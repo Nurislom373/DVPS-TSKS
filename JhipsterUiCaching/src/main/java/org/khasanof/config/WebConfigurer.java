@@ -39,10 +39,7 @@ public class WebConfigurer implements WebFluxConfigurer {
         CorsConfiguration config = jHipsterProperties.getCors();
         if (!CollectionUtils.isEmpty(config.getAllowedOrigins()) || !CollectionUtils.isEmpty(config.getAllowedOriginPatterns())) {
             log.debug("Registering CORS filter");
-            source.registerCorsConfiguration("/api/**", config);
             source.registerCorsConfiguration("/management/**", config);
-            source.registerCorsConfiguration("/api-docs", config);
-            source.registerCorsConfiguration("/swagger-ui/**", config);
         }
         return new CorsWebFilter(source);
     }

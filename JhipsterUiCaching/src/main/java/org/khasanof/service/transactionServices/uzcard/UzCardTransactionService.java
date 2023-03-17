@@ -1,12 +1,12 @@
-package org.khasanof.service.v2.transactionServices.humo;
+package org.khasanof.service.transactionServices.uzcard;
 
 import org.khasanof.annotation.TransactionType;
-import org.khasanof.service.v2.transactionServices.TransactionService;
-import org.khasanof.domain.transaction.Transaction;
 import org.khasanof.data.TransactionMockData;
-import org.khasanof.service.v2.context.FieldContextTransactionService;
-import org.khasanof.service.v2.context.MethodContextTransactionService;
-import org.khasanof.service.v2.transactionServices.AbstractTransactionService;
+import org.khasanof.domain.transaction.Transaction;
+import org.khasanof.service.context.FieldContextTransactionService;
+import org.khasanof.service.transactionServices.AbstractTransactionService;
+import org.khasanof.service.transactionServices.TransactionService;
+import org.khasanof.service.context.MethodContextTransactionService;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 
@@ -18,24 +18,24 @@ import java.util.List;
  * <br/>
  * Date: 3/7/2023
  * <br/>
- * Time: 3:58 PM
+ * Time: 3:56 PM
  * <br/>
- * Package: org.khasanof.uicachingstrategy.service.humo
+ * Package: org.khasanof.uicachingstrategy.service.uzcard
  */
 @Component
-@TransactionType(cardNumber = "9860", name = "Humo")
-public class HumoTransactionService extends AbstractTransactionService implements TransactionService,
+@TransactionType(cardNumber = "8600", name = "UzCard")
+public class UzCardTransactionService extends AbstractTransactionService implements TransactionService,
     FieldContextTransactionService, MethodContextTransactionService {
 
-    private final String cardNumber = "9860";
+    private final String cardNumber = "8600";
 
-    public HumoTransactionService(TransactionMockData data) {
+    public UzCardTransactionService(TransactionMockData data) {
         super(data);
     }
 
     @Override
     protected void afterPropertiesSet() {
-        final String path = "/data/mock_transactions_humo.json";
+        final String path = "/data/mock_transactions_uzcard.json";
         List<Transaction> mockList = data.getMockList(path, cardNumber);
         super.addList(mockList);
     }

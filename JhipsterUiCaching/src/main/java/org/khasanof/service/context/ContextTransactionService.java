@@ -1,7 +1,7 @@
-package org.khasanof.service.v2.context;
+package org.khasanof.service.context;
 
 
-import org.khasanof.service.v2.transactionServices.TransactionService;
+import org.khasanof.service.transactionServices.TransactionService;
 
 import java.util.Map;
 

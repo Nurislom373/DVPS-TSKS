@@ -1,8 +1,8 @@
-package org.khasanof.service.v2.composite;
+package org.khasanof.service.composite;
 
 import org.khasanof.domain.transaction.Transaction;
-import org.khasanof.service.v2.transactionServices.TransactionService;
-import org.khasanof.service.v2.context.AnnotationContextTransactionService;
+import org.khasanof.service.transactionServices.TransactionService;
+import org.khasanof.service.context.AnnotationContextTransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;

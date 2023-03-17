@@ -1,4 +1,4 @@
-package org.khasanof;
+package org.khasanof.service;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -7,10 +7,11 @@ import org.khasanof.domain.transaction.Transaction;
 import org.khasanof.dto.transaction.TransactionCardGetDTO;
 import org.khasanof.enums.Status;
 import org.khasanof.repository.TransactionRepository;
-import org.khasanof.service.v2.SpringMainTransactionsService;
-import org.khasanof.service.v2.context.AnnotationContextTransactionService;
-import org.khasanof.service.v2.context.SpringFieldContextTransactionService;
-import org.khasanof.service.v2.transactionServices.masterCard.MasterCardTransactionService;
+import org.khasanof.service.MainTransactionService;
+import org.khasanof.service.SpringMainTransactionsService;
+import org.khasanof.service.context.AnnotationContextTransactionService;
+import org.khasanof.service.context.SpringFieldContextTransactionService;
+import org.khasanof.service.transactionServices.masterCard.MasterCardTransactionService;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +44,7 @@ public class MainTransactionServiceMockTest {
     private TransactionMockData data;
 
     @Autowired
-    private SpringMainTransactionsService mainTransactionsService;
+    private MainTransactionService mainTransactionsService;
 
     @Test
     void test_getTransaction() {

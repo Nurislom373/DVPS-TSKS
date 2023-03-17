@@ -74,7 +74,7 @@ public class SecurityConfiguration {
         // @formatter:off
         http
             .securityMatcher(new NegatedServerWebExchangeMatcher(new OrServerWebExchangeMatcher(
-                pathMatchers("/app/**", "/_app/**", "/i18n/**", "/img/**", "/swagger-ui/**", "/api-docs/**", "/content/**", "/test/**")
+                pathMatchers("/app/**", "/_app/**", "/i18n/**", "/img/**", "/content/**", "/test/**")
             )))
             .csrf()
                 .disable()
@@ -100,7 +100,7 @@ public class SecurityConfiguration {
             .pathMatchers(WHITE_LIST).permitAll()
             .pathMatchers("/api/authenticate").permitAll()
             .pathMatchers("/api/admin/**").hasAuthority(AuthoritiesConstants.ADMIN)
-            .pathMatchers("/api/**").authenticated()
+            .pathMatchers("/api/**").permitAll()
             .pathMatchers("/management/health").permitAll()
             .pathMatchers("/management/health/**").permitAll()
             .pathMatchers("/management/info").permitAll()

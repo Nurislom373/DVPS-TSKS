@@ -1,4 +1,4 @@
-package org.khasanof.service.v2.transactionServices;
+package org.khasanof.service.transactionServices;
 
 import org.khasanof.domain.transaction.Transaction;
 import reactor.core.publisher.Flux;

@@ -1,12 +1,12 @@
-package org.khasanof.service.v2;
+package org.khasanof.service;
 
 import org.khasanof.domain.transaction.Transaction;
 import org.khasanof.dto.transaction.TransactionCardGetDTO;
 import org.khasanof.dto.transaction.TransactionMultiCardGetDTO;
 import org.khasanof.enums.FromToEnum;
 import org.khasanof.repository.TransactionRepository;
-import org.khasanof.service.v2.context.ContextTransactionService;
-import org.khasanof.service.v2.transactionServices.TransactionService;
+import org.khasanof.service.context.ContextTransactionService;
+import org.khasanof.service.transactionServices.TransactionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
