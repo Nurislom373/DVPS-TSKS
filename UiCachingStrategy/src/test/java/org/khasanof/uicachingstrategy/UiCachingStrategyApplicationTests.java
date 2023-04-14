@@ -582,6 +582,8 @@ class UiCachingStrategyApplicationTests {
         LocalDateTime to2 = LocalDateTime.of(2023, 3, 4, 0, 0);
 
         // call 1
+        Mockito.when(transactionRepository.count()).thenReturn(1L);
+
         Mockito.when(contextTransactionServices1.getService(ArgumentMatchers.any()))
                 .thenReturn(transactionService);
 
