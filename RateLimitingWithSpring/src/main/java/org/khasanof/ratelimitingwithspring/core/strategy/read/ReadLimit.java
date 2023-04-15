@@ -1,8 +1,7 @@
 package org.khasanof.ratelimitingwithspring.core.strategy.read;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
 import org.khasanof.ratelimitingwithspring.domain.enums.Method;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.List;
 import java.util.Objects;
@@ -19,14 +18,14 @@ import java.util.Objects;
 public class ReadLimit {
 
     private String url;
-    private Method method;
+    private RequestMethod method;
     private boolean customize;
     private List<ReadPlan> plans;
 
     public ReadLimit() {
     }
 
-    public ReadLimit(String url, Method method, boolean customize, List<ReadPlan> plans) {
+    public ReadLimit(String url, RequestMethod method, boolean customize, List<ReadPlan> plans) {
         this.url = url;
         this.method = method;
         this.customize = customize;
@@ -41,11 +40,11 @@ public class ReadLimit {
         this.url = url;
     }
 
-    public Method getMethod() {
+    public RequestMethod getMethod() {
         return method;
     }
 
-    public void setMethod(Method method) {
+    public void setMethod(RequestMethod method) {
         this.method = method;
     }
 

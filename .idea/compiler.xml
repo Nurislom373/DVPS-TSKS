@@ -9,7 +9,6 @@
         <outputRelativeToContentRoot value="true" />
         <module name="UiCachingStrategy" />
         <module name="UiCaching" />
-        <module name="DVPS-TSKS" />
         <module name="ReactiveUiCaching" />
       </profile>
       <profile name="Annotation profile for Jhipster Ui Caching" enabled="true">

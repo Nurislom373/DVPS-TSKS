@@ -41,6 +41,9 @@ public class LimitedEntity {
     @Basic(optional = false)
     private PricingPlan plan;
 
+    @Basic(optional = false)
+    private boolean customized;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "request_type")
     private RequestType requestType;

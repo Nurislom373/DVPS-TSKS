@@ -12,6 +12,8 @@ package org.khasanof.ratelimitingwithspring.domain.enums;
 public enum Method {
     GET,
     POST,
+    TRACE,
+    HEAD,
     DELETE,
     OPTIONS,
     PATCH,

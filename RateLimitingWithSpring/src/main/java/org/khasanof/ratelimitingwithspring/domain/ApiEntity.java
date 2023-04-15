@@ -3,6 +3,7 @@ package org.khasanof.ratelimitingwithspring.domain;
 import jakarta.persistence.*;
 import lombok.*;
 import org.khasanof.ratelimitingwithspring.domain.enums.Method;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
  * Author: Nurislom
@@ -33,5 +34,5 @@ public class ApiEntity {
 
     @Enumerated(EnumType.STRING)
     @Basic(optional = false)
-    private Method method;
+    private RequestMethod method;
 }

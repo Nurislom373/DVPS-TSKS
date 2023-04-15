@@ -44,7 +44,7 @@ public class PricingApiEntity {
     private CustomizedEntity customized;
 
     @Basic(optional = false)
-    private boolean customize;
+    private boolean isCustomized;
 
     @Column(name = "refill_count", nullable = false)
     private Integer refillCount;

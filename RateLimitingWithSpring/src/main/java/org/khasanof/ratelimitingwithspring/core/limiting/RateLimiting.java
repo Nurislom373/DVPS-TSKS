@@ -11,10 +11,18 @@ package org.khasanof.ratelimitingwithspring.core.limiting;
  */
 public interface RateLimiting {
 
-    boolean tryRequest(int token);
+    boolean consumeRequest();
+
+    boolean consumeRequest(int token);
 
     Long availableToken();
 
-    void addTokens();
+    Long availableRefill();
+
+    void replaceConfiguration(LocalRateLimiting rateLimiting);
+
+    void addRefill(Long refillCount);
+
+    void addTokens(Long tokenCount);
 
 }

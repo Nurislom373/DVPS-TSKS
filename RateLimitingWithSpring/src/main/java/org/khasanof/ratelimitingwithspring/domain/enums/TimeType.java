@@ -10,6 +10,7 @@ package org.khasanof.ratelimitingwithspring.domain.enums;
  * Package: org.khasanof.ratelimitingwithspring.domain.enums
  */
 public enum TimeType {
+    MINUTE,
     HOUR,
     DAY,
     WEEK,
