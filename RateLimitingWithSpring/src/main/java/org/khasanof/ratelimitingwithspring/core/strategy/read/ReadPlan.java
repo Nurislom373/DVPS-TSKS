@@ -18,27 +18,37 @@ import java.util.Objects;
  */
 public class ReadPlan {
 
-    private PricingPlan plan;
+    private String plan;
     private RequestType requestType;
     private Long requestCount;
     private TimeType timeType;
+    private Long timeCount;
 
     public ReadPlan() {
     }
 
-    public ReadPlan(PricingPlan plan, RequestType requestType, Long requestCount, TimeType timeType) {
+    public ReadPlan(String plan, RequestType requestType, Long requestCount, TimeType timeType, Long timeCount) {
         this.plan = plan;
         this.requestType = requestType;
         this.requestCount = requestCount;
         this.timeType = timeType;
+        this.timeCount = timeCount;
     }
 
-    public PricingPlan getPlan() {
+    public String getPlan() {
         return plan;
     }
 
-    public void setPlan(PricingPlan plan) {
+    public void setPlan(String plan) {
         this.plan = plan;
+    }
+
+    public Long getTimeCount() {
+        return timeCount;
+    }
+
+    public void setTimeCount(Long timeCount) {
+        this.timeCount = timeCount;
     }
 
     public RequestType getRequestType() {
@@ -72,11 +82,12 @@ public class ReadPlan {
 
         ReadPlan readPlan = (ReadPlan) o;
 
-        if (plan != readPlan.plan) return false;
+        if (!Objects.equals(plan, readPlan.plan)) return false;
         if (requestType != readPlan.requestType) return false;
         if (!Objects.equals(requestCount, readPlan.requestCount))
             return false;
-        return timeType == readPlan.timeType;
+        if (timeType != readPlan.timeType) return false;
+        return Objects.equals(timeCount, readPlan.timeCount);
     }
 
     @Override
@@ -85,16 +96,18 @@ public class ReadPlan {
         result = 31 * result + (requestType != null ? requestType.hashCode() : 0);
         result = 31 * result + (requestCount != null ? requestCount.hashCode() : 0);
         result = 31 * result + (timeType != null ? timeType.hashCode() : 0);
+        result = 31 * result + (timeCount != null ? timeCount.hashCode() : 0);
         return result;
     }
 
     @Override
     public String toString() {
         return "ReadPlan{" +
-                "plan=" + plan +
+                "plan='" + plan + '\'' +
                 ", requestType=" + requestType +
                 ", requestCount=" + requestCount +
                 ", timeType=" + timeType +
+                ", timeCount=" + timeCount +
                 '}';
     }
 }

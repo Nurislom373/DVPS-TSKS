@@ -10,14 +10,14 @@ import java.util.Map;
 @Component
 public class BaseUtils {
 
-    public Long limitMapToDays(Map<ApiEntity, RateLimiting> map) {
+    public Long limitMapToSeconds(Map<ApiEntity, RateLimiting> map) {
         return map.values().stream().map(this::getRateLimitingDaysWithRefillCount)
                 .reduce(Long::max).orElseThrow(RuntimeException::new);
     }
 
     private Long getRateLimitingDaysWithRefillCount(RateLimiting rateLimiting) {
         LocalRateLimiting limiting = rateLimiting.getLocalRateLimiting();
-        return limiting.getDuration().toDays() * limiting.getRefillCount();
+        return limiting.getDuration().toSeconds() * limiting.getRefillCount();
     }
 
 }

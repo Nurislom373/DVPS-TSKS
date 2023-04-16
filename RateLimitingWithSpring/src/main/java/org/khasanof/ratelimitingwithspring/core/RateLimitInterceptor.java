@@ -57,6 +57,7 @@ public class RateLimitInterceptor implements HandlerInterceptor {
             try {
                 String bearerToken = authorizationHeader.substring("Bearer".length());
 
+                // nimasi bo'yicha register qilishni properties fileda oladi
                 DecodedJWT jwt = JWTUtils.getVerifier().verify(bearerToken);
                 String id = jwt.getClaim("id").as(String.class);
 

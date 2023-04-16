@@ -10,6 +10,7 @@
         <module name="UiCachingStrategy" />
         <module name="UiCaching" />
         <module name="ReactiveUiCaching" />
+        <module name="RateLimitingWithSpring" />
       </profile>
       <profile name="Annotation profile for Jhipster Ui Caching" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
@@ -39,6 +40,7 @@
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="RateLimitingWithSpring" options="-parameters" />
       <module name="ReactiveUiCaching" options="-parameters" />
       <module name="UiCaching" options="-parameters" />
       <module name="UiCachingStrategy" options="-parameters" />

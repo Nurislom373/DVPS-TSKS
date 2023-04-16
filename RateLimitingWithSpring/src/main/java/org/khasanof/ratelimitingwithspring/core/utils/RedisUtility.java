@@ -1,6 +1,5 @@
 package org.khasanof.ratelimitingwithspring.core.utils;
 
-import com.google.gson.Gson;
 import org.khasanof.ratelimitingwithspring.core.limiting.RateLimiting;
 import org.khasanof.ratelimitingwithspring.domain.ApiEntity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +21,7 @@ public class RedisUtility {
 
     public void addValue(String key, Map<ApiEntity, RateLimiting> limitingMap) {
         redisTemplate.opsForValue().set(key, limitingMap);
-        redisTemplate.expire(key, Duration.ofDays(baseUtils.limitMapToDays(limitingMap)));
+        redisTemplate.expire(key, Duration.ofSeconds(baseUtils.limitMapToSeconds(limitingMap)));
     }
 
     public Optional<Map<ApiEntity, RateLimiting>> getValue(String key) {

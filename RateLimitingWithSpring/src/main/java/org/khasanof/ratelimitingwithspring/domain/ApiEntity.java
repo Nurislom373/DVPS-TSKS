@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @Entity
 @Getter
 @Setter
+@Builder
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
@@ -31,6 +32,9 @@ public class ApiEntity {
 
     @Basic(optional = false)
     private String url;
+
+    @Basic(optional = false)
+    private boolean isCustomized;
 
     @Enumerated(EnumType.STRING)
     @Basic(optional = false)

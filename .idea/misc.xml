@@ -5,10 +5,7 @@
     <option name="originalFiles">
       <list>
         <option value="$PROJECT_DIR$/pom.xml" />
-        <option value="$PROJECT_DIR$/UiCaching/pom.xml" />
-        <option value="$PROJECT_DIR$/UiCachingStrategy/pom.xml" />
-        <option value="$PROJECT_DIR$/ReactiveUiCaching/pom.xml" />
-        <option value="$PROJECT_DIR$/JhipsterUiCaching/pom.xml" />
+        <option value="$PROJECT_DIR$/RateLimitingWithSpring/pom.xml" />
       </list>
     </option>
   </component>

@@ -18,6 +18,7 @@ import org.khasanof.ratelimitingwithspring.domain.enums.TimeType;
 @Entity
 @Getter
 @Setter
+@Builder
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
@@ -37,9 +38,11 @@ public class LimitedEntity {
     @Column(name = "limit_type", nullable = false)
     private TimeType timeType;
 
-    @Enumerated(EnumType.STRING)
+    @Column(name = "time_count", nullable = false)
+    private Long timeCount;
+
     @Basic(optional = false)
-    private PricingPlan plan;
+    private String plan;
 
     @Basic(optional = false)
     private boolean customized;
