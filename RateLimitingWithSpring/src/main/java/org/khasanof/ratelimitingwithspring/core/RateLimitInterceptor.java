@@ -1,10 +1,13 @@
 package org.khasanof.ratelimitingwithspring.core;
 
+import com.auth0.jwt.interfaces.DecodedJWT;
 import io.github.bucket4j.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.khasanof.ratelimitingwithspring.core.utils.JWTUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -14,6 +17,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Objects;
 
 @Slf4j
 @Component
@@ -46,6 +50,24 @@ public class RateLimitInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+
+        String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            try {
+                String bearerToken = authorizationHeader.substring("Bearer".length());
+
+                DecodedJWT jwt = JWTUtils.getVerifier().verify(bearerToken);
+                String id = jwt.getClaim("id").as(String.class);
+
+                if (Objects.isNull(id)) {
+                    throw new RuntimeException("Invalid Token");
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
 
         String apiKey = request.getHeader(HEADER_API_KEY);
 

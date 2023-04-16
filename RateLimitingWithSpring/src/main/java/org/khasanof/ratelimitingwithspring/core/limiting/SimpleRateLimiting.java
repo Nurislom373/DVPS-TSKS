@@ -1,0 +1,196 @@
+package org.khasanof.ratelimitingwithspring.core.limiting;
+
+import io.github.bucket4j.Bucket;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+import java.time.Instant;
+import java.util.Objects;
+
+/**
+ * Author: Nurislom
+ * <br/>
+ * Date: 4/14/2023
+ * <br/>
+ * Time: 8:16 PM
+ * <br/>
+ * Package: org.khasanof.ratelimitingwithspring.core
+ */
+@Service
+public class SimpleRateLimiting implements RateLimiting {
+
+    public final Logger log = LoggerFactory.getLogger(this.getClass());
+
+    private LocalRateLimiting localRateLimiting;
+
+    @Override
+    public boolean consumeRequest() {
+        return consumerMuchAsPossible(1)
+                .isResult();
+    }
+
+    @Override
+    public boolean consumeRequest(int token) {
+        return consumerMuchAsPossible(token)
+                .isResult();
+    }
+
+    private Result consumerMuchAsPossible(int token) {
+        if (localRateLimiting.isNoLimit()) {
+
+            if (localRateLimiting.getCreatedAt().isAfter(Instant.now())) {
+                log.info("Working Well");
+                return new Result(true, Message.GET_NO_LIMIT);
+            } else {
+
+                if (localRateLimiting.getRefillCount() >= 1) {
+
+                    log.info("Refill Count : {}", localRateLimiting.getRefillCount());
+                    localRateLimiting.setRefillCount(localRateLimiting.getRefillCount() - 1);
+                    localRateLimiting.setToken(localRateLimiting.getTokenCount());
+                    return new Result(true, Message.GET_REFILL);
+                } else {
+                    log.warn("Your limit has been reached!");
+                    return new Result(false, Message.LIMIT_HAS_BEEN_REACHED);
+                }
+
+            }
+        } else {
+            Bucket bucket = localRateLimiting.getBucket();
+
+            long beforeConsumedTokens = bucket.getAvailableTokens();
+            log.info("Available Tokens Before Consumed : {}", beforeConsumedTokens);
+            if (bucket.tryConsume(token)) {
+
+                long afterConsumedTokens = bucket.getAvailableTokens();
+                log.info("Local Rate Limiting Tokens : {}", localRateLimiting.getToken());
+                log.info("Available Tokens After Consumed  : {}", afterConsumedTokens);
+
+                if (afterConsumedTokens < localRateLimiting.getToken()) {
+
+                    log.info("Working Well");
+                    localRateLimiting.setToken(localRateLimiting.getToken() - token);
+                    return new Result(true, Message.GET_TOKEN);
+                } else {
+
+                    if (localRateLimiting.getRefillCount() >= 1) {
+
+                        log.info("Refill Count : {}", localRateLimiting.getRefillCount());
+                        localRateLimiting.setRefillCount(localRateLimiting.getRefillCount() - 1);
+                        localRateLimiting.setToken(afterConsumedTokens);
+                        return new Result(true, Message.GET_REFILL);
+                    } else {
+
+                        log.warn("Your limit has been reached. Token Count : {}, Refill Count : {}",
+                                afterConsumedTokens, localRateLimiting.getRefillCount());
+                        return new Result(false, Message.LIMIT_HAS_BEEN_REACHED);
+                    }
+                }
+
+            } else {
+
+                log.warn("Too Many Request!");
+                return new Result(false, Message.TOO_MANY_REQUEST);
+            }
+        }
+    }
+
+    @Override
+    public Long availableToken() {
+        return null;
+    }
+
+    @Override
+    public Long availableRefill() {
+        return null;
+    }
+
+    @Override
+    public void replaceConfiguration(LocalRateLimiting rateLimiting) {
+
+    }
+
+    @Override
+    public void addRefill(Long refillCount) {
+
+    }
+
+    @Override
+    public void addTokens(Long tokenCount) {
+
+    }
+
+    @Override
+    public LocalRateLimiting getLocalRateLimiting() {
+        return this.localRateLimiting;
+    }
+
+    public void addLocalBuilder(LocalRateLimiting rateLimiting) {
+        this.localRateLimiting = rateLimiting;
+    }
+
+    public static class Result {
+
+        private boolean result;
+
+        private String message;
+
+        public Result(boolean result, String message) {
+            this.result = result;
+            this.message = message;
+        }
+
+        public boolean isResult() {
+            return result;
+        }
+
+        public void setResult(boolean result) {
+            this.result = result;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        public void setMessage(String message) {
+            this.message = message;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            Result result1 = (Result) o;
+
+            if (result != result1.result) return false;
+            return Objects.equals(message, result1.message);
+        }
+
+        @Override
+        public int hashCode() {
+            int result1 = (result ? 1 : 0);
+            result1 = 31 * result1 + (message != null ? message.hashCode() : 0);
+            return result1;
+        }
+
+        @Override
+        public String toString() {
+            return "Result{" +
+                    "result=" + result +
+                    ", message='" + message + '\'' +
+                    '}';
+        }
+    }
+
+    private static class Message {
+        public static String GET_TOKEN = "Get token";
+        public static String GET_NO_LIMIT = "Get no limit";
+        public static String GET_REFILL = "Get refill";
+        public static String TOO_MANY_REQUEST = "Too many request";
+        public static String LIMIT_HAS_BEEN_REACHED = "Your limit has been reached";
+    }
+
+
+}

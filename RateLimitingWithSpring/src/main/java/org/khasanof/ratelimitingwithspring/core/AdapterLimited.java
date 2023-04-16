@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.time.Duration;
+import java.time.temporal.TemporalUnit;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -66,20 +67,6 @@ public class AdapterLimited {
                             }
                         })
                 )).forEach(map -> bucketMap.put(map.getKey(), map.getValue()));
-
-        /*listMap.get(true).stream().filter(limitedMethod.and(requestMappingMethod))
-                .forEach(c -> Arrays.stream(c.getClass().getMethods())
-                        .filter(method -> methodLevelPresentAnnotation(method, annotations))
-                        .filter(method -> methodLevelPresentAnnotation(method, Limited.class))
-                        .map(m -> new AbstractMap.SimpleEntry<>(getMethodUrl(m, getClassUrl(c)), getBucketMethod(m)))
-                        .forEach(map -> bucketMap.put(map.getKey(), map.getValue())));
-
-        listMap.get(false).stream().filter(limitedMethod.and(requestMappingMethod))
-                .forEach(c -> Arrays.stream(c.getClass().getMethods())
-                        .filter(method -> methodLevelPresentAnnotation(method, annotations))
-                        .filter(method -> methodLevelPresentAnnotation(method, Limited.class))
-                        .map(m -> new AbstractMap.SimpleEntry<>(getMethodUrl(m, null), getBucketMethod(m)))
-                        .forEach(map -> bucketMap.put(map.getKey(), map.getValue())));*/
 
         return bucketMap;
     }

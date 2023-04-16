@@ -1,5 +1,7 @@
 package org.khasanof.ratelimitingwithspring.core.cache;
 
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
 
 /**
@@ -12,8 +14,9 @@ import org.springframework.stereotype.Service;
  * Package: org.khasanof.ratelimitingwithspring.core.cache
  */
 @Service
-public class CacheService {
+public class RedisCacheService {
 
-    // TODO add Redis Cache
+    private CacheManager cacheManager;
+    private Cache cache;
 
 }

@@ -5,39 +5,41 @@ import io.github.bucket4j.Bucket;
 
 import java.time.Duration;
 
-public class LocalRateLimitingBuilder {
+public class RateLimitingBuilder {
 
     private final LocalRateLimiting rateLimiting = new LocalRateLimiting();
 
-    public LocalRateLimitingBuilder token(Long token) {
+    public RateLimitingBuilder token(Long token) {
         rateLimiting.setToken(token);
         rateLimiting.setTokenCount(token);
         return this;
     }
 
-    public LocalRateLimitingBuilder noLimit(boolean noLimit) {
+    public RateLimitingBuilder noLimit(boolean noLimit) {
         rateLimiting.setNoLimit(noLimit);
         return this;
     }
 
-    public LocalRateLimitingBuilder duration(Duration duration) {
+    public RateLimitingBuilder duration(Duration duration) {
         rateLimiting.setDuration(duration);
         return this;
     }
 
-    public LocalRateLimitingBuilder refillCount(Long refillCount) {
+    public RateLimitingBuilder refillCount(Long refillCount) {
         rateLimiting.setRefillCount(refillCount);
         return this;
     }
 
-    public LocalRateLimiting build() {
+    public SimpleRateLimiting build() {
         Bandwidth bandwidth = Bandwidth.simple(rateLimiting.getToken(),
                 rateLimiting.getDuration());
         Bucket bucket = Bucket.builder()
                 .addLimit(bandwidth)
                 .build();
         rateLimiting.setBucket(bucket);
-        return rateLimiting;
+        SimpleRateLimiting limiting = new SimpleRateLimiting();
+        limiting.addLocalBuilder(rateLimiting);
+        return limiting;
     }
 
 }
