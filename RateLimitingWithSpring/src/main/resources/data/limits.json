@@ -2,7 +2,6 @@
   {
     "url": "/api/v1/user/findAll",
     "method": "GET",
-    "customize" : "true",
     "plans": [
       {
         "plan": "FREE",
@@ -30,7 +29,6 @@
   {
     "url": "/api/v1/item/findAll",
     "method": "GET",
-    "customize" : "false",
     "plans": [
       {
         "plan": "FREE",

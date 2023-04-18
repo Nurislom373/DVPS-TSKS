@@ -17,6 +17,8 @@ public interface RateLimiting {
 
     boolean consumeRequest();
 
+    long getNanosToWaitForRefill();
+
     boolean consumeRequest(int token);
 
     Long availableToken();

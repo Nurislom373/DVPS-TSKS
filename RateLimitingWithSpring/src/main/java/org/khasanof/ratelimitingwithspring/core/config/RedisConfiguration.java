@@ -1,7 +1,7 @@
 package org.khasanof.ratelimitingwithspring.core.config;
 
 import org.khasanof.ratelimitingwithspring.core.limiting.RateLimiting;
-import org.khasanof.ratelimitingwithspring.domain.ApiEntity;
+import org.khasanof.ratelimitingwithspring.core.domain.Api;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
@@ -10,8 +10,8 @@ import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.GenericToStringSerializer;
-import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.util.Map;
@@ -40,13 +40,23 @@ public class RedisConfiguration {
     }
 
     @Bean
-    public RedisTemplate<String, Map<ApiEntity, RateLimiting>> redisTemplate() {
-        final RedisTemplate<String, Map<ApiEntity, RateLimiting>> redisTemplate = new RedisTemplate<>();
+    public RedisTemplate<?, ?> redisTemplate() {
+        final RedisTemplate<byte[], Map<Api, RateLimiting>> redisTemplate = new RedisTemplate<>();
         redisTemplate.setKeySerializer(new StringRedisSerializer());
         redisTemplate.setHashKeySerializer(new GenericToStringSerializer<>(String.class));
-        redisTemplate.setHashValueSerializer(new JdkSerializationRedisSerializer());
+        redisTemplate.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
         redisTemplate.setConnectionFactory(connectionFactory());
         return redisTemplate;
     }
 
+//    @Bean
+//    @Primary
+//    StringRedisTemplate redisTemplate(RedisConnectionFactory redisConnectionFactory) {
+//        StringRedisTemplate redisTemplate = new StringRedisTemplate();
+//        redisTemplate.setConnectionFactory(redisConnectionFactory);
+//        redisTemplate.setEnableTransactionSupport(false);
+//        redisTemplate.afterPropertiesSet();
+//
+//        return redisTemplate;
+//    }
 }

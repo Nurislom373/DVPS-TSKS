@@ -12,5 +12,10 @@ package org.khasanof.ratelimitingwithspring.core.config;
 public class ApplicationProperties {
 
     public static final String READ_STRATEGY = "ReadStrategy";
+    public static final String SAVE_STRATEGY = "SaveWithEMStrategy";
+    public static final String JSON = "Json";
+    public static final String YAML = "Yaml";
+    public static final String LIMIT = "limit";
+    public static final String TARIFF = "tariff";
 
 }

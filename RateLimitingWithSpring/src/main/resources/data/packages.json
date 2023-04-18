@@ -1,0 +1,16 @@
+[
+  {
+    "name" : "BASIC",
+    "requestCount" : 10000,
+    "requestType" : "LIMIT",
+    "timeCount" : 2,
+    "timeType" : "MONTH"
+  },
+  {
+    "name" : "PRO",
+    "requestCount" : 50000,
+    "requestType" : "LIMIT",
+    "timeCount" : 2,
+    "timeType" : "MONTH"
+  }
+]

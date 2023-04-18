@@ -1,7 +1,5 @@
 package org.khasanof.ratelimitingwithspring.core.strategy;
 
-import org.khasanof.ratelimitingwithspring.core.strategy.read.ReadLimit;
-
 import java.io.IOException;
 import java.util.List;
 
@@ -14,8 +12,8 @@ import java.util.List;
  * <br/>
  * Package: org.khasanof.ratelimitingwithspring.core
  */
-public abstract class AbstractReadStrategy {
+public abstract class AbstractReadStrategy<T extends BaseRS> {
 
-    public abstract List<ReadLimit> readLimitList(String path) throws IOException;
+    public abstract List<T> read(String path) throws IOException;
 
 }

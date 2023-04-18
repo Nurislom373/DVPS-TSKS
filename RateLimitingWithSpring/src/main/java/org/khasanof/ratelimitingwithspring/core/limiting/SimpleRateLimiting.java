@@ -31,6 +31,11 @@ public class SimpleRateLimiting implements RateLimiting {
     }
 
     @Override
+    public long getNanosToWaitForRefill() {
+        return localRateLimiting.getDuration().toNanos();
+    }
+
+    @Override
     public boolean consumeRequest(int token) {
         return consumerMuchAsPossible(token)
                 .isResult();

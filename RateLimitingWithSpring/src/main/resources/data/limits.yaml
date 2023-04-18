@@ -1,32 +1,38 @@
-- url: /api/v2/limits/findAll
+- url: /api/v1/value
   method: GET
-  customize: true
   plans:
     - plan: FREE
       requestType: LIMIT
       requestCount: 100
       timeType: MONTH
+      timeCount: 2
     - plan: BASIC
       requestType: LIMIT
       requestCount: 1000
       timeType: MONTH
+      timeCount: 2
     - plan: PRO
       requestType: LIMIT
       requestCount: 10000
       timeType: MONTH
-- url: /api/v2/item/findAll
+      timeCount: 2
+- url: /api/v1/echo/*
   method: GET
-  customize: false
   plans:
     - plan: FREE
       requestType: LIMIT
       requestCount: 200
       timeType: WEEK
+      timeCount: 2
     - plan: BASIC
       requestType: LIMIT
       requestCount: 2000
       timeType: WEEK
+      timeCount: 2
     - plan: PRO
       requestType: LIMIT
       requestCount: 20000
       timeType: WEEK
+      timeCount: 2
+  variables:
+    value: nurislom

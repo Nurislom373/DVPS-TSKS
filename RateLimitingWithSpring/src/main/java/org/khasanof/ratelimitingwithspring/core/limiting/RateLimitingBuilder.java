@@ -2,6 +2,7 @@ package org.khasanof.ratelimitingwithspring.core.limiting;
 
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
+import io.github.bucket4j.Refill;
 
 import java.time.Duration;
 

@@ -1,11 +1,11 @@
 package org.khasanof.ratelimitingwithspring.test;
 
+import com.auth0.jwt.JWT;
 import lombok.RequiredArgsConstructor;
-import org.khasanof.ratelimitingwithspring.domain.AuthUserEntity;
+import org.khasanof.ratelimitingwithspring.core.utils.JWTUtils;
 import org.springframework.stereotype.Service;
 
-import java.util.Base64;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Author: Nurislom
@@ -42,6 +42,19 @@ public class AuthUserService {
             }
         }
         throw new RuntimeException();
+    }
+
+    public Map<String, Object> getToken() {
+        Date expiryForRefreshToken = JWTUtils.getExpiryForRefreshToken();
+
+        String refreshToken = JWT.create().withSubject("Nurislom")
+                .withExpiresAt(expiryForRefreshToken)
+                .withClaim("key", "5h489hg84")
+                .sign(JWTUtils.getAlgorithm());
+
+        return new HashMap<>() {{
+           put("token", refreshToken);
+        }};
     }
 
     private String base64Encode(AuthUserEntity user) {
