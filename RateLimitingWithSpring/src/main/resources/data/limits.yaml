@@ -3,25 +3,43 @@
   plans:
     - plan: FREE
       requestType: LIMIT
-      requestCount: 100
-      timeType: MONTH
-      timeCount: 2
+      requestCount: 10
+      timeType: MINUTE
+      timeCount: 1
     - plan: BASIC
       requestType: LIMIT
       requestCount: 1000
-      timeType: MONTH
-      timeCount: 2
+      timeType: MINUTE
+      timeCount: 1
     - plan: PRO
       requestType: LIMIT
       requestCount: 10000
-      timeType: MONTH
-      timeCount: 2
+      timeType: MINUTE
+      timeCount: 1
+- url: /api/v1/check
+  method: GET
+  plans:
+    - plan: FREE
+      requestType: LIMIT
+      requestCount: 15
+      timeType: MINUTE
+      timeCount: 1
+    - plan: BASIC
+      requestType: LIMIT
+      requestCount: 1500
+      timeType: MINUTE
+      timeCount: 1
+    - plan: PRO
+      requestType: LIMIT
+      requestCount: 15000
+      timeType: MINUTE
+      timeCount: 1
 - url: /api/v1/echo/*
   method: GET
   plans:
     - plan: FREE
       requestType: LIMIT
-      requestCount: 200
+      requestCount: 20
       timeType: WEEK
       timeCount: 2
     - plan: BASIC

@@ -9,9 +9,10 @@ import org.khasanof.ratelimitingwithspring.core.strategy.limit.classes.RSLimit;
 import org.khasanof.ratelimitingwithspring.core.strategy.limit.classes.RSLimitPlan;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 
-import static org.khasanof.ratelimitingwithspring.core.config.ApplicationProperties.*;
+import static org.khasanof.ratelimitingwithspring.core.config.ApplicationProperties.SAVE_STRATEGY;
 
 /**
  * Author: Nurislom
@@ -44,11 +45,19 @@ public class LimitSaveWithEMStrategy extends LimitSaveStrategy {
     }
 
     private Api buildApiEntity(RSLimit limit) {
-        return Api.builder()
-                .url(limit.getUrl())
-                .method(limit.getMethod())
-                .variables(limit.getVariables())
-                .build();
+        if (limit.getVariables() == null) {
+            return Api.builder()
+                    .url(limit.getUrl())
+                    .method(limit.getMethod())
+                    .attributes(new HashMap<>())
+                    .build();
+        } else {
+            return Api.builder()
+                    .url(limit.getUrl())
+                    .method(limit.getMethod())
+                    .attributes(limit.getVariables())
+                    .build();
+        }
     }
 
     private Limited buildLimitedEntity(RSLimitPlan plan, Api entity) {
@@ -56,6 +65,7 @@ public class LimitSaveWithEMStrategy extends LimitSaveStrategy {
                 .api(entity)
                 .plan(plan.getPlan())
                 .limitsEmbeddable(LimitsEmbeddable.builder()
+                        .undiminishedCount(plan.getRequestCount())
                         .requestType(plan.getRequestType())
                         .requestCount(plan.getRequestCount())
                         .timeType(plan.getTimeType())

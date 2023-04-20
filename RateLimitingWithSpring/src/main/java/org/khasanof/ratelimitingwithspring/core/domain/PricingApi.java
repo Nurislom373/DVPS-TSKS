@@ -32,7 +32,7 @@ public class PricingApi {
     @Column(name = "key", nullable = false)
     private String key;
 
-    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @ManyToOne
     @JoinColumn(name = "limited_id", referencedColumnName = "id",
             foreignKey = @ForeignKey(name = "limited_id_fk"), nullable = false)
     private Limited limited;

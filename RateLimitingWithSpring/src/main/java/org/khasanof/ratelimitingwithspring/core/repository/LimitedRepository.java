@@ -1,6 +1,5 @@
 package org.khasanof.ratelimitingwithspring.core.repository;
 
-import org.khasanof.ratelimitingwithspring.core.common.save.REGSLimit;
 import org.khasanof.ratelimitingwithspring.core.domain.Limited;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

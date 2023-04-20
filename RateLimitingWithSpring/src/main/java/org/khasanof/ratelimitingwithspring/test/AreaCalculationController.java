@@ -10,7 +10,7 @@ public class AreaCalculationController {
 
     @GetMapping(value = "value")
     public ResponseEntity<String> value() {
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok().body("Boom");
     }
 
     @RequestMapping(value = "check", method = RequestMethod.GET)

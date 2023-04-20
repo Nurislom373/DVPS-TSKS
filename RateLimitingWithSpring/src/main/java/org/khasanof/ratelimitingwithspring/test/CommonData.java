@@ -1,13 +1,9 @@
 package org.khasanof.ratelimitingwithspring.test;
 
 import org.khasanof.ratelimitingwithspring.core.common.CommonLimitsService;
-import org.khasanof.ratelimitingwithspring.core.common.save.REGSLimit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestMethod;
-
-import java.util.List;
 
 /**
  * Author: Nurislom
@@ -32,11 +28,24 @@ public class CommonData implements CommandLineRunner {
      */
     @Override
     public void run(String... args) throws Exception {
-        String key = "5h489hg84";
-        List<REGSLimit> saveLimits = List.of(
-                new REGSLimit("/api/v1/value", RequestMethod.GET, null, "BASIC", 1L),
-                new REGSLimit("/api/v1/echo/*", RequestMethod.GET, null, "BASIC", 1L)
-        );
-        commonLimitsService.registrationOfLimits(key, saveLimits);
+        String key1 = "432";
+        String key2 = "434";
+
+//        List<REGSTariff> key1Tariff = List.of(
+//                new REGSTariff("BASIC", List.of(
+//                        new REGSTariffApi("/api/v1/value", RequestMethod.GET, null),
+//                        new REGSTariffApi("/api/v1/check", RequestMethod.GET, null)
+//                ), 2L)
+//        );
+//
+//        List<REGSTariff> key2Tariff = List.of(
+//                new REGSTariff("PRO", List.of(
+//                        new REGSTariffApi("/api/v1/value", RequestMethod.GET, null),
+//                        new REGSTariffApi("/api/v1/echo/*", RequestMethod.GET, Map.of("value", "nurislom"))
+//                ), 1L)
+//        );
+//
+//        commonLimitsService.registrationOfTariffs(key1, key1Tariff);
+//        commonLimitsService.registrationOfTariffs(key2, key2Tariff);
     }
 }

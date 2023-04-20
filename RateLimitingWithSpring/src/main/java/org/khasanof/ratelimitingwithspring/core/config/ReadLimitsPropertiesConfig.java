@@ -1,8 +1,9 @@
-package org.khasanof.ratelimitingwithspring.core.limiting;
+package org.khasanof.ratelimitingwithspring.core.config;
 
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.Setter;
+import org.khasanof.ratelimitingwithspring.core.common.register.SaveDLLEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
@@ -26,6 +27,7 @@ public class ReadLimitsPropertiesConfig {
 
     @PostConstruct
     void afterPropertiesSet() {
+        setSaveDLLEnum(environment.getProperty("api.limits.ddl", SaveDLLEnum.class));
         setPackageEnabled(environment.getProperty("api.packages.enabled", Boolean.class));
         setApiLimitsEnabled(environment.getProperty("api.limits.enabled", Boolean.class));
         setPackagesConfigFilePath(environment.getProperty("api.packages.file-path"));
@@ -33,6 +35,8 @@ public class ReadLimitsPropertiesConfig {
         setUserKey(environment.getProperty("api.user-key"));
     }
 
+    // write logic ddl
+    private SaveDLLEnum saveDLLEnum;
     private String packagesConfigFilePath;
     private String apiLimitsConfigFilePath;
     private Boolean packageEnabled;

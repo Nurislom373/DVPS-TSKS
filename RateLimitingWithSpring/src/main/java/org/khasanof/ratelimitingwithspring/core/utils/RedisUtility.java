@@ -1,7 +1,7 @@
 package org.khasanof.ratelimitingwithspring.core.utils;
 
-import org.khasanof.ratelimitingwithspring.core.limiting.RateLimiting;
 import org.khasanof.ratelimitingwithspring.core.domain.Api;
+import org.khasanof.ratelimitingwithspring.core.limiting.RateLimiting;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -16,9 +16,6 @@ public class RedisUtility {
     @Autowired
     private RedisTemplate<String, Map<Api, RateLimiting>> redisTemplate;
 
-    @Autowired
-    private BaseUtils baseUtils;
-
     public void addValues(String key, Map<Api, RateLimiting> limitingMap) {
         // add validator
         Map<Api, RateLimiting> keyMap = redisTemplate.opsForValue().get(key);
@@ -32,9 +29,5 @@ public class RedisUtility {
 
     public Optional<Map<Api, RateLimiting>> getValue(String key) {
         return Optional.ofNullable(redisTemplate.opsForValue().get(key));
-    }
-
-    public boolean deleteValue(String key) {
-        return redisTemplate.delete(key);
     }
 }

@@ -5,6 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -20,6 +22,10 @@ import java.util.Optional;
 @Repository
 public interface ApiRepository extends JpaRepository<Api, Long> {
 
-    Optional<Api> findByUrlAndMethodAndVariables(String url, RequestMethod method, Map<String, String> variables);
+    Optional<Api> findByUrlAndMethodAndAttributes(String url, RequestMethod method, Map<String, String> attributes);
+
+    List<Api> findByUrlAndMethod(String url, RequestMethod method);
+
+    List<Api> findAllByIdIsIn(Collection<Long> id);
 
 }

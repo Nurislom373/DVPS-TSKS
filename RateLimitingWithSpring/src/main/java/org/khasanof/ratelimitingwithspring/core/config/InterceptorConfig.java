@@ -20,7 +20,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(interceptor)
-                .addPathPatterns(limitsAdapter.getLimitsOld().stream()
+                .addPathPatterns(limitsAdapter.getPublicLimits().stream()
                         .peek(System.out::println)
                         .map(RSLimit::getUrl).toList());
     }

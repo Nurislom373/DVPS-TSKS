@@ -25,7 +25,7 @@ import java.util.Objects;
 @NoArgsConstructor
 public class LocalRateLimiting {
 
-    private Long tokenCount;
+    private Long undiminishedCount;
 
     private Long token;
 

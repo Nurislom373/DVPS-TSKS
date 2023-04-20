@@ -41,6 +41,7 @@ public class TariffSaveWithEMStrategy extends TariffSaveStrategy {
         return Tariff.builder()
                 .name(tariff.getName())
                 .limitsEmbeddable(LimitsEmbeddable.builder()
+                        .undiminishedCount(tariff.getRequestCount())
                         .requestCount(tariff.getRequestCount())
                         .requestType(tariff.getRequestType())
                         .timeCount(tariff.getTimeCount())

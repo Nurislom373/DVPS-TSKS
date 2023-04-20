@@ -12,7 +12,7 @@ public class RateLimitingBuilder {
 
     public RateLimitingBuilder token(Long token) {
         rateLimiting.setToken(token);
-        rateLimiting.setTokenCount(token);
+        rateLimiting.setUndiminishedCount(token);
         return this;
     }
 
@@ -32,8 +32,9 @@ public class RateLimitingBuilder {
     }
 
     public SimpleRateLimiting build() {
-        Bandwidth bandwidth = Bandwidth.simple(rateLimiting.getToken(),
-                rateLimiting.getDuration());
+        Bandwidth bandwidth = Bandwidth.classic(rateLimiting.getUndiminishedCount(),
+                Refill.intervally(rateLimiting.getUndiminishedCount(), rateLimiting.getDuration()))
+                .withInitialTokens(rateLimiting.getToken());
         Bucket bucket = Bucket.builder()
                 .addLimit(bandwidth)
                 .build();

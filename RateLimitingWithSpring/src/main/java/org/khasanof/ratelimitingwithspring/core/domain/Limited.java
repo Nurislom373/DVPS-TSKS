@@ -30,9 +30,9 @@ public class Limited {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "api_id", referencedColumnName = "id",
-            foreignKey = @ForeignKey(name = "api_id_fk"), nullable = false)
+            foreignKey = @ForeignKey(name = "api_id_fk"))
     private Api api;
 
     @Basic(optional = false)

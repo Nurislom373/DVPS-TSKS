@@ -1,6 +1,7 @@
 package org.khasanof.ratelimitingwithspring.core.utils;
 
-import org.khasanof.ratelimitingwithspring.core.limiting.PTA;
+import lombok.extern.slf4j.Slf4j;
+import org.khasanof.ratelimitingwithspring.core.common.search.classes.PTA;
 import org.khasanof.ratelimitingwithspring.core.limiting.RateLimiting;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * <br/>
  * Package: org.khasanof.ratelimitingwithspring.core.utils
  */
+@Slf4j
 @Component
 public class ConcurrentMapUtility {
 
@@ -27,6 +29,14 @@ public class ConcurrentMapUtility {
 
     public Map<PTA, RateLimiting> get(String key) {
         return map.get(key);
+    }
+
+    public Map<String, Map<PTA, RateLimiting>> getAll() {
+        return this.map;
+    }
+
+    public void showSize() {
+        log.info("Show Limits Info => Count : {}", map.size());
     }
 
 }

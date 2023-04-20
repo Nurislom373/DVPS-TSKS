@@ -1,4 +1,4 @@
-package org.khasanof.ratelimitingwithspring.core.limiting;
+package org.khasanof.ratelimitingwithspring.core.common.search.classes;
 
 import lombok.*;
 

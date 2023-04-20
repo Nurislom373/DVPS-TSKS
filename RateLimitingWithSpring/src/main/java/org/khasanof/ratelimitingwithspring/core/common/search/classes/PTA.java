@@ -1,11 +1,10 @@
-package org.khasanof.ratelimitingwithspring.core.limiting;
+package org.khasanof.ratelimitingwithspring.core.common.search.classes;
 
 import lombok.*;
 import org.khasanof.ratelimitingwithspring.core.domain.Api;
 import org.khasanof.ratelimitingwithspring.core.domain.enums.PricingType;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Author: Nurislom

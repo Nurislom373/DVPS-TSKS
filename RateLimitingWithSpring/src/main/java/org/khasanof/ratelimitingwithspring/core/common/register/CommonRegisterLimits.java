@@ -1,7 +1,7 @@
-package org.khasanof.ratelimitingwithspring.core.common;
+package org.khasanof.ratelimitingwithspring.core.common.register;
 
-import org.khasanof.ratelimitingwithspring.core.common.save.REGSLimit;
-import org.khasanof.ratelimitingwithspring.core.common.save.REGSTariff;
+import org.khasanof.ratelimitingwithspring.core.common.register.classes.REGSLimit;
+import org.khasanof.ratelimitingwithspring.core.common.register.classes.REGSTariff;
 
 import java.util.List;
 

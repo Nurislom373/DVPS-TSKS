@@ -1,18 +1,20 @@
 package org.khasanof.ratelimitingwithspring.core.utils;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.khasanof.ratelimitingwithspring.core.domain.PricingTariff;
 import org.khasanof.ratelimitingwithspring.core.domain.enums.PricingType;
-import org.khasanof.ratelimitingwithspring.core.limiting.PTA;
+import org.khasanof.ratelimitingwithspring.core.common.search.classes.PTA;
 import org.khasanof.ratelimitingwithspring.core.limiting.RateLimiting;
 import org.khasanof.ratelimitingwithspring.core.domain.PricingApi;
 import org.khasanof.ratelimitingwithspring.core.domain.enums.RequestType;
 import org.khasanof.ratelimitingwithspring.core.domain.enums.TimeType;
+import org.khasanof.ratelimitingwithspring.core.repository.ApiRepository;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
-import java.util.AbstractMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -24,8 +26,54 @@ import java.util.stream.Collectors;
  * <br/>
  * Package: org.khasanof.ratelimitingwithspring.core.utils
  */
+@Slf4j
 @Component
+@RequiredArgsConstructor
 public class RedisValueBuilder {
+
+    private final ApiRepository apiRepository;
+
+    public Map<String, Map<PTA, RateLimiting>> convertApiListToInnerMap(List<PricingApi> list) {
+        Map<String, Map<PTA, RateLimiting>> map = new ConcurrentHashMap<>();
+
+        for (PricingApi p : list) {
+            Map.Entry<PTA, RateLimiting> entity = convertEntityToEntry(p);
+
+            Map<PTA, RateLimiting> rateLimitingMap = map.get(p.getKey());
+
+            if (rateLimitingMap != null) {
+                rateLimitingMap.put(entity.getKey(), entity.getValue());
+                map.put(p.getKey(), rateLimitingMap);
+            } else {
+                map.put(p.getKey(), Map.of(entity.getKey(), entity.getValue()));
+            }
+        }
+
+        log.info("PricingAPI LoadSize = {}", map.size());
+
+        return map;
+    }
+
+    public Map<String, Map<PTA, RateLimiting>> convertTariffListToInnerMap(List<PricingTariff> list) {
+        Map<String, Map<PTA, RateLimiting>> map = new ConcurrentHashMap<>();
+
+        for (PricingTariff p : list) {
+            Map.Entry<PTA, RateLimiting> entity = convertEntityToEntry(p);
+
+            Map<PTA, RateLimiting> rateLimitingMap = map.get(p.getKey());
+
+            if (rateLimitingMap != null) {
+                rateLimitingMap.put(entity.getKey(), entity.getValue());
+                map.put(p.getKey(), rateLimitingMap);
+            } else {
+                map.put(p.getKey(), Map.of(entity.getKey(), entity.getValue()));
+            }
+        }
+
+        log.info("PricingTariff LoadSize = {}", map.size());
+
+        return map;
+    }
 
     public Map<PTA, RateLimiting> convertApiListToMap(List<PricingApi> list) {
         return list.stream().map(this::convertEntityToEntry)
@@ -37,6 +85,10 @@ public class RedisValueBuilder {
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
+    private Map.Entry<String, Map.Entry<PTA, RateLimiting>> convertEntityToEntry(String key, PricingApi api) {
+        return new AbstractMap.SimpleEntry<>(key, convertEntityToEntry(api));
+    }
+
     private Map.Entry<PTA, RateLimiting> convertEntityToEntry(PricingApi entity) {
         return new AbstractMap.SimpleEntry<>(PTA.builder()
                 .apis(List.of(entity.getLimited().getApi()))
@@ -46,7 +98,7 @@ public class RedisValueBuilder {
 
     private Map.Entry<PTA, RateLimiting> convertEntityToEntry(PricingTariff entity) {
         return new AbstractMap.SimpleEntry<>(PTA.builder()
-                .apis(entity.getApis())
+                .apis(apiRepository.findAllByIdIsIn(entity.getApis()))
                 .pricingType(PricingType.TARIFF)
                 .build(), rateLimitingBuild(entity));
     }

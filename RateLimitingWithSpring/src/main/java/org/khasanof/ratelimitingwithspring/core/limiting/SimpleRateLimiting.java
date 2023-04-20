@@ -1,6 +1,7 @@
 package org.khasanof.ratelimitingwithspring.core.limiting;
 
 import io.github.bucket4j.Bucket;
+import io.github.bucket4j.ConsumptionProbe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,8 @@ public class SimpleRateLimiting implements RateLimiting {
 
     private LocalRateLimiting localRateLimiting;
 
+    private long nanosToWaitForRefill;
+
     @Override
     public boolean consumeRequest() {
         return consumerMuchAsPossible(1)
@@ -32,7 +35,10 @@ public class SimpleRateLimiting implements RateLimiting {
 
     @Override
     public long getNanosToWaitForRefill() {
-        return localRateLimiting.getDuration().toNanos();
+        if (localRateLimiting.getRefillCount() >= 1) {
+            return this.nanosToWaitForRefill;
+        }
+        return 0;
     }
 
     @Override
@@ -41,7 +47,7 @@ public class SimpleRateLimiting implements RateLimiting {
                 .isResult();
     }
 
-    private Result consumerMuchAsPossible(int token) {
+    private synchronized Result consumerMuchAsPossible(int token) {
         if (localRateLimiting.isNoLimit()) {
 
             if (localRateLimiting.getCreatedAt().isAfter(Instant.now())) {
@@ -53,7 +59,7 @@ public class SimpleRateLimiting implements RateLimiting {
 
                     log.info("Refill Count : {}", localRateLimiting.getRefillCount());
                     localRateLimiting.setRefillCount(localRateLimiting.getRefillCount() - 1);
-                    localRateLimiting.setToken(localRateLimiting.getTokenCount());
+                    localRateLimiting.setToken(localRateLimiting.getUndiminishedCount());
                     return new Result(true, Message.GET_REFILL);
                 } else {
                     log.warn("Your limit has been reached!");
@@ -62,11 +68,13 @@ public class SimpleRateLimiting implements RateLimiting {
 
             }
         } else {
+            System.out.println("localRateLimiting = " + localRateLimiting);
             Bucket bucket = localRateLimiting.getBucket();
 
             long beforeConsumedTokens = bucket.getAvailableTokens();
             log.info("Available Tokens Before Consumed : {}", beforeConsumedTokens);
-            if (bucket.tryConsume(token)) {
+            ConsumptionProbe consumptionProbe = bucket.tryConsumeAndReturnRemaining(token);
+            if (consumptionProbe.isConsumed()) {
 
                 long afterConsumedTokens = bucket.getAvailableTokens();
                 log.info("Local Rate Limiting Tokens : {}", localRateLimiting.getToken());
@@ -95,6 +103,11 @@ public class SimpleRateLimiting implements RateLimiting {
 
             } else {
 
+                log.warn("getNanosToWaitForRefill - {}", consumptionProbe.getNanosToWaitForRefill());
+                log.warn("getNanosToWaitForReset - {}", consumptionProbe.getNanosToWaitForReset());
+
+                setNanosToWaitForRefill(consumptionProbe.getNanosToWaitForRefill());
+
                 log.warn("Too Many Request!");
                 return new Result(false, Message.TOO_MANY_REQUEST);
             }
@@ -103,7 +116,7 @@ public class SimpleRateLimiting implements RateLimiting {
 
     @Override
     public Long availableToken() {
-        return null;
+        return localRateLimiting.getToken();
     }
 
     @Override
@@ -133,6 +146,10 @@ public class SimpleRateLimiting implements RateLimiting {
 
     public void addLocalBuilder(LocalRateLimiting rateLimiting) {
         this.localRateLimiting = rateLimiting;
+    }
+
+    public void setNanosToWaitForRefill(long nanosToWaitForRefill) {
+        this.nanosToWaitForRefill = nanosToWaitForRefill;
     }
 
     public static class Result {

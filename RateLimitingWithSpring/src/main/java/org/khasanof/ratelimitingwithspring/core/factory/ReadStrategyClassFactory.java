@@ -1,7 +1,6 @@
 package org.khasanof.ratelimitingwithspring.core.factory;
 
 import lombok.RequiredArgsConstructor;
-import org.khasanof.ratelimitingwithspring.core.strategy.AbstractReadStrategy;
 import org.khasanof.ratelimitingwithspring.core.config.ApplicationProperties;
 import org.khasanof.ratelimitingwithspring.core.strategy.limit.LimitReadStrategy;
 import org.khasanof.ratelimitingwithspring.core.strategy.tariff.TariffReadStrategy;
@@ -9,8 +8,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
-
-import java.util.Objects;
 
 /**
  * Author: Nurislom
@@ -23,7 +20,7 @@ import java.util.Objects;
  */
 @Service
 @RequiredArgsConstructor
-public class ReadStrategyFactory {
+public class ReadStrategyClassFactory {
 
     private final ApplicationContext context;
 

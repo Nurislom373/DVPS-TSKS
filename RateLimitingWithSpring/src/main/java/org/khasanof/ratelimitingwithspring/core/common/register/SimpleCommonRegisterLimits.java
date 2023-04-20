@@ -1,13 +1,13 @@
-package org.khasanof.ratelimitingwithspring.core.common;
+package org.khasanof.ratelimitingwithspring.core.common.register;
 
 import lombok.RequiredArgsConstructor;
-import org.khasanof.ratelimitingwithspring.core.common.save.REGSLimit;
-import org.khasanof.ratelimitingwithspring.core.common.save.REGSTariff;
-import org.khasanof.ratelimitingwithspring.core.domain.Limited;
-import org.khasanof.ratelimitingwithspring.core.domain.PricingApi;
-import org.khasanof.ratelimitingwithspring.core.domain.PricingTariff;
-import org.khasanof.ratelimitingwithspring.core.domain.Tariff;
+import lombok.extern.slf4j.Slf4j;
+import org.khasanof.ratelimitingwithspring.core.common.register.classes.REGSLimit;
+import org.khasanof.ratelimitingwithspring.core.common.register.classes.REGSTariff;
+import org.khasanof.ratelimitingwithspring.core.common.register.classes.REGSTariffApi;
+import org.khasanof.ratelimitingwithspring.core.domain.*;
 import org.khasanof.ratelimitingwithspring.core.repository.*;
+import org.khasanof.ratelimitingwithspring.core.utils.BaseUtils;
 import org.khasanof.ratelimitingwithspring.core.utils.ConcurrentMapUtility;
 import org.khasanof.ratelimitingwithspring.core.utils.RedisValueBuilder;
 import org.springframework.stereotype.Service;
@@ -26,11 +26,12 @@ import java.util.Optional;
  * <br/>
  * Package: org.khasanof.ratelimitingwithspring.core
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class SimpleCommonRegisterLimits implements CommonRegisterLimits {
 
-    private final PricingApiEntityRepository pricingApiEntityRepository;
+    private final PricingApiRepository pricingApiRepository;
     private final LimitedRepository limitedRepository;
     private final PricingTariffRepository pricingTariffRepository;
     private final TariffRepository tariffRepository;
@@ -45,7 +46,8 @@ public class SimpleCommonRegisterLimits implements CommonRegisterLimits {
 
         List<PricingApi> apiEntityList = limits.stream()
                 .map(limit -> buildPricingAPIEntity(key, limit))
-                .peek(pricingApiEntityRepository::save)
+                .peek((p) -> log.info("Build PricingApi - {}", p))
+                .peek(pricingApiRepository::saveAndFlush)
                 .toList();
 
         mapUtility.add(key, redisValueBuilder.convertApiListToMap(apiEntityList));
@@ -71,15 +73,37 @@ public class SimpleCommonRegisterLimits implements CommonRegisterLimits {
             return PricingTariff.builder()
                     .key(key)
                     .tariff(tariffEntity)
-                    .apis(tariff.getApi().stream().map(e ->
-                            apiRepository.findByUrlAndMethodAndVariables(e.getUrl(), e.getMethod(), e.getAttributes()))
-                            .map(Optional::orElseThrow).toList())
+                    .apis(buildPricingTariffEntity(tariff.getApi()))
                     .limitsEmbeddable(tariffEntity.getLimitsEmbeddable())
                     .refillCount(tariff.getRefillCount())
                     .build();
         }
         throw new RuntimeException("Tariff not found");
     }
+
+    private List<Long> buildPricingTariffEntity(List<REGSTariffApi> apis) {
+        return apis.stream()
+                .map(this::isPresentReturnIdOrNull)
+                .peek(p -> {
+                    if (p == null)
+                        throw new RuntimeException("API not found!");
+                }).toList();
+    }
+
+    private Long isPresentReturnIdOrNull(REGSTariffApi api) {
+        log.info("isPresentReturnIdOrNull param api - {}", api);
+        if (api.getAttributes() == null || api.getAttributes().isEmpty()) {
+            return apiRepository.findByUrlAndMethodAndAttributes(api.getUrl(), api.getMethod(),
+                    api.getAttributes()).map(Api::getId)
+                    .orElse(null);
+        } else {
+            List<Api> list = apiRepository.findByUrlAndMethod(api.getUrl(), api.getMethod());
+            return list.stream().filter(f -> BaseUtils.areEqual(f.getAttributes(), api.getAttributes()))
+                    .findFirst().orElseThrow(() -> new RuntimeException("Match API not found!"))
+                    .getId();
+        }
+    }
+
 
     private PricingApi buildPricingAPIEntity(String key, REGSLimit limit) {
         return PricingApi.builder()
@@ -100,18 +124,10 @@ public class SimpleCommonRegisterLimits implements CommonRegisterLimits {
                 }
             } else {
                 return list.stream()
-                        .filter(f -> areEqual(f.getApi().getVariables(), attributes))
+                        .filter(f -> BaseUtils.areEqual(f.getApi().getAttributes(), attributes))
                         .findFirst().orElseThrow(() -> new RuntimeException("Limited match not found!"));
             }
         }
         throw new RuntimeException("Limit not found!");
-    }
-
-    private boolean areEqual(Map<String, String> first, Map<String, String> second) {
-        if (first.size() != second.size()) {
-            return false;
-        }
-        return first.entrySet().stream()
-                .allMatch(e -> e.getValue().equals(second.get(e.getKey())));
     }
 }

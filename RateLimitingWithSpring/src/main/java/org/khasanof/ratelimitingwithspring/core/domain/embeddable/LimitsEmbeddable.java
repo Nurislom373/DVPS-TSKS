@@ -27,6 +27,9 @@ import org.khasanof.ratelimitingwithspring.core.domain.enums.TimeType;
 @AllArgsConstructor
 public class LimitsEmbeddable {
 
+    @Column(name = "undiminished_count", nullable = false)
+    private Long undiminishedCount;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "request_type", nullable = false)
     private RequestType requestType;

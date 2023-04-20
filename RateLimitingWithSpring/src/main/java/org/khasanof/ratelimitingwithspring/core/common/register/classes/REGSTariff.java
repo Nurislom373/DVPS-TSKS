@@ -1,4 +1,4 @@
-package org.khasanof.ratelimitingwithspring.core.common.save;
+package org.khasanof.ratelimitingwithspring.core.common.register.classes;
 
 import lombok.*;
 
@@ -21,7 +21,6 @@ import java.util.List;
 @EqualsAndHashCode
 @NoArgsConstructor
 public class REGSTariff {
-    private String key;
     private String name;
     private List<REGSTariffApi> api;
     private Long refillCount;

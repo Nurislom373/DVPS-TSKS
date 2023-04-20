@@ -1,7 +1,7 @@
 package org.khasanof.ratelimitingwithspring.core.config;
 
-import org.khasanof.ratelimitingwithspring.core.limiting.RateLimiting;
 import org.khasanof.ratelimitingwithspring.core.domain.Api;
+import org.khasanof.ratelimitingwithspring.core.limiting.RateLimiting;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
@@ -41,7 +41,7 @@ public class RedisConfiguration {
 
     @Bean
     public RedisTemplate<?, ?> redisTemplate() {
-        final RedisTemplate<byte[], Map<Api, RateLimiting>> redisTemplate = new RedisTemplate<>();
+        final RedisTemplate<byte[], byte[]> redisTemplate = new RedisTemplate<>();
         redisTemplate.setKeySerializer(new StringRedisSerializer());
         redisTemplate.setHashKeySerializer(new GenericToStringSerializer<>(String.class));
         redisTemplate.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());

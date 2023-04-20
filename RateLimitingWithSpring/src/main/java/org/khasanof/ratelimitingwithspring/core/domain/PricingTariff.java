@@ -5,6 +5,7 @@ import lombok.*;
 import org.khasanof.ratelimitingwithspring.core.domain.embeddable.LimitsEmbeddable;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Author: Nurislom
@@ -24,7 +25,8 @@ import java.util.List;
 @EqualsAndHashCode
 @AllArgsConstructor
 @Table(name = "pricing_package", uniqueConstraints = {
-        @UniqueConstraint(name = "uniqueId", columnNames = "id")
+        @UniqueConstraint(name = "uniqueId", columnNames = "id"),
+        @UniqueConstraint(name = "uniqueKeyTariff", columnNames = {"key", "package_id"})
 })
 public class PricingTariff {
 
@@ -35,15 +37,15 @@ public class PricingTariff {
     @Column(name = "key", nullable = false, updatable = false)
     private String key;
 
-    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @ManyToOne
     @JoinColumn(name = "package_id", referencedColumnName = "id",
             foreignKey = @ForeignKey(name = "package_id_fk"), nullable = false)
     private Tariff tariff;
 
-    @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-    @JoinColumn(name = "api_id", referencedColumnName = "id",
-            foreignKey = @ForeignKey(name = "api_id_fk"), nullable = false)
-    private List<Api> apis;
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "pricing_tariff_api")
+    @Column(name = "api_id")
+    private List<Long> apis;
 
     @Embedded
     private LimitsEmbeddable limitsEmbeddable;
