@@ -2,6 +2,7 @@ package org.khasanof.ratelimitingwithspring.core.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.khasanof.ratelimitingwithspring.core.domain.embeddable.LimitsEmbeddable;
 
 /**
  * Author: Nurislom
@@ -36,6 +37,9 @@ public class PricingApi {
     @JoinColumn(name = "limited_id", referencedColumnName = "id",
             foreignKey = @ForeignKey(name = "limited_id_fk"), nullable = false)
     private Limited limited;
+
+    @Embedded
+    private LimitsEmbeddable limitsEmbeddable;
 
     @Column(name = "refill_count", nullable = false)
     private Long refillCount;

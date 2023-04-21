@@ -122,26 +122,23 @@ public class CommonUpdateOnRuntime implements UpdateOnRuntime {
     }
 
     private boolean copyProperties(LocalRateLimiting localRateLimiting, PricingApi tariff) {
-        boolean result = false;
-        LimitsEmbeddable limitsEmbeddable = tariff.getLimited().getLimitsEmbeddable();
+        LimitsEmbeddable limitsEmbeddable = tariff.getLimitsEmbeddable();
         if (localRateLimiting.isNoLimit()) {
             if (!Objects.equals(localRateLimiting.getRefillCount(), tariff.getRefillCount())) {
                 tariff.setRefillCount(localRateLimiting.getRefillCount());
-                result = true;
+                return true;
             }
         } else {
             if (!Objects.equals(localRateLimiting.getRefillCount(), tariff.getRefillCount())) {
                 tariff.setRefillCount(localRateLimiting.getRefillCount());
-                result = true;
+                return true;
             } else if (!Objects.equals(localRateLimiting.getToken(), limitsEmbeddable.getRequestCount())) {
                 limitsEmbeddable.setRequestCount(localRateLimiting.getToken());
-                Limited limited = tariff.getLimited();
-                limited.setLimitsEmbeddable(limitsEmbeddable);
-                tariff.setLimited(limited);
-                result = true;
+                tariff.setLimitsEmbeddable(limitsEmbeddable);
+                return true;
             }
         }
-        return result;
+        return false;
     }
 
 }

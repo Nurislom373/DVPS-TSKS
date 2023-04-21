@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.khasanof.ratelimitingwithspring.core.domain.embeddable.LimitsEmbeddable;
 import org.khasanof.ratelimitingwithspring.core.domain.Tariff;
 import org.khasanof.ratelimitingwithspring.core.strategy.tariff.TariffSaveStrategy;
+import org.khasanof.ratelimitingwithspring.core.strategy.tariff.builder.StaticTariffBuilder;
 import org.khasanof.ratelimitingwithspring.core.strategy.tariff.classes.RSTariff;
 import org.springframework.stereotype.Service;
 
@@ -32,21 +33,8 @@ public class TariffSaveWithEMStrategy extends TariffSaveStrategy {
     }
 
     private void save(RSTariff tariff) {
-        Tariff buildTariff = buildTariff(tariff);
+        Tariff buildTariff = StaticTariffBuilder.buildTariff(tariff);
         log.info("build Tariff : {}", buildTariff);
         entityManager.persist(buildTariff);
-    }
-
-    private Tariff buildTariff(RSTariff tariff) {
-        return Tariff.builder()
-                .name(tariff.getName())
-                .limitsEmbeddable(LimitsEmbeddable.builder()
-                        .undiminishedCount(tariff.getRequestCount())
-                        .requestCount(tariff.getRequestCount())
-                        .requestType(tariff.getRequestType())
-                        .timeCount(tariff.getTimeCount())
-                        .timeType(tariff.getTimeType())
-                        .build())
-                .build();
     }
 }

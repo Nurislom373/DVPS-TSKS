@@ -104,20 +104,20 @@ public class RedisValueBuilder {
     }
 
     private RateLimiting rateLimitingBuild(PricingApi entity) {
-        if (entity.getLimited().getLimitsEmbeddable().getRequestType().equals(RequestType.NO_LIMIT)) {
+        if (entity.getLimitsEmbeddable().getRequestType().equals(RequestType.NO_LIMIT)) {
             return RateLimiting.builder()
                     .noLimit(true)
-                    .token(entity.getLimited().getLimitsEmbeddable().getRequestCount())
-                    .duration(convertDuration(entity.getLimited().getLimitsEmbeddable().getTimeType(),
-                            entity.getLimited().getLimitsEmbeddable().getTimeCount()))
+                    .token(entity.getLimitsEmbeddable().getRequestCount())
+                    .duration(convertDuration(entity.getLimitsEmbeddable().getTimeType(),
+                            entity.getLimitsEmbeddable().getTimeCount()))
                     .refillCount(entity.getRefillCount())
                     .build();
         } else {
             return RateLimiting.builder()
                     .noLimit(false)
-                    .token(entity.getLimited().getLimitsEmbeddable().getRequestCount())
-                    .duration(convertDuration(entity.getLimited().getLimitsEmbeddable().getTimeType(),
-                            entity.getLimited().getLimitsEmbeddable().getTimeCount()))
+                    .token(entity.getLimitsEmbeddable().getRequestCount())
+                    .duration(convertDuration(entity.getLimitsEmbeddable().getTimeType(),
+                            entity.getLimitsEmbeddable().getTimeCount()))
                     .refillCount(entity.getRefillCount())
                     .build();
         }

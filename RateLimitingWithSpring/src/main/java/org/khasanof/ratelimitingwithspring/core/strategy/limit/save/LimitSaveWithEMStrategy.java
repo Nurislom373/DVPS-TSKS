@@ -5,6 +5,7 @@ import org.khasanof.ratelimitingwithspring.core.domain.Api;
 import org.khasanof.ratelimitingwithspring.core.domain.Limited;
 import org.khasanof.ratelimitingwithspring.core.domain.embeddable.LimitsEmbeddable;
 import org.khasanof.ratelimitingwithspring.core.strategy.limit.LimitSaveStrategy;
+import org.khasanof.ratelimitingwithspring.core.strategy.limit.builder.StaticLimitBuilder;
 import org.khasanof.ratelimitingwithspring.core.strategy.limit.classes.RSLimit;
 import org.khasanof.ratelimitingwithspring.core.strategy.limit.classes.RSLimitPlan;
 import org.springframework.stereotype.Service;
@@ -35,42 +36,12 @@ public class LimitSaveWithEMStrategy extends LimitSaveStrategy {
     }
 
     private void save(RSLimit limit) {
-        Api apiEntity = buildApiEntity(limit);
+        Api apiEntity = StaticLimitBuilder.buildApiEntity(limit);
         log.info("build Api : {}", apiEntity);
         entityManager.persist(apiEntity);
 
-        limit.getPlans().stream().map(m -> buildLimitedEntity(m, apiEntity))
+        limit.getPlans().stream().map(m -> StaticLimitBuilder.buildLimitedEntity(m, apiEntity))
                 .peek((e) -> log.info("build Limited : {}", e))
                 .forEach(entityManager::persist);
-    }
-
-    private Api buildApiEntity(RSLimit limit) {
-        if (limit.getVariables() == null) {
-            return Api.builder()
-                    .url(limit.getUrl())
-                    .method(limit.getMethod())
-                    .attributes(new HashMap<>())
-                    .build();
-        } else {
-            return Api.builder()
-                    .url(limit.getUrl())
-                    .method(limit.getMethod())
-                    .attributes(limit.getVariables())
-                    .build();
-        }
-    }
-
-    private Limited buildLimitedEntity(RSLimitPlan plan, Api entity) {
-        return Limited.builder()
-                .api(entity)
-                .plan(plan.getPlan())
-                .limitsEmbeddable(LimitsEmbeddable.builder()
-                        .undiminishedCount(plan.getRequestCount())
-                        .requestType(plan.getRequestType())
-                        .requestCount(plan.getRequestCount())
-                        .timeType(plan.getTimeType())
-                        .timeCount(plan.getTimeCount())
-                        .build())
-                .build();
     }
 }

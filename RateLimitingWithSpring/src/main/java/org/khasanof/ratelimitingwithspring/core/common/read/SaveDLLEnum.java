@@ -1,4 +1,4 @@
-package org.khasanof.ratelimitingwithspring.core.common.register;
+package org.khasanof.ratelimitingwithspring.core.common.read;
 
 /**
  * Author: Nurislom
@@ -10,5 +10,5 @@ package org.khasanof.ratelimitingwithspring.core.common.register;
  * Package: org.khasanof.ratelimitingwithspring.core.common.save
  */
 public enum SaveDLLEnum {
-    create, update, none;
+    CREATE, UPDATE;
 }

@@ -3,7 +3,7 @@ package org.khasanof.ratelimitingwithspring.core.config;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.Setter;
-import org.khasanof.ratelimitingwithspring.core.common.register.SaveDLLEnum;
+import org.khasanof.ratelimitingwithspring.core.common.read.SaveDLLEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
@@ -25,6 +25,9 @@ public class ReadLimitsPropertiesConfig {
     @Autowired
     private Environment environment;
 
+    /*
+        Secret Key, JWT Algorithm and etc...
+     */
     @PostConstruct
     void afterPropertiesSet() {
         setSaveDLLEnum(environment.getProperty("api.limits.ddl", SaveDLLEnum.class));

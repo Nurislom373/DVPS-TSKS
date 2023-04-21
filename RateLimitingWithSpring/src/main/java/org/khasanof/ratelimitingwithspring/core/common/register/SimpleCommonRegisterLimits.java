@@ -106,10 +106,12 @@ public class SimpleCommonRegisterLimits implements CommonRegisterLimits {
 
 
     private PricingApi buildPricingAPIEntity(String key, REGSLimit limit) {
+        Limited limited = attributesEqualsAndGet(limitedRepository.findByREGSLimit(limit.getPlan(),
+                limit.getUrl(), limit.getMethod()), limit.getAttributes());
         return PricingApi.builder()
                 .key(key)
-                .limited(attributesEqualsAndGet(limitedRepository.findByREGSLimit(limit.getPlan(),
-                        limit.getUrl(), limit.getMethod()), limit.getAttributes()))
+                .limited(limited)
+                .limitsEmbeddable(limited.getLimitsEmbeddable())
                 .refillCount(limit.getRefillCount())
                 .build();
     }

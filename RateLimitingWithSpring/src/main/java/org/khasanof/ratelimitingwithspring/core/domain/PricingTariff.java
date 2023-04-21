@@ -24,7 +24,7 @@ import java.util.Set;
 @NoArgsConstructor
 @EqualsAndHashCode
 @AllArgsConstructor
-@Table(name = "pricing_package", uniqueConstraints = {
+@Table(name = "pricing_tariff", uniqueConstraints = {
         @UniqueConstraint(name = "uniqueId", columnNames = "id"),
         @UniqueConstraint(name = "uniqueKeyTariff", columnNames = {"key", "package_id"})
 })

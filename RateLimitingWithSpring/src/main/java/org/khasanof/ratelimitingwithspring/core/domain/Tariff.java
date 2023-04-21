@@ -21,7 +21,7 @@ import org.khasanof.ratelimitingwithspring.core.domain.embeddable.LimitsEmbeddab
 @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "package", uniqueConstraints = {
+@Table(name = "tariff", uniqueConstraints = {
         @UniqueConstraint(name = "uniqueId", columnNames = "id")
 })
 public class Tariff {
