@@ -11,6 +11,7 @@
         <module name="UiCaching" />
         <module name="ReactiveUiCaching" />
         <module name="RateLimitingWithSpring" />
+        <module name="DVPS-TSKS" />
       </profile>
       <profile name="Annotation profile for Jhipster Ui Caching" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />

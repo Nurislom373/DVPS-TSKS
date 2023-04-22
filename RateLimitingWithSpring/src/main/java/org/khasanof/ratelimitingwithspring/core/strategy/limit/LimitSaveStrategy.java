@@ -3,6 +3,8 @@ package org.khasanof.ratelimitingwithspring.core.strategy.limit;
 import org.khasanof.ratelimitingwithspring.core.strategy.AbstractSaveStrategy;
 import org.khasanof.ratelimitingwithspring.core.strategy.limit.classes.RSLimit;
 
+import java.util.List;
+
 /**
  * Author: Nurislom
  * <br/>

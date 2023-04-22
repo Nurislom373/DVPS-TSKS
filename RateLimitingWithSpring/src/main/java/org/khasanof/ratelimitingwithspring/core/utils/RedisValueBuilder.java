@@ -143,6 +143,7 @@ public class RedisValueBuilder {
         }
     }
 
+    // rewrite
     private Duration convertDuration(TimeType timeType, Long timeCount) {
         return switch (timeType) {
             case MINUTE -> Duration.ofMinutes(timeCount);

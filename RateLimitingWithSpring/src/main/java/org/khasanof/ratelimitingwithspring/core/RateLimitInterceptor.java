@@ -35,7 +35,7 @@ public class RateLimitInterceptor implements HandlerInterceptor {
 
         String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer")) {
             String bearerToken = authorizationHeader.substring("Bearer ".length());
             log.info("Bearer Token : {}", bearerToken);
 

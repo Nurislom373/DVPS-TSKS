@@ -47,7 +47,7 @@ public class SimpleRateLimiting implements RateLimiting {
                 .isResult();
     }
 
-    private synchronized Result consumerMuchAsPossible(int token) {
+    private Result consumerMuchAsPossible(int token) {
         if (localRateLimiting.isNoLimit()) {
 
             if (localRateLimiting.getCreatedAt().isAfter(Instant.now())) {
