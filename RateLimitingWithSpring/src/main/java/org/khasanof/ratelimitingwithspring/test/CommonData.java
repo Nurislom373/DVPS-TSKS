@@ -1,9 +1,15 @@
 package org.khasanof.ratelimitingwithspring.test;
 
 import org.khasanof.ratelimitingwithspring.core.common.CommonLimitsService;
+import org.khasanof.ratelimitingwithspring.core.common.register.classes.REGSTariff;
+import org.khasanof.ratelimitingwithspring.core.common.register.classes.REGSTariffApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestMethod;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * Author: Nurislom

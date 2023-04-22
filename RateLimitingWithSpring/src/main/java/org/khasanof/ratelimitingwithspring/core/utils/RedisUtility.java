@@ -1,7 +1,7 @@
 package org.khasanof.ratelimitingwithspring.core.utils;
 
 import org.khasanof.ratelimitingwithspring.core.domain.Api;
-import org.khasanof.ratelimitingwithspring.core.limiting.RateLimiting;
+import org.khasanof.ratelimitingwithspring.core.RateLimiting;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;

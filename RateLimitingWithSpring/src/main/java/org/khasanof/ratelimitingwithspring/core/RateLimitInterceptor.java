@@ -6,8 +6,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.khasanof.ratelimitingwithspring.core.common.CommonLimitsService;
-import org.khasanof.ratelimitingwithspring.core.common.update.CommonUpdateOnRuntime;
-import org.khasanof.ratelimitingwithspring.core.limiting.RateLimiting;
 import org.khasanof.ratelimitingwithspring.core.utils.JWTUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -28,7 +26,6 @@ public class RateLimitInterceptor implements HandlerInterceptor {
     private static final String HEADER_LIMIT_REMAINING = "X-Rate-Limit-Remaining";
     private static final String HEADER_RETRY_AFTER = "X-Rate-Limit-Retry-After-Seconds";
     private final CommonLimitsService commonLimitsService;
-    private final CommonUpdateOnRuntime commonUpdateOnRuntime;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {

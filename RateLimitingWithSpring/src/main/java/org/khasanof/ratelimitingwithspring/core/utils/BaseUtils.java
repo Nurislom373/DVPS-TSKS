@@ -2,9 +2,8 @@ package org.khasanof.ratelimitingwithspring.core.utils;
 
 import org.khasanof.ratelimitingwithspring.core.domain.Api;
 import org.khasanof.ratelimitingwithspring.core.limiting.LocalRateLimiting;
-import org.khasanof.ratelimitingwithspring.core.limiting.RateLimiting;
+import org.khasanof.ratelimitingwithspring.core.RateLimiting;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;

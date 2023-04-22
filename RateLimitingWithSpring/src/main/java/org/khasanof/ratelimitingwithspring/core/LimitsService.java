@@ -1,5 +1,13 @@
 package org.khasanof.ratelimitingwithspring.core;
 
+import org.khasanof.ratelimitingwithspring.core.common.register.classes.REGSLimit;
+import org.khasanof.ratelimitingwithspring.core.common.register.classes.REGSTariff;
+import org.khasanof.ratelimitingwithspring.core.strategy.limit.classes.RSLimit;
+import org.springframework.beans.factory.InitializingBean;
+
+import java.util.List;
+import java.util.Map;
+
 /**
  * Author: Nurislom
  * <br/>
@@ -9,5 +17,15 @@ package org.khasanof.ratelimitingwithspring.core;
  * <br/>
  * Package: org.khasanof.ratelimitingwithspring.core
  */
-public interface LimitsService {
+public interface LimitsService extends InitializingBean {
+
+    void registrationOfLimits(String key, List<REGSLimit> limits);
+
+    void registrationOfTariffs(String key, List<REGSTariff> tariffs);
+
+    RateLimiting searchKeys(String key, String url, String method, Map<String, String> attributes);
+
+    List<RSLimit> getLimits();
+
+
 }

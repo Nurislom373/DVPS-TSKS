@@ -1,4 +1,7 @@
-package org.khasanof.ratelimitingwithspring.core.limiting;
+package org.khasanof.ratelimitingwithspring.core;
+
+import org.khasanof.ratelimitingwithspring.core.limiting.LocalRateLimiting;
+import org.khasanof.ratelimitingwithspring.core.limiting.RateLimitingBuilder;
 
 /**
  * Author: Nurislom

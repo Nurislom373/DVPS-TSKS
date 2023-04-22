@@ -7,7 +7,7 @@ import org.khasanof.ratelimitingwithspring.core.domain.*;
 import org.khasanof.ratelimitingwithspring.core.domain.embeddable.LimitsEmbeddable;
 import org.khasanof.ratelimitingwithspring.core.domain.enums.PricingType;
 import org.khasanof.ratelimitingwithspring.core.limiting.LocalRateLimiting;
-import org.khasanof.ratelimitingwithspring.core.limiting.RateLimiting;
+import org.khasanof.ratelimitingwithspring.core.RateLimiting;
 import org.khasanof.ratelimitingwithspring.core.repository.PricingApiRepository;
 import org.khasanof.ratelimitingwithspring.core.repository.PricingTariffRepository;
 import org.khasanof.ratelimitingwithspring.core.utils.BaseUtils;

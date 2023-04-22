@@ -9,7 +9,10 @@ import org.khasanof.ratelimitingwithspring.core.strategy.tariff.classes.RSTariff
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Author: Nurislom
@@ -32,29 +35,40 @@ public class TariffUpdateWithRepoStrategy extends TariffUpdateStrategy {
     public void update(List<RSTariff> list) {
         List<Tariff> tariffsFromDatabase = repository.findAll();
         List<Tariff> tariffsFromConfig = StaticTariffBuilder.buildTariffList(list);
-        List<Tariff> tariffList = compareAndSetAfterReturn(tariffsFromDatabase, tariffsFromConfig);
-        log.info("Updated Tariffs Count : {}", tariffList.size());
+
+        List<Tariff> tariffList = new ArrayList<>(compareAndDifferenceReturn(tariffsFromDatabase, tariffsFromConfig));
+        log.info("Difference Tariffs Count : {}", tariffList.size());
+
         if (!tariffList.isEmpty()) {
             repository.saveAll(tariffList);
+            tariffsFromConfig.removeAll(tariffList);
         }
+
+        List<Tariff> updatedTariffs = tariffsFromConfig.stream()
+                .filter(f1 -> tariffsFromDatabase.stream()
+                        .anyMatch(f2 -> compareAndCopyProperties(f1, f2)))
+                .toList();
+        log.info("Updated Tariffs Count : {}", updatedTariffs.size());
     }
 
-    private List<Tariff> compareAndSetAfterReturn(List<Tariff> tariffs1, List<Tariff> tariffs2) {
-        return tariffs1.stream().filter(f -> tariffs2.stream()
-                .anyMatch(any -> compareAndCopyProperties(f, any)))
+    private List<Tariff> compareAndDifferenceReturn(List<Tariff> tariffs1, List<Tariff> tariffs2) {
+        return tariffs2.stream()
+                .filter(f -> tariffs1.stream()
+                        .noneMatch(f2 -> f.getName().equals(f2.getName())))
                 .toList();
     }
 
-    private boolean compareAndCopyProperties(Tariff tariffDatabase, Tariff tariffConfig) {
-        if (tariffDatabase.equals(tariffConfig)) {
-            return false;
-        } else {
-            if (tariffDatabase.getName().equals(tariffConfig.getName())) {
-                BeanUtils.copyProperties(tariffConfig, tariffDatabase, "id", "name");
+    private boolean compareAndCopyProperties(Tariff tariffConfig, Tariff tariffDatabase) {
+        if (tariffDatabase.getName().equals(tariffConfig.getName())) {
+            if (!Objects.equals(tariffDatabase.getLimitsEmbeddable(), tariffConfig.getLimitsEmbeddable())) {
+                tariffDatabase.setLimitsEmbeddable(tariffConfig.getLimitsEmbeddable());
+                repository.save(tariffDatabase);
                 return true;
             } else {
                 return false;
             }
+        } else {
+            return false;
         }
     }
 }

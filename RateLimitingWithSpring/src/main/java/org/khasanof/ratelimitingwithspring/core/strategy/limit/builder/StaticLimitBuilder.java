@@ -25,7 +25,8 @@ public abstract class StaticLimitBuilder {
 
     public static Map<Api, List<Limited>> buildApiAndLimitsMap(List<RSLimit> list) {
         return list.stream().map(StaticLimitBuilder::buildApiAndLimitsEntry)
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
+                        (prev, next) -> next, HashMap::new));
     }
 
     public static Map.Entry<Api, List<Limited>> buildApiAndLimitsEntry(RSLimit limit) {

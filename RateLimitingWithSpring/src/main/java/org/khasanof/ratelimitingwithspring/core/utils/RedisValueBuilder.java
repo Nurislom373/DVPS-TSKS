@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.khasanof.ratelimitingwithspring.core.domain.PricingTariff;
 import org.khasanof.ratelimitingwithspring.core.domain.enums.PricingType;
 import org.khasanof.ratelimitingwithspring.core.common.search.classes.PTA;
-import org.khasanof.ratelimitingwithspring.core.limiting.RateLimiting;
+import org.khasanof.ratelimitingwithspring.core.RateLimiting;
 import org.khasanof.ratelimitingwithspring.core.domain.PricingApi;
 import org.khasanof.ratelimitingwithspring.core.domain.enums.RequestType;
 import org.khasanof.ratelimitingwithspring.core.domain.enums.TimeType;

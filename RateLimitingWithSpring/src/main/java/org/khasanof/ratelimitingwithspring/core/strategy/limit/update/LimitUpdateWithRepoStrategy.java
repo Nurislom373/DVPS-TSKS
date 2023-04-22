@@ -5,17 +5,13 @@ import org.khasanof.ratelimitingwithspring.core.domain.Api;
 import org.khasanof.ratelimitingwithspring.core.domain.Limited;
 import org.khasanof.ratelimitingwithspring.core.repository.ApiRepository;
 import org.khasanof.ratelimitingwithspring.core.repository.LimitedRepository;
-import org.khasanof.ratelimitingwithspring.core.strategy.limit.LimitSaveStrategy;
 import org.khasanof.ratelimitingwithspring.core.strategy.limit.LimitUpdateStrategy;
 import org.khasanof.ratelimitingwithspring.core.strategy.limit.builder.StaticLimitBuilder;
 import org.khasanof.ratelimitingwithspring.core.strategy.limit.classes.RSLimit;
 import org.khasanof.ratelimitingwithspring.core.utils.BaseUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -43,49 +39,142 @@ public class LimitUpdateWithRepoStrategy extends LimitUpdateStrategy {
         Map<Api, List<Limited>> apisFromDatabase = limitedRepository.findAll().stream()
                 .collect(Collectors.groupingBy(Limited::getApi));
         Map<Api, List<Limited>> apisFromConfig = StaticLimitBuilder.buildApiAndLimitsMap(list);
+        System.out.println("apisFromConfig.size() = " + apisFromConfig.size());
+
+        Map<Api, List<Limited>> falsiesGet = compareAndFalsiesGet(apisFromDatabase, apisFromConfig);
+        log.info("New APIs Count : {}", falsiesGet.size());
+
+        if (!falsiesGet.isEmpty()) {
+            falsiesGet.entrySet()
+                    .forEach(this::save);
+            falsiesGet.keySet()
+                    .forEach(apisFromConfig::remove);
+            log.info("All New APIs Saved!");
+        }
+        System.out.println("apisFromConfig.size() = " + apisFromConfig.size());
+
+        Map<Api, List<Limited>> updatedMap = compareAndSetAfterReturn(apisFromDatabase, apisFromConfig);
+        log.info("Updated APIs Count : {}", updatedMap.size());
+
+        if (!updatedMap.isEmpty()) {
+            updatedMap.values().forEach(this::save);
+            log.info("Now Updated Limits : {}", updatedMap.size());
+        } else {
+            log.warn("Now Updated Limits not found!");
+        }
     }
 
-    private Map<Api, List<Limited>> compareAndSetAfterReturn(Map<Api, List<Limited>> apis1, Map<Api, List<Limited>> api2) {
-        return null;
+    private Map<Api, List<Limited>> compareAndFalsiesGet(Map<Api, List<Limited>> apis1, Map<Api, List<Limited>> apis2) {
+        return apis2.entrySet().stream()
+                .filter(f1 -> apis1.entrySet().stream()
+                        .noneMatch(f2 -> equals(f1.getKey(), f2.getKey())))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
+                        (prev, next) -> next, HashMap::new));
+    }
+
+    private boolean equals(Api api1, Api api2) {
+        if (!api1.getUrl().equals(api2.getUrl())) {
+            return false;
+        }
+        if (!api1.getMethod().equals(api2.getMethod())) {
+            return false;
+        }
+        return BaseUtils.areEqual(api1.getAttributes(), api2.getAttributes());
+    }
+
+    private Map<Api, List<Limited>> compareAndSetAfterReturn(Map<Api, List<Limited>> apis1, Map<Api, List<Limited>> apis2) {
+        return apis1.entrySet().stream().filter(api1 -> apis2.entrySet().
+                        stream().anyMatch(api2 -> compareAndCopyProperties(api1, api2)))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     private boolean compareAndCopyProperties(Map.Entry<Api, List<Limited>> apiDatabase, Map.Entry<Api, List<Limited>> apiConfig) {
-        Result result = equals(apiDatabase, apiConfig);
-        if (result.equals(Result.NOT_EQUAL)) {
-            save(apiConfig);
-        } else if (result.equals(Result.LIMITS_NOT_EQUAL)) {
-
+        if (equals(apiDatabase, apiConfig).equals(Result.LIMITS_NOT_EQUAL)) {
+            copyProperties(apiDatabase, apiConfig);
+            return true;
         }
         return false;
     }
 
-    private List<Limited> copyProperties(Map.Entry<Api, List<Limited>> apiDatabase, Map.Entry<Api, List<Limited>> apiConfig) {
+    private void copyProperties(Map.Entry<Api, List<Limited>> apiDatabase, Map.Entry<Api, List<Limited>> apiConfig) {
         log.info("apiDatabase Limit : {}", apiDatabase);
         log.info("apiConfig Limit : {}", apiConfig);
 
         List<Limited> list = new ArrayList<>();
 
-        List<Limited> apiConfigValue = apiConfig.getValue();
+        List<Limited> apiConfigValue = new ArrayList<>(apiConfig.getValue());
         List<Limited> apiDatabaseValue = apiDatabase.getValue();
 
-        apiConfigValue.stream().collect(Collectors.filtering());
+        List<Limited> newLimits = apiConfigValue.stream()
+                .filter(f -> !matchAny(f, apiDatabaseValue))
+                .collect(Collectors.toCollection(ArrayList::new));
+        log.info("New Limits Size : {}", newLimits.size());
 
-        return false;
+        apiConfigValue.removeAll(newLimits);
+
+        List<Limited> updateLimits = apiDatabaseValue.stream()
+                .filter(f1 -> apiConfigValue.stream()
+                        .anyMatch(f2 -> compareAndCopyProperties(f1, f2))
+                ).toList();
+        log.info("Updated Limits Size : {}", updateLimits.size());
+
+        if (!newLimits.isEmpty()) {
+            list.addAll(newLimits);
+            log.info("New Limits Add");
+        }
+        if (!updateLimits.isEmpty()) {
+            list.addAll(updateLimits);
+            log.info("Update Limits Add");
+        }
+
+        apiDatabase.setValue(list);
     }
 
-    private Result compareAll(Limited limited, List<Limited> list) {
-        return list.stream().allMatch(any -> equalsPlan(limited, any).equals(Result.EQUAL))
+    private boolean matchAny(Limited limited, List<Limited> list) {
+        boolean anyMatch = list.stream().anyMatch(any -> equalsPlan(limited, any)
+                .equals(Result.EQUAL));
+        if (!anyMatch) {
+            limited.setApi(list.get(0).getApi());
+        }
+        return anyMatch;
     }
 
-    private Limited copyProperties(Limited limited1, Limited limited2) {
-        BeanUtils.copyProperties(limited2.getLimitsEmbeddable(),
-                limited1.getLimitsEmbeddable());
-        return limited1;
+    private boolean compareAndCopyProperties(Limited limited1, Limited limited2) {
+        if (equalLimits(limited1, limited2)) {
+            return false;
+        } else {
+            if (limited1.getPlan().equals(limited2.getPlan())) {
+                if (!Objects.equals(limited1.getLimitsEmbeddable(), limited2.getLimitsEmbeddable())) {
+                    limited1.setLimitsEmbeddable(limited2.getLimitsEmbeddable());
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        }
+    }
+
+    private boolean equalLimits(Limited limited1, Limited limited2) {
+        if (!limited1.getPlan().equals(limited2.getPlan())) {
+            return false;
+        }
+        if (!Objects.equals(limited1.getLimitsEmbeddable(), limited2.getLimitsEmbeddable())) {
+            return false;
+        }
+        if (!limited1.getApi().getUrl().equals(limited2.getApi().getUrl())) {
+            return false;
+        }
+        if (!limited1.getApi().getMethod().equals(limited2.getApi().getMethod())) {
+            return false;
+        }
+        return BaseUtils.areEqual(limited1.getApi().getAttributes(), limited2.getApi().getAttributes());
     }
 
     private Result equals(Map.Entry<Api, List<Limited>> apiDatabase, Map.Entry<Api, List<Limited>> apiConfig) {
-        Api api1 = apiDatabase.getKey();
-        Api api2 = apiConfig.getKey();
+        Api api1 = apiDatabase.getKey(), api2 = apiConfig.getKey();
+
         if (!api1.getUrl().equals(api2.getUrl())) {
             return Result.NOT_EQUAL;
         }
@@ -95,6 +184,7 @@ public class LimitUpdateWithRepoStrategy extends LimitUpdateStrategy {
         if (!BaseUtils.areEqual(api1.getAttributes(), api2.getAttributes())) {
             return Result.NOT_EQUAL;
         }
+
         if (equals(apiDatabase.getValue(), apiConfig.getValue())) {
             return Result.LIMITS_EQUAL;
         } else {
@@ -106,9 +196,24 @@ public class LimitUpdateWithRepoStrategy extends LimitUpdateStrategy {
         if (limitedList1.size() != limitedList2.size()) {
             return false;
         }
-        return limitedList1.stream()
-                .anyMatch(any1 -> limitedList2.stream()
-                        .anyMatch(any2 -> equals(any1, any2)));
+        return isEqualCollection(limitedList1, limitedList2);
+    }
+
+    private boolean isEqualCollection(List<Limited> limitedList1, List<Limited> limitedList2) {
+        for (Limited limited : limitedList1) {
+            boolean equalPresent = false;
+            for (Limited limited1 : limitedList2) {
+                if (limited.getPlan().equals(limited1.getPlan())) {
+                    if (Objects.equals(limited.getLimitsEmbeddable(), limited1.getLimitsEmbeddable())) {
+                        equalPresent = true;
+                    }
+                }
+            }
+            if (!equalPresent) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private Result equalsPlan(Limited limited1, Limited limited2) {
@@ -117,22 +222,16 @@ public class LimitUpdateWithRepoStrategy extends LimitUpdateStrategy {
         return Result.NOT_EQUAL;
     }
 
-    private boolean equals(Limited limited1, Limited limited2) {
-        if (limited1.getPlan().equals(limited2.getPlan())) {
-            return limited1.getLimitsEmbeddable().equals(limited2.getLimitsEmbeddable());
-        }
-        return false;
-    }
-
-
-
     private void save(Map.Entry<Api, List<Limited>> entry) {
         repository.save(entry.getKey());
         limitedRepository.saveAll(entry.getValue());
     }
 
-    private enum Result {
+    private void save(List<Limited> limitedList) {
+        limitedRepository.saveAll(limitedList);
+    }
 
+    private enum Result {
         LIMITS_NOT_EQUAL,
         LIMITS_EQUAL,
         NOT_EQUAL,

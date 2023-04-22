@@ -1,7 +1,7 @@
 package org.khasanof.ratelimitingwithspring.core.common.update;
 
 import org.khasanof.ratelimitingwithspring.core.common.search.classes.PTA;
-import org.khasanof.ratelimitingwithspring.core.limiting.RateLimiting;
+import org.khasanof.ratelimitingwithspring.core.RateLimiting;
 
 import java.util.Map;
 

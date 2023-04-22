@@ -1,6 +1,5 @@
 package org.khasanof.ratelimitingwithspring.core.common.load.genericLoad;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.khasanof.ratelimitingwithspring.core.factory.ReadStrategyClassFactory;
 import org.khasanof.ratelimitingwithspring.core.strategy.tariff.TariffReadStrategy;
@@ -31,9 +30,11 @@ public class RSTariffLoadPostConstruct extends AbstractGenericLoadIPostConstruct
     public void afterPropertiesSet(String path) {
         checkPathAndSetFalse(path);
         try {
-            TariffReadStrategy readStrategy = classFactory.tariffReadStrategy(path);
-            setList(readStrategy.read(path));
-            setPresent(true);
+            if (list == null || list.isEmpty()) {
+                TariffReadStrategy readStrategy = classFactory.tariffReadStrategy(path);
+                setList(readStrategy.read(path));
+                setPresent(true);
+            }
         } catch (IOException e) {
             setList(new ArrayList<>());
             setPresent(false);

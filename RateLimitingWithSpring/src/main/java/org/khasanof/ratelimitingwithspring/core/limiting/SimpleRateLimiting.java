@@ -2,6 +2,7 @@ package org.khasanof.ratelimitingwithspring.core.limiting;
 
 import io.github.bucket4j.Bucket;
 import io.github.bucket4j.ConsumptionProbe;
+import org.khasanof.ratelimitingwithspring.core.RateLimiting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

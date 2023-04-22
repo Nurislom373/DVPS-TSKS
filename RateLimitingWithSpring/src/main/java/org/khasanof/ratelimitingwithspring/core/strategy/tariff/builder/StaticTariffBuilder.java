@@ -4,7 +4,9 @@ import org.khasanof.ratelimitingwithspring.core.domain.Tariff;
 import org.khasanof.ratelimitingwithspring.core.domain.embeddable.LimitsEmbeddable;
 import org.khasanof.ratelimitingwithspring.core.strategy.tariff.classes.RSTariff;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Author: Nurislom
@@ -20,7 +22,7 @@ public abstract class StaticTariffBuilder {
     public static List<Tariff> buildTariffList(List<RSTariff> tariffs) {
         return tariffs.stream()
                 .map(StaticTariffBuilder::buildTariff)
-                .toList();
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     public static Tariff buildTariff(RSTariff tariff) {

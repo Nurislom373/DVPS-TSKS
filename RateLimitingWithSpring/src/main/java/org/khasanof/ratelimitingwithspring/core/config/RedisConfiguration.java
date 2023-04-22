@@ -1,7 +1,5 @@
 package org.khasanof.ratelimitingwithspring.core.config;
 
-import org.khasanof.ratelimitingwithspring.core.domain.Api;
-import org.khasanof.ratelimitingwithspring.core.limiting.RateLimiting;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
@@ -13,8 +11,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.GenericToStringSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
-
-import java.util.Map;
 
 @Configuration
 @EnableCaching

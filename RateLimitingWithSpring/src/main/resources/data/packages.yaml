@@ -4,7 +4,12 @@
   timeCount: 2
   timeType: MINUTE
 - name: PRO
-  requestCount: 50000
+  requestCount: 40000
+  requestType: LIMIT
+  timeCount: 2
+  timeType: MONTH
+- name: SUPER
+  requestCount: 400000
   requestType: LIMIT
   timeCount: 2
   timeType: MONTH
