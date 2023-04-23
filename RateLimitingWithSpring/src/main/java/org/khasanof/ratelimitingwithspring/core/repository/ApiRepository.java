@@ -26,6 +26,8 @@ public interface ApiRepository extends JpaRepository<Api, Long> {
 
     List<Api> findByUrlAndMethod(String url, RequestMethod method);
 
+    Optional<Api> findApiByUrlAndMethod(String url, RequestMethod method);
+
     List<Api> findAllByIdIsIn(Collection<Long> id);
 
 }

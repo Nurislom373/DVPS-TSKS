@@ -5,6 +5,7 @@ import io.github.bucket4j.ConsumptionProbe;
 import org.khasanof.ratelimitingwithspring.core.RateLimiting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -29,9 +30,13 @@ public class SimpleRateLimiting implements RateLimiting {
     private long nanosToWaitForRefill;
 
     @Override
-    public boolean consumeRequest() {
-        return consumerMuchAsPossible(1)
-                .isResult();
+    public Result consumeRequest() {
+        return consumerMuchAsPossible(1);
+    }
+
+    @Override
+    public Result consumeRequest(int token) {
+        return consumerMuchAsPossible(token);
     }
 
     @Override
@@ -42,18 +47,12 @@ public class SimpleRateLimiting implements RateLimiting {
         return 0;
     }
 
-    @Override
-    public boolean consumeRequest(int token) {
-        return consumerMuchAsPossible(token)
-                .isResult();
-    }
-
     private Result consumerMuchAsPossible(int token) {
         if (localRateLimiting.isNoLimit()) {
 
             if (localRateLimiting.getCreatedAt().isAfter(Instant.now())) {
                 log.info("Working Well");
-                return new Result(true, Message.GET_NO_LIMIT);
+                return new Result(true, Message.GET_NO_LIMIT, HttpStatus.OK);
             } else {
 
                 if (localRateLimiting.getRefillCount() >= 1) {
@@ -61,10 +60,10 @@ public class SimpleRateLimiting implements RateLimiting {
                     log.info("Refill Count : {}", localRateLimiting.getRefillCount());
                     localRateLimiting.setRefillCount(localRateLimiting.getRefillCount() - 1);
                     localRateLimiting.setToken(localRateLimiting.getUndiminishedCount());
-                    return new Result(true, Message.GET_REFILL);
+                    return new Result(true, Message.GET_REFILL, HttpStatus.OK);
                 } else {
                     log.warn("Your limit has been reached!");
-                    return new Result(false, Message.LIMIT_HAS_BEEN_REACHED);
+                    return new Result(false, Message.LIMIT_HAS_BEEN_REACHED, HttpStatus.BAD_REQUEST);
                 }
 
             }
@@ -85,7 +84,7 @@ public class SimpleRateLimiting implements RateLimiting {
 
                     log.info("Working Well");
                     localRateLimiting.setToken(localRateLimiting.getToken() - token);
-                    return new Result(true, Message.GET_TOKEN);
+                    return new Result(true, Message.GET_TOKEN, HttpStatus.OK);
                 } else {
 
                     if (localRateLimiting.getRefillCount() >= 1) {
@@ -93,12 +92,12 @@ public class SimpleRateLimiting implements RateLimiting {
                         log.info("Refill Count : {}", localRateLimiting.getRefillCount());
                         localRateLimiting.setRefillCount(localRateLimiting.getRefillCount() - 1);
                         localRateLimiting.setToken(afterConsumedTokens);
-                        return new Result(true, Message.GET_REFILL);
+                        return new Result(true, Message.GET_REFILL, HttpStatus.OK);
                     } else {
 
                         log.warn("Your limit has been reached. Token Count : {}, Refill Count : {}",
                                 afterConsumedTokens, localRateLimiting.getRefillCount());
-                        return new Result(false, Message.LIMIT_HAS_BEEN_REACHED);
+                        return new Result(false, Message.LIMIT_HAS_BEEN_REACHED, HttpStatus.BAD_REQUEST);
                     }
                 }
 
@@ -110,7 +109,7 @@ public class SimpleRateLimiting implements RateLimiting {
                 setNanosToWaitForRefill(consumptionProbe.getNanosToWaitForRefill());
 
                 log.warn("Too Many Request!");
-                return new Result(false, Message.TOO_MANY_REQUEST);
+                return new Result(false, Message.TOO_MANY_REQUEST, HttpStatus.TOO_MANY_REQUESTS);
             }
         }
     }
@@ -156,12 +155,13 @@ public class SimpleRateLimiting implements RateLimiting {
     public static class Result {
 
         private boolean result;
-
+        private HttpStatus status;
         private String message;
 
-        public Result(boolean result, String message) {
+        public Result(boolean result, String message, HttpStatus status) {
             this.result = result;
             this.message = message;
+            this.status = status;
         }
 
         public boolean isResult() {
@@ -180,6 +180,14 @@ public class SimpleRateLimiting implements RateLimiting {
             this.message = message;
         }
 
+        public HttpStatus getStatus() {
+            return status;
+        }
+
+        public void setStatus(HttpStatus status) {
+            this.status = status;
+        }
+
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
@@ -188,12 +196,14 @@ public class SimpleRateLimiting implements RateLimiting {
             Result result1 = (Result) o;
 
             if (result != result1.result) return false;
+            if (status != result1.status) return false;
             return Objects.equals(message, result1.message);
         }
 
         @Override
         public int hashCode() {
             int result1 = (result ? 1 : 0);
+            result1 = 31 * result1 + (status != null ? status.hashCode() : 0);
             result1 = 31 * result1 + (message != null ? message.hashCode() : 0);
             return result1;
         }
@@ -202,6 +212,7 @@ public class SimpleRateLimiting implements RateLimiting {
         public String toString() {
             return "Result{" +
                     "result=" + result +
+                    ", status=" + status +
                     ", message='" + message + '\'' +
                     '}';
         }

@@ -6,11 +6,14 @@ import org.khasanof.ratelimitingwithspring.core.common.read.CommonReadConfigAndS
 import org.khasanof.ratelimitingwithspring.core.common.register.CommonRegisterLimits;
 import org.khasanof.ratelimitingwithspring.core.common.register.classes.REGSLimit;
 import org.khasanof.ratelimitingwithspring.core.common.register.classes.REGSTariff;
+import org.khasanof.ratelimitingwithspring.core.validator.register.RegisterLimitsValidator;
+import org.khasanof.ratelimitingwithspring.core.validator.ValidatorResult;
 import org.khasanof.ratelimitingwithspring.core.common.search.RateLimitingSearchKeys;
 import org.khasanof.ratelimitingwithspring.core.common.search.classes.RLSearch;
 import org.khasanof.ratelimitingwithspring.core.config.ReadLimitsPropertiesConfig;
 import org.khasanof.ratelimitingwithspring.core.RateLimiting;
 import org.khasanof.ratelimitingwithspring.core.strategy.limit.classes.RSLimit;
+import org.khasanof.ratelimitingwithspring.core.validator.register.RegisterTariffValidator;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,19 +35,32 @@ public class CommonLimitsService extends AbstractCommonLimitsService {
     private final RateLimitingSearchKeys limitingSearchKeys;
     private final RSLimitLoadPostConstruct rsLimitLoadPostConstruct;
 
-    public CommonLimitsService(ReadLimitsPropertiesConfig propertiesConfig, CommonReadConfigAndSave readConfigAndSave, CommonRegisterLimits registerLimits, RateLimitingSearchKeys limitingSearchKeys, RSLimitLoadPostConstruct rsLimitLoadPostConstruct) {
-        super(propertiesConfig, readConfigAndSave);
+    public CommonLimitsService(ReadLimitsPropertiesConfig propertiesConfig, CommonReadConfigAndSave readConfigAndSave,
+                               RegisterLimitsValidator registerLimitsValidator, RegisterTariffValidator registerTariffValidator,
+                               CommonRegisterLimits registerLimits, RateLimitingSearchKeys limitingSearchKeys,
+                               RSLimitLoadPostConstruct rsLimitLoadPostConstruct) {
+        super(propertiesConfig, readConfigAndSave, registerLimitsValidator, registerTariffValidator);
         this.registerLimits = registerLimits;
         this.limitingSearchKeys = limitingSearchKeys;
         this.rsLimitLoadPostConstruct = rsLimitLoadPostConstruct;
     }
 
     public void registrationOfLimits(String key, List<REGSLimit> limits) {
-        registerLimits.registrationOfLimits(key, limits);
+        ValidatorResult result = registerLimitsValidator.validatorLimits(key, limits);
+        if (result.isSuccess()) {
+            registerLimits.registrationOfLimits(key, limits);
+        } else {
+            throw new RuntimeException("APIs didn't Registered");
+        }
     }
 
     public void registrationOfTariffs(String key, List<REGSTariff> tariffs) {
-        registerLimits.registrationOfTariffs(key, tariffs);
+        ValidatorResult result = registerTariffValidator.validatorTariffs(key, tariffs);
+        if (result.isSuccess()) {
+            registerLimits.registrationOfTariffs(key, tariffs);
+        } else {
+            throw new RuntimeException("Tariffs didn't Registered");
+        }
     }
 
     // rewrite search

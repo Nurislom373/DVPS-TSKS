@@ -23,4 +23,6 @@ public interface PricingApiRepository extends JpaRepository<PricingApi, Long> {
     @Query("FROM PricingApi e where e.limited.api = ?2 and e.key = ?1")
     Optional<PricingApi> findByQuery(String key, Api api);
 
+    Boolean existsByKeyAndLimited_Api(String key, Api limited_api);
+
 }

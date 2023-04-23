@@ -13,6 +13,7 @@ import org.khasanof.ratelimitingwithspring.core.repository.ApiRepository;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
+import java.time.Period;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -42,10 +43,12 @@ public class RedisValueBuilder {
             Map<PTA, RateLimiting> rateLimitingMap = map.get(p.getKey());
 
             if (rateLimitingMap != null) {
-                rateLimitingMap.put(entity.getKey(), entity.getValue());
+                rateLimitingMap.putIfAbsent(entity.getKey(), entity.getValue());
                 map.put(p.getKey(), rateLimitingMap);
             } else {
-                map.put(p.getKey(), Map.of(entity.getKey(), entity.getValue()));
+                map.put(p.getKey(), new HashMap<>() {{
+                    put(entity.getKey(), entity.getValue());
+                }});
             }
         }
 
@@ -63,10 +66,12 @@ public class RedisValueBuilder {
             Map<PTA, RateLimiting> rateLimitingMap = map.get(p.getKey());
 
             if (rateLimitingMap != null) {
-                rateLimitingMap.put(entity.getKey(), entity.getValue());
+                rateLimitingMap.putIfAbsent(entity.getKey(), entity.getValue());
                 map.put(p.getKey(), rateLimitingMap);
             } else {
-                map.put(p.getKey(), Map.of(entity.getKey(), entity.getValue()));
+                map.put(p.getKey(), new HashMap<>() {{
+                    put(entity.getKey(), entity.getValue());
+                }});
             }
         }
 
@@ -83,10 +88,6 @@ public class RedisValueBuilder {
     public Map<PTA, RateLimiting> convertTariffListToMap(List<PricingTariff> list) {
         return list.stream().map(this::convertEntityToEntry)
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-    }
-
-    private Map.Entry<String, Map.Entry<PTA, RateLimiting>> convertEntityToEntry(String key, PricingApi api) {
-        return new AbstractMap.SimpleEntry<>(key, convertEntityToEntry(api));
     }
 
     private Map.Entry<PTA, RateLimiting> convertEntityToEntry(PricingApi entity) {
@@ -151,7 +152,7 @@ public class RedisValueBuilder {
             case DAY -> Duration.ofDays(timeCount);
             case WEEK -> Duration.ofDays((7 * timeCount));
             case MONTH -> Duration.ofDays((30 * timeCount));
-            case YEAR -> Duration.ofDays((356 * timeCount));
+            case YEAR -> Duration.ofDays(Period.ofYears(timeCount.intValue()).getDays());
         };
     }
 

@@ -1,6 +1,7 @@
 package org.khasanof.ratelimitingwithspring.test;
 
 import org.khasanof.ratelimitingwithspring.core.common.CommonLimitsService;
+import org.khasanof.ratelimitingwithspring.core.common.register.classes.REGSLimit;
 import org.khasanof.ratelimitingwithspring.core.common.register.classes.REGSTariff;
 import org.khasanof.ratelimitingwithspring.core.common.register.classes.REGSTariffApi;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,24 +35,39 @@ public class CommonData implements CommandLineRunner {
      */
     @Override
     public void run(String... args) throws Exception {
+//        limitRegister();
+    }
+
+    private void limitRegister() {
+        String key = "431";
+        List<REGSLimit> limits = List.of(
+                new REGSLimit("/api/v1/echo/*", RequestMethod.GET, Map.of("value", "nurislom"), "BASIC", 2L),
+                new REGSLimit("/api/v1/echo/*", RequestMethod.GET, Map.of("value", "373"), "BASIC", 2L)
+        );
+        commonLimitsService.registrationOfLimits(key, limits);
+    }
+
+    private void registerTariffsFirst() {
         String key1 = "432";
         String key2 = "434";
 
-//        List<REGSTariff> key1Tariff = List.of(
-//                new REGSTariff("BASIC", List.of(
-//                        new REGSTariffApi("/api/v1/value", RequestMethod.GET, null),
-//                        new REGSTariffApi("/api/v1/check", RequestMethod.GET, null)
-//                ), 2L)
-//        );
-//
-//        List<REGSTariff> key2Tariff = List.of(
-//                new REGSTariff("PRO", List.of(
-//                        new REGSTariffApi("/api/v1/value", RequestMethod.GET, null),
-//                        new REGSTariffApi("/api/v1/echo/*", RequestMethod.GET, Map.of("value", "nurislom"))
-//                ), 1L)
-//        );
-//
-//        commonLimitsService.registrationOfTariffs(key1, key1Tariff);
-//        commonLimitsService.registrationOfTariffs(key2, key2Tariff);
+        List<REGSTariff> key1Tariff = List.of(
+                new REGSTariff("BASIC", List.of(
+                        new REGSTariffApi("/api/v1/value", RequestMethod.GET, null),
+                        new REGSTariffApi("/api/v1/check", RequestMethod.GET, null)
+                ), 2L)
+        );
+
+        List<REGSTariff> key2Tariff = List.of(
+                new REGSTariff("PRO", List.of(
+                        new REGSTariffApi("/api/v1/value", RequestMethod.GET, null),
+                        new REGSTariffApi("/api/v1/echo/*", RequestMethod.GET, Map.of("value", "nurislom"))
+                ), 1L)
+        );
+
+        commonLimitsService.registrationOfTariffs(key1, key1Tariff);
+        commonLimitsService.registrationOfTariffs(key2, key2Tariff);
     }
+
+
 }

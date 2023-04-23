@@ -4,10 +4,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.khasanof.ratelimitingwithspring.core.domain.Api;
 import org.khasanof.ratelimitingwithspring.core.domain.Limited;
 import org.khasanof.ratelimitingwithspring.core.domain.embeddable.LimitsEmbeddable;
+import org.khasanof.ratelimitingwithspring.core.exceptions.InvalidValidationException;
 import org.khasanof.ratelimitingwithspring.core.strategy.limit.LimitSaveStrategy;
 import org.khasanof.ratelimitingwithspring.core.strategy.limit.builder.StaticLimitBuilder;
 import org.khasanof.ratelimitingwithspring.core.strategy.limit.classes.RSLimit;
 import org.khasanof.ratelimitingwithspring.core.strategy.limit.classes.RSLimitPlan;
+import org.khasanof.ratelimitingwithspring.core.validator.ValidatorResult;
+import org.khasanof.ratelimitingwithspring.core.validator.limit.save.LimitSaveValidator;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -30,9 +33,18 @@ public class LimitSaveWithEMStrategy extends LimitSaveStrategy {
 
     public static final String SERVICE_NAME = "limit" + SAVE_STRATEGY;
 
+    public LimitSaveWithEMStrategy(LimitSaveValidator limitSaveValidator) {
+        super(limitSaveValidator);
+    }
+
     @Override
     public void save(List<RSLimit> list) {
-        list.forEach(this::save);
+        ValidatorResult result = validator.validatorRSLimits(list);
+        if (result.isSuccess()) {
+            list.forEach(this::save);
+        } else {
+            throw new InvalidValidationException("Duplicate API found!");
+        }
     }
 
     private void save(RSLimit limit) {

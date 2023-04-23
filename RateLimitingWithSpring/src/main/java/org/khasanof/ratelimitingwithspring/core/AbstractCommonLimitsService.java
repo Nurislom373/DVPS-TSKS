@@ -1,9 +1,10 @@
 package org.khasanof.ratelimitingwithspring.core;
 
 import lombok.RequiredArgsConstructor;
-import org.khasanof.ratelimitingwithspring.core.LimitsService;
 import org.khasanof.ratelimitingwithspring.core.common.read.CommonReadConfigAndSave;
+import org.khasanof.ratelimitingwithspring.core.validator.register.RegisterLimitsValidator;
 import org.khasanof.ratelimitingwithspring.core.config.ReadLimitsPropertiesConfig;
+import org.khasanof.ratelimitingwithspring.core.validator.register.RegisterTariffValidator;
 
 /**
  * Author: Nurislom
@@ -19,6 +20,8 @@ public abstract class AbstractCommonLimitsService implements LimitsService {
 
     private final ReadLimitsPropertiesConfig propertiesConfig;
     private final CommonReadConfigAndSave readConfigAndSave;
+    protected final RegisterLimitsValidator registerLimitsValidator;
+    protected final RegisterTariffValidator registerTariffValidator;
 
     @Override
     public void afterPropertiesSet() throws Exception {

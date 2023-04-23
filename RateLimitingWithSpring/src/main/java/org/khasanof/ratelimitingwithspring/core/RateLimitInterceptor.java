@@ -6,6 +6,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.khasanof.ratelimitingwithspring.core.common.CommonLimitsService;
+import org.khasanof.ratelimitingwithspring.core.config.ReadLimitsPropertiesConfig;
+import org.khasanof.ratelimitingwithspring.core.limiting.SimpleRateLimiting;
 import org.khasanof.ratelimitingwithspring.core.utils.JWTUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -26,6 +28,7 @@ public class RateLimitInterceptor implements HandlerInterceptor {
     private static final String HEADER_LIMIT_REMAINING = "X-Rate-Limit-Remaining";
     private static final String HEADER_RETRY_AFTER = "X-Rate-Limit-Retry-After-Seconds";
     private final CommonLimitsService commonLimitsService;
+    private final ReadLimitsPropertiesConfig propertiesConfig;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -39,7 +42,7 @@ public class RateLimitInterceptor implements HandlerInterceptor {
             DecodedJWT jwt = JWTUtils.getVerifier()
                     .verify(bearerToken);
 
-            String key = jwt.getClaim("key").as(String.class);
+            String key = jwt.getClaim(propertiesConfig.getUserKey()).as(String.class);
             log.info("key - {}", key);
 
             if (Objects.isNull(key)) {
@@ -55,22 +58,18 @@ public class RateLimitInterceptor implements HandlerInterceptor {
 
             RateLimiting rateLimiting = commonLimitsService.searchKeys(key, requestRequestURI, method, requestAttribute);
 
-            if (rateLimiting.consumeRequest()) {
-
+            SimpleRateLimiting.Result result = rateLimiting.consumeRequest();
+            if (result.isResult()) {
                 Long availableToken = rateLimiting.availableToken();
                 log.info("availableToken - {}", availableToken);
 
                 response.addHeader(HEADER_LIMIT_REMAINING, String.valueOf(availableToken));
                 return true;
-
-                // ...
-
             } else {
                 response.setContentType(MediaType.APPLICATION_JSON_VALUE);
                 response.addHeader(HEADER_RETRY_AFTER, String.valueOf(TimeUnit.NANOSECONDS.toSeconds(
-                        rateLimiting.getNanosToWaitForRefill()))); // new way
-                response.sendError(HttpStatus.TOO_MANY_REQUESTS.value(),
-                        "You have exhausted your API Request"); // 429
+                        rateLimiting.getNanosToWaitForRefill()))); // refill seconds
+                response.sendError(result.getStatus().value(), result.getMessage()); // 429, 400
 
                 return false;
             }

@@ -1,4 +1,4 @@
-package org.khasanof.ratelimitingwithspring.core.cache;
+package org.khasanof.ratelimitingwithspring.cache;
 
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;

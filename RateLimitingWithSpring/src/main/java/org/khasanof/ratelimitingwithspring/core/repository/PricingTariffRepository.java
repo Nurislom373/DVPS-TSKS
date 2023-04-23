@@ -2,6 +2,7 @@ package org.khasanof.ratelimitingwithspring.core.repository;
 
 import org.khasanof.ratelimitingwithspring.core.domain.Api;
 import org.khasanof.ratelimitingwithspring.core.domain.PricingTariff;
+import org.khasanof.ratelimitingwithspring.core.domain.Tariff;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

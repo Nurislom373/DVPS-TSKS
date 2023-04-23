@@ -2,6 +2,7 @@ package org.khasanof.ratelimitingwithspring.core;
 
 import org.khasanof.ratelimitingwithspring.core.limiting.LocalRateLimiting;
 import org.khasanof.ratelimitingwithspring.core.limiting.RateLimitingBuilder;
+import org.khasanof.ratelimitingwithspring.core.limiting.SimpleRateLimiting;
 
 /**
  * Author: Nurislom
@@ -18,11 +19,11 @@ public interface RateLimiting {
         return new RateLimitingBuilder();
     }
 
-    boolean consumeRequest();
+    SimpleRateLimiting.Result consumeRequest();
+
+    SimpleRateLimiting.Result consumeRequest(int token);
 
     long getNanosToWaitForRefill();
-
-    boolean consumeRequest(int token);
 
     Long availableToken();
 
