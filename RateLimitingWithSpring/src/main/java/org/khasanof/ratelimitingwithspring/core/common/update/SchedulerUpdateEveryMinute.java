@@ -36,7 +36,6 @@ public class SchedulerUpdateEveryMinute {
         log.info("Start SchedulerUpdateEveryMinute");
 
         Map<String, Map<PTA, RateLimiting>> utilityAll = concurrentMapUtility.getAll();
-        deleteOnRuntime.deleteWithKey()
 
         concurrentMapUtility.getAll()
                 .forEach(updateOnRuntime::updateWithKey);

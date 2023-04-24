@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import java.io.Serializable;
 import java.util.Map;
 
 /**
@@ -25,7 +26,7 @@ import java.util.Map;
 @Table(name = "api", uniqueConstraints = {
         @UniqueConstraint(columnNames = "id")
 })
-public class Api {
+public class Api implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -2,11 +2,11 @@ package org.khasanof.ratelimitingwithspring.core.utils;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.khasanof.ratelimitingwithspring.core.RateLimiting;
+import org.khasanof.ratelimitingwithspring.core.common.search.classes.PTA;
+import org.khasanof.ratelimitingwithspring.core.domain.PricingApi;
 import org.khasanof.ratelimitingwithspring.core.domain.PricingTariff;
 import org.khasanof.ratelimitingwithspring.core.domain.enums.PricingType;
-import org.khasanof.ratelimitingwithspring.core.common.search.classes.PTA;
-import org.khasanof.ratelimitingwithspring.core.RateLimiting;
-import org.khasanof.ratelimitingwithspring.core.domain.PricingApi;
 import org.khasanof.ratelimitingwithspring.core.domain.enums.RequestType;
 import org.khasanof.ratelimitingwithspring.core.domain.enums.TimeType;
 import org.khasanof.ratelimitingwithspring.core.repository.ApiRepository;
@@ -14,7 +14,10 @@ import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 import java.time.Period;
-import java.util.*;
+import java.util.AbstractMap;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -30,7 +33,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class RedisValueBuilder {
+public class CacheValueBuilder {
 
     private final ApiRepository apiRepository;
 

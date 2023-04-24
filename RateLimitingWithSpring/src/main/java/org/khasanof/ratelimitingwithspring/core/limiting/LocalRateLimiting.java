@@ -3,6 +3,7 @@ package org.khasanof.ratelimitingwithspring.core.limiting;
 import io.github.bucket4j.Bucket;
 import lombok.*;
 
+import java.io.Serializable;
 import java.time.Duration;
 import java.time.Instant;
 
@@ -22,7 +23,7 @@ import java.time.Instant;
 @AllArgsConstructor
 @EqualsAndHashCode
 @NoArgsConstructor
-public class LocalRateLimiting {
+public class LocalRateLimiting implements Serializable {
 
     private Long undiminishedCount;
 

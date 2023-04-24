@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.io.Serializable;
 import java.time.Instant;
 import java.util.Objects;
 
@@ -152,7 +153,7 @@ public class SimpleRateLimiting implements RateLimiting {
         this.nanosToWaitForRefill = nanosToWaitForRefill;
     }
 
-    public static class Result {
+    public static class Result implements Serializable {
 
         private boolean result;
         private HttpStatus status;

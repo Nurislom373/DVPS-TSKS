@@ -4,6 +4,7 @@ import lombok.*;
 import org.khasanof.ratelimitingwithspring.core.domain.Api;
 import org.khasanof.ratelimitingwithspring.core.domain.enums.PricingType;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -22,7 +23,7 @@ import java.util.List;
 @AllArgsConstructor
 @EqualsAndHashCode
 @NoArgsConstructor
-public class PTA {
+public class PTA implements Serializable {
 
     public List<Api> apis;
 

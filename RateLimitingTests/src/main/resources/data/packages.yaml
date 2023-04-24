@@ -1,0 +1,15 @@
+- name: BASIC
+  requestCount: 30
+  requestType: LIMIT
+  timeCount: 2
+  timeType: MINUTE
+- name: PRO
+  requestCount: 40000
+  requestType: LIMIT
+  timeCount: 2
+  timeType: MONTH
+- name: SUPER
+  requestCount: 400000
+  requestType: LIMIT
+  timeCount: 2
+  timeType: MONTH

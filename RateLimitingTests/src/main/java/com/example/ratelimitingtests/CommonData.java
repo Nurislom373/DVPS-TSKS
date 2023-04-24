@@ -1,10 +1,9 @@
-package org.khasanof.ratelimitingwithspring.test;
+package com.example.ratelimitingtests;
 
-import org.khasanof.ratelimitingwithspring.core.common.CommonLimitsService;
-import org.khasanof.ratelimitingwithspring.core.common.register.classes.REGSLimit;
+import lombok.RequiredArgsConstructor;
+import org.khasanof.ratelimitingwithspring.core.LimitsService;
 import org.khasanof.ratelimitingwithspring.core.common.register.classes.REGSTariff;
 import org.khasanof.ratelimitingwithspring.core.common.register.classes.REGSTariffApi;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -15,39 +14,20 @@ import java.util.Map;
 /**
  * Author: Nurislom
  * <br/>
- * Date: 4/17/2023
+ * Date: 4/23/2023
  * <br/>
- * Time: 3:51 PM
+ * Time: 3:41 PM
  * <br/>
- * Package: org.khasanof.ratelimitingwithspring.test
+ * Package: com.example.ratelimitingtests
  */
 @Component
+@RequiredArgsConstructor
 public class CommonData implements CommandLineRunner {
 
-    @Autowired
-    private CommonLimitsService commonLimitsService;
+    private final LimitsService limitsService;
 
-    /**
-     * Callback used to run the bean.
-     *
-     * @param args incoming main method arguments
-     * @throws Exception on error
-     */
     @Override
     public void run(String... args) throws Exception {
-        limitRegister();
-    }
-
-    private void limitRegister() {
-        String key = "431";
-        List<REGSLimit> limits = List.of(
-                new REGSLimit("/api/v1/echo/*", RequestMethod.GET, Map.of("value", "nurislom"), "BASIC", 2L),
-                new REGSLimit("/api/v1/echo/*", RequestMethod.GET, Map.of("value", "373"), "BASIC", 2L)
-        );
-        commonLimitsService.registrationOfLimits(key, limits);
-    }
-
-    private void registerTariffsFirst() {
         String key1 = "432";
         String key2 = "434";
 
@@ -65,9 +45,7 @@ public class CommonData implements CommandLineRunner {
                 ), 1L)
         );
 
-        commonLimitsService.registrationOfTariffs(key1, key1Tariff);
-        commonLimitsService.registrationOfTariffs(key2, key2Tariff);
+        limitsService.registrationOfTariffs(key1, key1Tariff);
+        limitsService.registrationOfTariffs(key2, key2Tariff);
     }
-
-
 }

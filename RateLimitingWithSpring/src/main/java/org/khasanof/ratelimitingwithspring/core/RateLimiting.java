@@ -4,6 +4,8 @@ import org.khasanof.ratelimitingwithspring.core.limiting.LocalRateLimiting;
 import org.khasanof.ratelimitingwithspring.core.limiting.RateLimitingBuilder;
 import org.khasanof.ratelimitingwithspring.core.limiting.SimpleRateLimiting;
 
+import java.io.Serializable;
+
 /**
  * Author: Nurislom
  * <br/>
@@ -13,7 +15,7 @@ import org.khasanof.ratelimitingwithspring.core.limiting.SimpleRateLimiting;
  * <br/>
  * Package: org.khasanof.ratelimitingwithspring.core
  */
-public interface RateLimiting {
+public interface RateLimiting extends Serializable {
 
     static RateLimitingBuilder builder() {
         return new RateLimitingBuilder();

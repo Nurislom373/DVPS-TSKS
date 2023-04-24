@@ -16,6 +16,6 @@ import java.util.Map;
  */
 public interface DeleteOnRuntime {
 
-    Map<PTA, RateLimiting> deleteWithKey(String key, Map<PTA, RateLimiting> limitingMap);
+    Map<String, Map<PTA, RateLimiting>> deleteWithKey(String key, Map<PTA, RateLimiting> limitingMap);
 
 }

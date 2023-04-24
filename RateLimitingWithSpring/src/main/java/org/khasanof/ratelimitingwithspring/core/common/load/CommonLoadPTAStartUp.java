@@ -9,7 +9,7 @@ import org.khasanof.ratelimitingwithspring.core.RateLimiting;
 import org.khasanof.ratelimitingwithspring.core.repository.PricingApiRepository;
 import org.khasanof.ratelimitingwithspring.core.repository.PricingTariffRepository;
 import org.khasanof.ratelimitingwithspring.core.utils.ConcurrentMapUtility;
-import org.khasanof.ratelimitingwithspring.core.utils.RedisValueBuilder;
+import org.khasanof.ratelimitingwithspring.core.utils.CacheValueBuilder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -33,7 +33,7 @@ public class CommonLoadPTAStartUp implements LoadingPTAStartUp {
 
     private final PricingApiRepository pricingApiRepository;
     private final PricingTariffRepository pricingTariffRepository;
-    private final RedisValueBuilder redisValueBuilder;
+    private final CacheValueBuilder redisValueBuilder;
     private final ConcurrentMapUtility mapUtility;
 
     @Override
