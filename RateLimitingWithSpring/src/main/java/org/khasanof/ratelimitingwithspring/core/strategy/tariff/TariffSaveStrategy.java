@@ -1,8 +1,9 @@
 package org.khasanof.ratelimitingwithspring.core.strategy.tariff;
 
-import org.khasanof.ratelimitingwithspring.core.domain.Tariff;
+import lombok.RequiredArgsConstructor;
 import org.khasanof.ratelimitingwithspring.core.strategy.AbstractSaveStrategy;
 import org.khasanof.ratelimitingwithspring.core.strategy.tariff.classes.RSTariff;
+import org.khasanof.ratelimitingwithspring.core.validator.tariff.TariffSaveValidator;
 
 /**
  * Author: Nurislom
@@ -13,5 +14,9 @@ import org.khasanof.ratelimitingwithspring.core.strategy.tariff.classes.RSTariff
  * <br/>
  * Package: org.khasanof.ratelimitingwithspring.core.strategy.tariff
  */
+@RequiredArgsConstructor
 public abstract class TariffSaveStrategy extends AbstractSaveStrategy<RSTariff> {
+
+    protected final TariffSaveValidator validator;
+
 }

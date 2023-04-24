@@ -4,8 +4,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.khasanof.ratelimitingwithspring.core.RateLimiting;
 import org.khasanof.ratelimitingwithspring.core.common.search.classes.PTA;
+import org.khasanof.ratelimitingwithspring.core.domain.enums.PricingType;
 import org.khasanof.ratelimitingwithspring.core.limiting.LocalRateLimiting;
 import org.khasanof.ratelimitingwithspring.core.strategy.limit.delete.LimitDeleteStrategy;
+import org.khasanof.ratelimitingwithspring.core.strategy.tariff.delete.TariffDeleteStrategy;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -25,9 +27,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CommonDeleteOnRuntime implements DeleteOnRuntime {
 
-    // TODO ... write logic
-
     private final LimitDeleteStrategy limitDeleteStrategy;
+    private final TariffDeleteStrategy tariffDeleteStrategy;
 
     @Override
     public Map<String, Map<PTA, RateLimiting>> delete(Map<String, Map<PTA, RateLimiting>> map) {
@@ -45,14 +46,22 @@ public class CommonDeleteOnRuntime implements DeleteOnRuntime {
         if (!deletedMap.isEmpty()) {
             entry.getValue().keySet()
                     .removeIf(deletedMap::containsKey);
-            limitDeleteStrategy.delete(new AbstractMap.SimpleEntry<>(entry.getKey(), deletedMap));
+
+            deletedMap.entrySet().forEach(p -> {
+                if (p.getKey().getPricingType().equals(PricingType.API)) {
+                    log.info("API Deleted Key - {} and PTA - {}", entry.getKey(), p.getKey());
+                    limitDeleteStrategy.delete(new AbstractMap.SimpleEntry<>(entry.getKey(), Map.ofEntries(p)));
+                } else {
+                    log.info("TARIFF Deleted Key - {} and PTA - {}", entry.getKey(), p.getKey());
+                    tariffDeleteStrategy.delete(new AbstractMap.SimpleEntry<>(entry.getKey(), Map.ofEntries(p)));
+                }
+            });
 
             if (!entry.getValue().isEmpty()) {
                 return new AbstractMap.SimpleEntry<>(State.DELETED_DATA, entry);
             } else {
                 return new AbstractMap.SimpleEntry<>(State.NO_DATA, entry);
             }
-
         } else {
             return new AbstractMap.SimpleEntry<>(State.NO_DELETED_DATA, entry);
         }

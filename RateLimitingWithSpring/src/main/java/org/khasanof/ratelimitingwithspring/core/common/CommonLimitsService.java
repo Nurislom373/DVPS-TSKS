@@ -6,6 +6,7 @@ import org.khasanof.ratelimitingwithspring.core.common.read.CommonReadConfigAndS
 import org.khasanof.ratelimitingwithspring.core.common.register.CommonRegisterLimits;
 import org.khasanof.ratelimitingwithspring.core.common.register.classes.REGSLimit;
 import org.khasanof.ratelimitingwithspring.core.common.register.classes.REGSTariff;
+import org.khasanof.ratelimitingwithspring.core.validator.register.RegisterLTValidator;
 import org.khasanof.ratelimitingwithspring.core.validator.register.RegisterLimitsValidator;
 import org.khasanof.ratelimitingwithspring.core.validator.ValidatorResult;
 import org.khasanof.ratelimitingwithspring.core.common.search.RateLimitingSearchKeys;
@@ -38,15 +39,15 @@ public class CommonLimitsService extends AbstractCommonLimitsService {
     public CommonLimitsService(ReadLimitsPropertiesConfig propertiesConfig, CommonReadConfigAndSave readConfigAndSave,
                                RegisterLimitsValidator registerLimitsValidator, RegisterTariffValidator registerTariffValidator,
                                CommonRegisterLimits registerLimits, RateLimitingSearchKeys limitingSearchKeys,
-                               RSLimitLoadPostConstruct rsLimitLoadPostConstruct) {
-        super(propertiesConfig, readConfigAndSave, registerLimitsValidator, registerTariffValidator);
+                               RSLimitLoadPostConstruct rsLimitLoadPostConstruct, RegisterLTValidator validator) {
+        super(propertiesConfig, readConfigAndSave, registerLimitsValidator, registerTariffValidator, validator);
         this.registerLimits = registerLimits;
         this.limitingSearchKeys = limitingSearchKeys;
         this.rsLimitLoadPostConstruct = rsLimitLoadPostConstruct;
     }
 
     public void registrationOfLimits(String key, List<REGSLimit> limits) {
-        ValidatorResult result = registerLimitsValidator.validatorLimits(key, limits);
+        ValidatorResult result = validator.validatorLimit(key, limits);
         if (result.isSuccess()) {
             registerLimits.registrationOfLimits(key, limits);
         } else {
@@ -55,7 +56,7 @@ public class CommonLimitsService extends AbstractCommonLimitsService {
     }
 
     public void registrationOfTariffs(String key, List<REGSTariff> tariffs) {
-        ValidatorResult result = registerTariffValidator.validatorTariffs(key, tariffs);
+        ValidatorResult result = validator.validatorTariff(key, tariffs);
         if (result.isSuccess()) {
             registerLimits.registrationOfTariffs(key, tariffs);
         } else {

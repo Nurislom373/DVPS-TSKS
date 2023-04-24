@@ -6,6 +6,8 @@ import org.khasanof.ratelimitingwithspring.core.domain.Tariff;
 import org.khasanof.ratelimitingwithspring.core.strategy.tariff.TariffSaveStrategy;
 import org.khasanof.ratelimitingwithspring.core.strategy.tariff.builder.StaticTariffBuilder;
 import org.khasanof.ratelimitingwithspring.core.strategy.tariff.classes.RSTariff;
+import org.khasanof.ratelimitingwithspring.core.validator.ValidatorResult;
+import org.khasanof.ratelimitingwithspring.core.validator.tariff.TariffSaveValidator;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,9 +29,18 @@ public class TariffSaveWithEMStrategy extends TariffSaveStrategy {
 
     public static final String SERVICE_NAME = "tariff" + SAVE_STRATEGY;
 
+    public TariffSaveWithEMStrategy(TariffSaveValidator validator) {
+        super(validator);
+    }
+
     @Override
     public void save(List<RSTariff> list) {
-        list.forEach(this::save);
+        ValidatorResult result = validator.validatorRSTariff(list);
+        if (result.isSuccess()) {
+            list.forEach(this::save);
+        } else {
+            throw new RuntimeException();
+        }
     }
 
     private void save(RSTariff tariff) {

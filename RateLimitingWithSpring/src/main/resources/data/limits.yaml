@@ -44,7 +44,7 @@
       requestCount: 100000
       timeType: MINUTE
       timeCount: 1
-- url: /api/v1/value2321
+- url: /api/v1/value2
   method: POST
   plans:
     - plan: FREE

@@ -42,7 +42,8 @@ public class RegisterTariffValidator implements BaseValidator {
                 .allMatch(ValidatorResult::isSuccess));
     }
 
-    public ValidatorResult validatorTariff(String key, REGSTariff tariff) {
+    private ValidatorResult validatorTariff(String key, REGSTariff tariff) {
+        // Tariff
         List<Api> collect = tariff.getApi().stream()
                 .map(this::regsTariffApiMatchApiGet).toList();
         List<PricingTariff> allByKey = pricingTariffRepository.findAllByKey(key);

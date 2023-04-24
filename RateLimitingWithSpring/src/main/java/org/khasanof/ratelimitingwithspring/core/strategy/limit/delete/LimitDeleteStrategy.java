@@ -32,12 +32,12 @@ public class LimitDeleteStrategy extends AbstractDeleteStrategy<PricingApiReposi
 
     @Override
     public void delete(Map.Entry<String, Map<PTA, RateLimiting>> entry) {
-        long count = entry.getValue().keySet().stream()
+        log.info("Enter LIMIT Delete Method");
+        entry.getValue().keySet().stream()
                 .map(p -> repository.findByQuery(entry.getKey(), p.getApis().get(0)))
                 .map(optional -> optional
                         .orElseThrow(() -> new RuntimeException("Match API not found!")))
-                .peek(repository::delete)
-                .count();
-        log.info("Deleted PricingApi Count : {}", count);
+                .forEach(repository::delete);
+        log.info("Deleted PricingApi Count : {}", entry.getValue().size());
     }
 }

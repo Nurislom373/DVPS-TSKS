@@ -35,7 +35,7 @@ public class CommonData implements CommandLineRunner {
      */
     @Override
     public void run(String... args) throws Exception {
-        limitRegister();
+        keyFive();
     }
 
     private void limitRegister() {
@@ -67,6 +67,25 @@ public class CommonData implements CommandLineRunner {
 
         commonLimitsService.registrationOfTariffs(key1, key1Tariff);
         commonLimitsService.registrationOfTariffs(key2, key2Tariff);
+    }
+
+    private void keyFive() {
+        String key1 = "432";
+        String key2 = "436";
+
+        List<REGSTariff> key1Tariff = List.of(
+                new REGSTariff("BASIC", List.of(
+                        new REGSTariffApi("/api/v1/value", RequestMethod.GET, null)
+                ), 2L)
+        );
+
+        List<REGSLimit> limits = List.of(
+                new REGSLimit("/api/v1/value", RequestMethod.GET, null, "BASIC", 2L)
+        );
+
+        commonLimitsService.registrationOfLimits(key2, limits);
+        commonLimitsService.registrationOfLimits(key1, limits);
+        commonLimitsService.registrationOfTariffs(key1, key1Tariff);
     }
 
 

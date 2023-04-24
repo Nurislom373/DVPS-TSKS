@@ -12,7 +12,6 @@ import org.khasanof.ratelimitingwithspring.core.repository.*;
 import org.khasanof.ratelimitingwithspring.core.utils.BaseUtils;
 import org.khasanof.ratelimitingwithspring.core.utils.CacheValueBuilder;
 import org.khasanof.ratelimitingwithspring.core.utils.ConcurrentMapUtility;
-import org.khasanof.ratelimitingwithspring.cache.redis.RedisUtility;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
@@ -41,7 +40,6 @@ public class SimpleCommonRegisterLimits implements CommonRegisterLimits {
     private final ApiRepository apiRepository;
     private final ConcurrentMapUtility mapUtility;
     private final CacheValueBuilder cacheValueBuilder;
-    private final RedisUtility redisUtility;
 
     @Override
     public void registrationOfLimits(String key, List<REGSLimit> limits) {
@@ -55,13 +53,7 @@ public class SimpleCommonRegisterLimits implements CommonRegisterLimits {
                 .toList();
 
         Map<PTA, RateLimiting> ptaRateLimitingMap = cacheValueBuilder.convertApiListToMap(apiEntityList);
-        redisUtility.addValues(key, ptaRateLimitingMap);
         mapUtility.add(key, ptaRateLimitingMap);
-
-        Map<PTA, RateLimiting> limitingMap = redisUtility.getValue(key).get();
-
-        System.out.println("limitingMap = " + limitingMap);
-        limitingMap.values().forEach(rateLimiting -> System.out.println(rateLimiting.getLocalRateLimiting()));
     }
 
     @Override
@@ -75,7 +67,6 @@ public class SimpleCommonRegisterLimits implements CommonRegisterLimits {
                 .toList();
 
         Map<PTA, RateLimiting> ptaRateLimitingMap = cacheValueBuilder.convertTariffListToMap(pricingTariffs);
-        redisUtility.addValues(key, ptaRateLimitingMap);
         mapUtility.add(key, ptaRateLimitingMap);
     }
 
