@@ -1,4 +1,4 @@
-package org.khasanof.ratelimitingwithspring.core.common.update;
+package org.khasanof.ratelimitingwithspring.core.common.runtime.update;
 
 import org.khasanof.ratelimitingwithspring.core.common.search.classes.PTA;
 import org.khasanof.ratelimitingwithspring.core.RateLimiting;

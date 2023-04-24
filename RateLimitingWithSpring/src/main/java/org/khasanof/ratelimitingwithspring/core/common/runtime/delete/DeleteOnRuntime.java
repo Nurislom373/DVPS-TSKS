@@ -1,4 +1,4 @@
-package org.khasanof.ratelimitingwithspring.core.common.update;
+package org.khasanof.ratelimitingwithspring.core.common.runtime.delete;
 
 import org.khasanof.ratelimitingwithspring.core.RateLimiting;
 import org.khasanof.ratelimitingwithspring.core.common.search.classes.PTA;
@@ -16,6 +16,6 @@ import java.util.Map;
  */
 public interface DeleteOnRuntime {
 
-    Map<String, Map<PTA, RateLimiting>> deleteWithKey(String key, Map<PTA, RateLimiting> limitingMap);
+    Map<String, Map<PTA, RateLimiting>> delete(Map<String, Map<PTA, RateLimiting>> map);
 
 }

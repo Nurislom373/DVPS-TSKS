@@ -1,9 +1,10 @@
-package org.khasanof.ratelimitingwithspring.core.common.update;
+package org.khasanof.ratelimitingwithspring.core.common.runtime;
 
-import com.zaxxer.hikari.HikariDataSource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.khasanof.ratelimitingwithspring.core.RateLimiting;
+import org.khasanof.ratelimitingwithspring.core.common.runtime.delete.DeleteOnRuntime;
+import org.khasanof.ratelimitingwithspring.core.common.runtime.update.UpdateOnRuntime;
 import org.khasanof.ratelimitingwithspring.core.common.search.classes.PTA;
 import org.khasanof.ratelimitingwithspring.core.utils.ConcurrentMapUtility;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -36,9 +37,12 @@ public class SchedulerUpdateEveryMinute {
         log.info("Start SchedulerUpdateEveryMinute");
 
         Map<String, Map<PTA, RateLimiting>> utilityAll = concurrentMapUtility.getAll();
+        utilityAll.entrySet().forEach(System.out::println);
 
-        concurrentMapUtility.getAll()
-                .forEach(updateOnRuntime::updateWithKey);
+        Map<String, Map<PTA, RateLimiting>> clearMap = deleteOnRuntime.delete(utilityAll);
+        clearMap.entrySet().forEach(System.out::println);
+
+        clearMap.forEach(updateOnRuntime::updateWithKey);
         // write logic db connection failed write object with file.
     }
 }

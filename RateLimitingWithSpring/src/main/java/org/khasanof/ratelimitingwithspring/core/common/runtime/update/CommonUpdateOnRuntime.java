@@ -1,4 +1,4 @@
-package org.khasanof.ratelimitingwithspring.core.common.update;
+package org.khasanof.ratelimitingwithspring.core.common.runtime.update;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

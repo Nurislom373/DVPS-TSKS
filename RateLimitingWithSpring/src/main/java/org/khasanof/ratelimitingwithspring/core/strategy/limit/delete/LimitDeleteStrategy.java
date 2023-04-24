@@ -8,6 +8,9 @@ import org.khasanof.ratelimitingwithspring.core.repository.PricingApiRepository;
 import org.khasanof.ratelimitingwithspring.core.strategy.AbstractDeleteStrategy;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -29,6 +32,12 @@ public class LimitDeleteStrategy extends AbstractDeleteStrategy<PricingApiReposi
 
     @Override
     public void delete(Map.Entry<String, Map<PTA, RateLimiting>> entry) {
-        // TODO write
+        long count = entry.getValue().keySet().stream()
+                .map(p -> repository.findByQuery(entry.getKey(), p.getApis().get(0)))
+                .map(optional -> optional
+                        .orElseThrow(() -> new RuntimeException("Match API not found!")))
+                .peek(repository::delete)
+                .count();
+        log.info("Deleted PricingApi Count : {}", count);
     }
 }
