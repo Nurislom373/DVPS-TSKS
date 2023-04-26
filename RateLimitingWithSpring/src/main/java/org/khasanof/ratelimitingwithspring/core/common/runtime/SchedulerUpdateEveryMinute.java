@@ -38,11 +38,18 @@ public class SchedulerUpdateEveryMinute {
 
         Map<String, Map<PTA, RateLimiting>> utilityAll = concurrentMapUtility.getAll();
         utilityAll.entrySet().forEach(System.out::println);
+        log.info("List that has not yet been modified. size => Key Count : {}, Values Count : {}", utilityAll.size(),
+                utilityAll.values().size());
 
         Map<String, Map<PTA, RateLimiting>> clearMap = deleteOnRuntime.delete(utilityAll);
         clearMap.entrySet().forEach(System.out::println);
+        log.info("List that has been modified. size => Key Count : {}, Values Count : {}", clearMap.size(),
+                clearMap.values().size());
 
         clearMap.forEach(updateOnRuntime::updateWithKey);
+        log.warn("End SchedulerUpdateEveryMinute");
+
+        concurrentMapUtility.getAll().entrySet().forEach(System.out::println);
         // write logic db connection failed write object with file.
     }
 }

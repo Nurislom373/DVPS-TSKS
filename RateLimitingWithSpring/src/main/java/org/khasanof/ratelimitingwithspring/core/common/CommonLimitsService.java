@@ -6,6 +6,8 @@ import org.khasanof.ratelimitingwithspring.core.common.read.CommonReadConfigAndS
 import org.khasanof.ratelimitingwithspring.core.common.register.CommonRegisterLimits;
 import org.khasanof.ratelimitingwithspring.core.common.register.classes.REGSLimit;
 import org.khasanof.ratelimitingwithspring.core.common.register.classes.REGSTariff;
+import org.khasanof.ratelimitingwithspring.core.exceptions.AlreadyRegisteredException;
+import org.khasanof.ratelimitingwithspring.core.exceptions.NotRegisteredException;
 import org.khasanof.ratelimitingwithspring.core.validator.register.RegisterLTValidator;
 import org.khasanof.ratelimitingwithspring.core.validator.register.RegisterLimitsValidator;
 import org.khasanof.ratelimitingwithspring.core.validator.ValidatorResult;
@@ -51,7 +53,7 @@ public class CommonLimitsService extends AbstractCommonLimitsService {
         if (result.isSuccess()) {
             registerLimits.registrationOfLimits(key, limits);
         } else {
-            throw new RuntimeException("APIs didn't Registered");
+            throw new RuntimeException(result.getException().getMessage());
         }
     }
 
@@ -60,7 +62,7 @@ public class CommonLimitsService extends AbstractCommonLimitsService {
         if (result.isSuccess()) {
             registerLimits.registrationOfTariffs(key, tariffs);
         } else {
-            throw new RuntimeException("Tariffs didn't Registered");
+            throw new AlreadyRegisteredException("one of the APIs you want to register is already registered.");
         }
     }
 

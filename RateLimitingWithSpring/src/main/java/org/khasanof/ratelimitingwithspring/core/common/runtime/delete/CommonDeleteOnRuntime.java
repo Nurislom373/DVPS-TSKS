@@ -8,6 +8,7 @@ import org.khasanof.ratelimitingwithspring.core.domain.enums.PricingType;
 import org.khasanof.ratelimitingwithspring.core.limiting.LocalRateLimiting;
 import org.khasanof.ratelimitingwithspring.core.strategy.limit.delete.LimitDeleteStrategy;
 import org.khasanof.ratelimitingwithspring.core.strategy.tariff.delete.TariffDeleteStrategy;
+import org.khasanof.ratelimitingwithspring.core.utils.ConcurrentMapUtility;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -29,6 +30,7 @@ public class CommonDeleteOnRuntime implements DeleteOnRuntime {
 
     private final LimitDeleteStrategy limitDeleteStrategy;
     private final TariffDeleteStrategy tariffDeleteStrategy;
+    private final ConcurrentMapUtility concurrentMapUtility;
 
     @Override
     public Map<String, Map<PTA, RateLimiting>> delete(Map<String, Map<PTA, RateLimiting>> map) {
@@ -40,8 +42,7 @@ public class CommonDeleteOnRuntime implements DeleteOnRuntime {
     private Map.Entry<State, Map.Entry<String, Map<PTA, RateLimiting>>> deleteWithKey(Map.Entry<String, Map<PTA, RateLimiting>> entry) {
         Map<PTA, RateLimiting> deletedMap = entry.getValue().entrySet().stream()
                 .filter(f -> isDelete(f.getValue()))
-                .collect(Collectors.toMap(Map.Entry::getKey,
-                        Map.Entry::getValue));
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
         if (!deletedMap.isEmpty()) {
             entry.getValue().keySet()
@@ -60,7 +61,11 @@ public class CommonDeleteOnRuntime implements DeleteOnRuntime {
             if (!entry.getValue().isEmpty()) {
                 return new AbstractMap.SimpleEntry<>(State.DELETED_DATA, entry);
             } else {
-                return new AbstractMap.SimpleEntry<>(State.NO_DATA, entry);
+                if (concurrentMapUtility.delete(entry.getKey())) {
+                    return new AbstractMap.SimpleEntry<>(State.NO_DATA, entry);
+                } else {
+                    throw new RuntimeException("Object don't deleted!");
+                }
             }
         } else {
             return new AbstractMap.SimpleEntry<>(State.NO_DELETED_DATA, entry);

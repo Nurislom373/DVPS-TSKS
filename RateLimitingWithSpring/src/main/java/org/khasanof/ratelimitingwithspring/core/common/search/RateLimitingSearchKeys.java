@@ -7,6 +7,7 @@ import org.khasanof.ratelimitingwithspring.core.common.search.classes.PTA;
 import org.khasanof.ratelimitingwithspring.core.common.search.classes.RLSearch;
 import org.khasanof.ratelimitingwithspring.core.domain.Api;
 import org.khasanof.ratelimitingwithspring.core.domain.enums.PricingType;
+import org.khasanof.ratelimitingwithspring.core.exceptions.NotRegisteredException;
 import org.khasanof.ratelimitingwithspring.core.utils.BaseUtils;
 import org.khasanof.ratelimitingwithspring.core.utils.ConcurrentMapUtility;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Author: Nurislom
@@ -34,11 +36,16 @@ public class RateLimitingSearchKeys {
     public RateLimiting searchKeys(RLSearch search) {
         Assert.notNull(search, "search param is null!");
 
-        Map<PTA, RateLimiting> ptaRateLimitingMap = mapUtility.get(search.getKey());
-        return ptaRateLimitingMap.entrySet().stream()
-                .filter(f -> checkAndReturnPTA(f.getKey(), search))
-                .map(Map.Entry::getValue)
-                .findFirst().orElseThrow(() -> new RuntimeException("URI not found!"));
+        Optional<Map<PTA, RateLimiting>> optional = mapUtility.get(search.getKey());
+        if (optional.isPresent()) {
+            return optional.get().entrySet().stream()
+                    .filter(f -> checkAndReturnPTA(f.getKey(), search))
+                    .map(Map.Entry::getValue)
+                    .findFirst().orElseThrow(() -> new RuntimeException("URI not found!"));
+        } else {
+            log.error("No APIs are registered with this key : {}", search.getKey());
+            throw new NotRegisteredException("No APIs are registered with this key : " + search.getKey());
+        }
     }
 
     private boolean checkAndReturnPTA(PTA pta, RLSearch search) {

@@ -7,6 +7,10 @@ import org.khasanof.ratelimitingwithspring.core.common.register.classes.REGSTari
 import org.khasanof.ratelimitingwithspring.core.common.register.classes.REGSTariffApi;
 import org.khasanof.ratelimitingwithspring.core.domain.Api;
 import org.khasanof.ratelimitingwithspring.core.domain.PricingTariff;
+import org.khasanof.ratelimitingwithspring.core.exceptions.AlreadyRegisteredException;
+import org.khasanof.ratelimitingwithspring.core.exceptions.NotFoundException;
+import org.khasanof.ratelimitingwithspring.core.exceptions.NotRegisteredException;
+import org.khasanof.ratelimitingwithspring.core.exceptions.properties.ExceptionProperties;
 import org.khasanof.ratelimitingwithspring.core.repository.ApiRepository;
 import org.khasanof.ratelimitingwithspring.core.repository.PricingApiRepository;
 import org.khasanof.ratelimitingwithspring.core.repository.PricingTariffRepository;
@@ -20,6 +24,10 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * Author: Nurislom
@@ -56,15 +64,14 @@ public class RegisterLimitsValidator implements BaseValidator {
         if (optional.isPresent()) {
             Boolean exists = pricingApiRepository.existsByKeyAndLimited_Api(key, optional.get());
             if (exists) {
-                return new ValidatorResult().failed(new RuntimeException("Already Get this API"));
+                return new ValidatorResult().failed(new AlreadyRegisteredException("Already Get this API"));
             } else {
                 return new ValidatorResult().success(true);
             }
         } else {
-            return new ValidatorResult().failed(new RuntimeException("API not found"));
+            return new ValidatorResult().failed(new NotFoundException("API not found"));
         }
     }
-
 
 
 }

@@ -6,6 +6,7 @@ import org.khasanof.ratelimitingwithspring.core.common.search.classes.PTA;
 import org.khasanof.ratelimitingwithspring.core.domain.*;
 import org.khasanof.ratelimitingwithspring.core.domain.embeddable.LimitsEmbeddable;
 import org.khasanof.ratelimitingwithspring.core.domain.enums.PricingType;
+import org.khasanof.ratelimitingwithspring.core.exceptions.NotFoundException;
 import org.khasanof.ratelimitingwithspring.core.limiting.LocalRateLimiting;
 import org.khasanof.ratelimitingwithspring.core.RateLimiting;
 import org.khasanof.ratelimitingwithspring.core.repository.PricingApiRepository;
@@ -39,7 +40,8 @@ public class CommonUpdateOnRuntime implements UpdateOnRuntime {
 
     @Override
     public void updateWithKey(String key) {
-        updateWithKey(key, concurrentMapUtility.get(key));
+        updateWithKey(key, concurrentMapUtility.get(key)
+                .orElseThrow(RuntimeException::new));
     }
 
     @Override
