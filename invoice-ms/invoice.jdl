@@ -1,0 +1,22 @@
+/** Запрос счета-фактуры */
+entity InvoiceRequest {
+   status Status /** Статус запроса счёт-фактуры*/
+   requestJson TextBlob required /** Запрос в json формате */
+}
+
+/** Статус */
+enum Status {
+	NEW,
+    ACTIVE,
+    DELETED,
+    SUCCESS,
+    ERROR,
+    WAITING,
+    CANCELLED,
+    UNKNOWN
+}
+
+dto * with mapstruct
+paginate * with pagination
+service * with serviceImpl
+filter *

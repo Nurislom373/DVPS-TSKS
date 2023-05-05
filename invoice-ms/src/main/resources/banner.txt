@@ -1,0 +1,9 @@
+  ${AnsiColor.GREEN}ooooo                                    o8o                        ${AnsiColor.RED}ooo        ooooo
+  ${AnsiColor.GREEN}`888'                                    `"'                        ${AnsiColor.RED}`88.       .888'
+  ${AnsiColor.GREEN} 888  ooo. .oo.   oooo    ooo  .ooooo.  oooo   .ooooo.   .ooooo.    ${AnsiColor.RED} 888b     d'888   .oooo.o
+  ${AnsiColor.GREEN} 888  `888P"Y88b   `88.  .8'  d88' `88b `888  d88' `"Y8 d88' `88b   ${AnsiColor.RED} 8 Y88. .P  888  d88(  "8
+  ${AnsiColor.GREEN} 888   888   888    `88..8'   888   888  888  888       888ooo888   ${AnsiColor.RED} 8  `888'   888  `"Y88b.
+  ${AnsiColor.GREEN} 888   888   888     `888'    888   888  888  888   .o8 888    .o   ${AnsiColor.RED} 8    Y     888  o.  )88b
+  ${AnsiColor.GREEN}o888o o888o o888o     `8'     `Y8bod8P' o888o `Y8bod8P' `Y8bod8P'   ${AnsiColor.RED}o8o        o888o 8""888P'
+
+${AnsiColor.RED}:: http://devops.uz ::${AnsiColor.DEFAULT}

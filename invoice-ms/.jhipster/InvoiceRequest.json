@@ -1,0 +1,34 @@
+{
+  "applications": "*",
+  "changelogDate": "20230428150217",
+  "clientRootFolder": "invoicems",
+  "databaseType": "sql",
+  "dto": "mapstruct",
+  "embedded": false,
+  "entityTableName": "invoice_request",
+  "fields": [
+    {
+      "fieldName": "status",
+      "fieldType": "Status",
+      "fieldTypeJavadoc": "Статус",
+      "fieldValues": "NEW,ACTIVE,DELETED,SUCCESS,ERROR,WAITING,CANCELLED,UNKNOWN",
+      "javadoc": "Статус запроса счёт-фактуры"
+    },
+    {
+      "fieldName": "requestJson",
+      "fieldType": "byte[]",
+      "fieldTypeBlobContent": "text",
+      "fieldValidateRules": ["required"],
+      "javadoc": "Запрос в json формате"
+    }
+  ],
+  "fluentMethods": true,
+  "javadoc": "Запрос счета-фактуры",
+  "jpaMetamodelFiltering": true,
+  "microserviceName": "invoicems",
+  "name": "InvoiceRequest",
+  "pagination": "pagination",
+  "readOnly": false,
+  "relationships": [],
+  "service": "serviceImpl"
+}

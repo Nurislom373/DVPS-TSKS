@@ -1,0 +1,11 @@
+id;status;request_json
+1;ERROR;../fake-data/blob/hipster.txt
+2;DELETED;../fake-data/blob/hipster.txt
+3;NEW;../fake-data/blob/hipster.txt
+4;ERROR;../fake-data/blob/hipster.txt
+5;WAITING;../fake-data/blob/hipster.txt
+6;WAITING;../fake-data/blob/hipster.txt
+7;DELETED;../fake-data/blob/hipster.txt
+8;CANCELLED;../fake-data/blob/hipster.txt
+9;ERROR;../fake-data/blob/hipster.txt
+10;NEW;../fake-data/blob/hipster.txt

@@ -1,0 +1,33 @@
+{
+  "applications": "*",
+  "changelogDate": "20230502150217",
+  "clientRootFolder": "invoicems",
+  "databaseType": "sql",
+  "dto": "mapstruct",
+  "embedded": false,
+  "entityTableName": "transaction_param",
+  "fields": [
+    {
+      "fieldName": "status",
+      "fieldType": "Status",
+      "fieldTypeJavadoc": "Статус",
+      "fieldValues": "NEW,ACTIVE,DELETED,SUCCESS,ERROR,WAITING,CANCELLED,UNKNOWN",
+      "javadoc": "TransactionParam status"
+    },
+    {
+      "fieldName": "transactionId",
+      "fieldType": "Long",
+      "fieldValidateRules": ["required"],
+      "javadoc": "Transaction id on bm-db"
+    }
+  ],
+  "fluentMethods": true,
+  "javadoc": "TransactionParam",
+  "jpaMetamodelFiltering": true,
+  "microserviceName": "invoicems",
+  "name": "TransactionParam",
+  "pagination": "pagination",
+  "readOnly": false,
+  "relationships": [],
+  "service": "serviceImpl"
+}
