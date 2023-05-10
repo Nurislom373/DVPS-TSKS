@@ -7,6 +7,7 @@ import org.khasanof.ratelimitingwithspring.core.RateLimiting;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 public class BaseUtils {
 
@@ -37,6 +38,10 @@ public class BaseUtils {
 
     public static List<Long> returnIds(List<Api> apis) {
         return apis.stream().map(Api::getId).toList();
+    }
+
+    public static boolean getOrDefault(Supplier<Boolean> supplier) {
+        return supplier.get();
     }
 
 }

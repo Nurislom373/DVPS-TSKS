@@ -3,6 +3,7 @@ package org.khasanof.ratelimitingwithspring.core.validator;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.khasanof.ratelimitingwithspring.core.exceptions.InvalidValidationException;
 
 /**
  * Author: Nurislom
@@ -19,7 +20,7 @@ import lombok.ToString;
 public class ValidatorResult {
 
     private boolean success;
-    private Exception exception;
+    private String message;
     private Object data;
 
     public ValidatorResult success(boolean success) {
@@ -28,17 +29,17 @@ public class ValidatorResult {
         return this;
     }
 
-    public ValidatorResult success(boolean success, RuntimeException exception) {
+    public ValidatorResult success(boolean success, String message) {
         this.success = success;
         if (!success) {
-            this.exception = exception;
+            this.message = message;
         }
         return this;
     }
 
-    public ValidatorResult failed(Exception e) {
+    public ValidatorResult failed(String message) {
         this.success = false;
-        this.exception = e;
+        this.message = message;
         return this;
     }
 

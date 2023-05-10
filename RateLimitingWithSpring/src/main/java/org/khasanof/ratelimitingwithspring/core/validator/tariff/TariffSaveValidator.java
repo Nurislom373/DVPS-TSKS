@@ -31,16 +31,13 @@ public class TariffSaveValidator implements BaseValidator {
     public ValidatorResult validatorRSTariff(RSTariff tariff) {
         if (tariff.getTimeCount() < 1) {
             log.error("RSTariff field => timeCount is less than one! (Object) : {}", tariff);
-            return new ValidatorResult().failed(
-                    new InvalidValidationException("RSTariff field => timeCount is less than one!"));
+            return new ValidatorResult().failed("RSTariff field => timeCount is less than one!");
         } else if (tariff.getRequestCount() < 1) {
             log.error("RSTariff field => requestCount is less than one! (Object) : {}", tariff);
-            return new ValidatorResult().failed(
-                    new InvalidValidationException("RSTariff field => requestCount is less than one!"));
+            return new ValidatorResult().failed("RSTariff field => requestCount is less than one!");
         } else if (StringUtils.isAlpha(tariff.getName()) && StringUtils.isAllUpperCase(tariff.getName())) {
             log.error("RSTariff field => name must contain only letters and upperCase! (Object) : {}", tariff);
-            return new ValidatorResult().failed(
-                    new InvalidValidationException("RSTariff field => name must contain only letters and upperCase!"));
+            return new ValidatorResult().failed("RSTariff field => name must contain only letters and upperCase!");
         }
         return new ValidatorResult().success(true);
     }

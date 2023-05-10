@@ -64,12 +64,12 @@ public class RegisterLimitsValidator implements BaseValidator {
         if (optional.isPresent()) {
             Boolean exists = pricingApiRepository.existsByKeyAndLimited_Api(key, optional.get());
             if (exists) {
-                return new ValidatorResult().failed(new AlreadyRegisteredException("Already Get this API"));
+                return new ValidatorResult().failed("Already Get this API");
             } else {
                 return new ValidatorResult().success(true);
             }
         } else {
-            return new ValidatorResult().failed(new NotFoundException("API not found"));
+            return new ValidatorResult().failed("API not found");
         }
     }
 

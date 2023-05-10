@@ -53,7 +53,7 @@ public class CommonLimitsService extends AbstractCommonLimitsService {
         if (result.isSuccess()) {
             registerLimits.registrationOfLimits(key, limits);
         } else {
-            throw new RuntimeException(result.getException().getMessage());
+            throw new RuntimeException(result.getMessage());
         }
     }
 

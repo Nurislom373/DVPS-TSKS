@@ -48,7 +48,7 @@ public class RegisterTariffValidator implements BaseValidator {
                 .map(this::regsTariffApiMatchApiGet).toList();
         List<PricingTariff> allByKey = pricingTariffRepository.findAllByKey(key);
         if (!checkAlreadySellAPI(allByKey, collect)) {
-            return new ValidatorResult().failed(new RuntimeException("API match found!"));
+            return new ValidatorResult().failed("API match found!");
         } else {
             return new ValidatorResult().success(true);
         }

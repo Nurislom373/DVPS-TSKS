@@ -43,7 +43,7 @@ public class RegisterLTValidator {
                             registerTariffValidator.validatorTariffs(key, limitsToTariffs(limits)))
                     .allMatch(ValidatorResult::isSuccess));
         } else {
-            return new ValidatorResult().failed(allAPIsAreUnique.getException());
+            return new ValidatorResult().failed(allAPIsAreUnique.getMessage());
         }
     }
 
@@ -78,13 +78,12 @@ public class RegisterLTValidator {
         if (regsLimits.size() == limits.size()) {
             return new ValidatorResult().success(true);
         } else {
-            return new ValidatorResult().failed(new NotRegisteredException(ExceptionProperties.REGISTER_TWO_SAME_API));
+            return new ValidatorResult().failed(ExceptionProperties.REGISTER_TWO_SAME_API);
         }
     }
 
     private ValidatorResult checkThatAllAPIsAreUnique(List<REGSLimit> limits) {
-        return new ValidatorResult().success(checkUnique(limits, this::equals),
-                new NotRegisteredException(ExceptionProperties.REGISTER_TWO_SAME_API));
+        return new ValidatorResult().success(checkUnique(limits, this::equals), ExceptionProperties.REGISTER_TWO_SAME_API);
     }
 
     private boolean checkUnique(List<REGSLimit> limits, BiFunction<REGSLimit, REGSLimit, Boolean> function) {

@@ -27,7 +27,9 @@ public class RateLimitInterceptor implements HandlerInterceptor {
 
     private static final String HEADER_LIMIT_REMAINING = "X-Rate-Limit-Remaining";
     private static final String HEADER_RETRY_AFTER = "X-Rate-Limit-Retry-After-Seconds";
+
     private final CommonLimitsService commonLimitsService;
+
     private final ReadLimitsPropertiesConfig propertiesConfig;
 
     @Override
