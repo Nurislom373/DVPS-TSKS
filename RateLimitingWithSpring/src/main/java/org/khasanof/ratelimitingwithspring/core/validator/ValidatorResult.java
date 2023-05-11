@@ -19,12 +19,14 @@ import org.khasanof.ratelimitingwithspring.core.exceptions.InvalidValidationExce
 @ToString
 public class ValidatorResult {
 
+    public static final String DEFAULT_MESSAGE = "All Checks Passed";
     private boolean success;
     private String message;
     private Object data;
 
     public ValidatorResult success(boolean success) {
         this.success = success;
+        this.message = DEFAULT_MESSAGE;
         this.data = null;
         return this;
     }
@@ -33,6 +35,8 @@ public class ValidatorResult {
         this.success = success;
         if (!success) {
             this.message = message;
+        } else {
+            this.message = DEFAULT_MESSAGE;
         }
         return this;
     }

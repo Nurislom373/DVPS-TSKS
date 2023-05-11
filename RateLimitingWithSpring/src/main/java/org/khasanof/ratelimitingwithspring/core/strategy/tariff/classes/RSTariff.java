@@ -5,6 +5,8 @@ import org.khasanof.ratelimitingwithspring.core.domain.enums.RequestType;
 import org.khasanof.ratelimitingwithspring.core.domain.enums.TimeType;
 import org.khasanof.ratelimitingwithspring.core.strategy.BaseRS;
 
+import java.util.Objects;
+
 /**
  * Author: Nurislom
  * <br/>
@@ -19,7 +21,6 @@ import org.khasanof.ratelimitingwithspring.core.strategy.BaseRS;
 @Builder
 @ToString
 @AllArgsConstructor
-@EqualsAndHashCode
 @NoArgsConstructor
 public class RSTariff implements BaseRS {
     private String name;
@@ -27,4 +28,19 @@ public class RSTariff implements BaseRS {
     private Long requestCount;
     private TimeType timeType;
     private Long timeCount;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RSTariff rsTariff = (RSTariff) o;
+        return Objects.equals(name, rsTariff.name) && requestType == rsTariff.requestType &&
+                Objects.equals(requestCount, rsTariff.requestCount) && timeType == rsTariff.timeType &&
+                Objects.equals(timeCount, rsTariff.timeCount);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, requestType, requestCount, timeType, timeCount);
+    }
 }
