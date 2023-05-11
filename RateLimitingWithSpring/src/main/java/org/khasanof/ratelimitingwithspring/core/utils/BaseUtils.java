@@ -7,6 +7,7 @@ import org.khasanof.ratelimitingwithspring.core.RateLimiting;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 public class BaseUtils {
@@ -22,11 +23,14 @@ public class BaseUtils {
     }
 
     public static boolean areEqual(Map<String, String> first, Map<String, String> second) {
-        if (first.size() != second.size()) {
-            return false;
+        if (Objects.nonNull(first) && Objects.nonNull(second)) {
+            if (first.size() != second.size()) {
+                return false;
+            }
+            return first.entrySet().stream()
+                    .allMatch(e -> e.getValue().equals(second.get(e.getKey())));
         }
-        return first.entrySet().stream()
-                .allMatch(e -> e.getValue().equals(second.get(e.getKey())));
+        return false;
     }
 
     public static boolean areEqual(Collection<Long> collection1, Collection<Long> collection2) {

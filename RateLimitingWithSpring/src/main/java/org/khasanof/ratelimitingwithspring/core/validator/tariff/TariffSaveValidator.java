@@ -26,6 +26,7 @@ import java.util.Objects;
 public class TariffSaveValidator implements BaseValidator {
 
     public ValidatorResult validatorRSTariff(List<RSTariff> list) {
+        log.info("validatorRSTariff method started to be execute");
         if (list != null && list.size() >= 1) {
             ValidatorResult validatorResult = new ValidatorResult().success(list.stream()
                     .map(this::validatorRSTariff).allMatch(ThrowingPredicate::isTrue));

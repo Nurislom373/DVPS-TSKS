@@ -140,7 +140,7 @@ public class TariffSaveValidatorTest {
         );
     }
 
-    private List<RSTariff> simpleThree() {
+    private static List<RSTariff> simpleThree() {
         return List.of(
                 new RSTariff("FREE", RequestType.LIMIT, 100L, TimeType.DAY, 1L),
                 new RSTariff("BASIC", RequestType.LIMIT, 1000L, TimeType.DAY, 1L),
