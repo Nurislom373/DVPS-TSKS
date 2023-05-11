@@ -8,13 +8,9 @@ import org.khasanof.ratelimitingwithspring.core.utils.functional.ThrowingPredica
 import org.khasanof.ratelimitingwithspring.core.validator.BaseValidator;
 import org.khasanof.ratelimitingwithspring.core.validator.ValidatorResult;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Stream;
 
 /**
  * Author: Nurislom
@@ -30,17 +26,26 @@ import java.util.stream.Stream;
 public class TariffSaveValidator implements BaseValidator {
 
     public ValidatorResult validatorRSTariff(List<RSTariff> list) {
-        Set<RSTariff> tariffs = new HashSet<>(list);
-        return new ValidatorResult().success(Stream.of(Objects.equals(tariffs.size(), list.size()),
-                        list.stream().map(this::validatorRSTariff).allMatch(ThrowingPredicate::isTrue))
-                .allMatch(any -> any));
+        if (list != null && list.size() >= 1) {
+            ValidatorResult validatorResult = new ValidatorResult().success(list.stream()
+                    .map(this::validatorRSTariff).allMatch(ThrowingPredicate::isTrue));
+            if (validatorResult.isSuccess()) {
+                if (duplicateWithName(list)) {
+                    return new ValidatorResult().success(true);
+                } else {
+                    throw new InvalidValidationException("Duplicate tariff!");
+                }
+            }
+            throw new InvalidValidationException();
+        }
+        return new ValidatorResult().failed("List is empty!");
     }
 
     public ValidatorResult validatorRSTariff(RSTariff tariff) {
-        if (tariff.getTimeCount() < 1) {
+        if (Objects.isNull(tariff.getTimeCount()) || tariff.getTimeCount() < 1) {
             log.error("RSTariff field => timeCount is less than one! (Object) : {}", tariff);
             return new ValidatorResult().failed("RSTariff field => timeCount is less than one!");
-        } else if (tariff.getRequestCount() < 1) {
+        } else if (Objects.isNull(tariff.getRequestCount()) || tariff.getRequestCount() < 1) {
             log.error("RSTariff field => requestCount is less than one! (Object) : {}", tariff);
             return new ValidatorResult().failed("RSTariff field => requestCount is less than one!");
         } else if (!StringUtils.isAlpha(tariff.getName()) || !StringUtils.isAllUpperCase(tariff.getName())) {
@@ -54,6 +59,12 @@ public class TariffSaveValidator implements BaseValidator {
             return new ValidatorResult().failed("RSTariff field => requestType must not be null!");
         }
         return new ValidatorResult().success(true);
+    }
+
+    private boolean duplicateWithName(List<RSTariff> tariffs) {
+        return tariffs.stream().map(m -> tariffs.stream()
+                        .filter(any -> m.getName().equals(any.getName())).count())
+                .allMatch(count -> count == 1);
     }
 
 }
