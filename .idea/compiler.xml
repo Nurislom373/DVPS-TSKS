@@ -9,8 +9,8 @@
         <outputRelativeToContentRoot value="true" />
         <module name="UiCachingStrategy" />
         <module name="RateLimitingTests" />
+        <module name="khasanof-rate-limiting" />
         <module name="ReactiveUiCaching" />
-        <module name="RateLimitingWithSpring" />
         <module name="DVPS-TSKS" />
       </profile>
       <profile name="Annotation profile for Jhipster Ui Caching" enabled="true">
@@ -39,6 +39,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="RateLimitingWithSpring" target="17" />
       <module name="UiCaching" target="17" />
     </bytecodeTargetLevel>
   </component>
@@ -49,6 +50,7 @@
       <module name="ReactiveUiCaching" options="-parameters" />
       <module name="UiCaching" options="-parameters" />
       <module name="UiCachingStrategy" options="-parameters" />
+      <module name="khasanof-rate-limiting" options="-parameters" />
     </option>
   </component>
 </project>

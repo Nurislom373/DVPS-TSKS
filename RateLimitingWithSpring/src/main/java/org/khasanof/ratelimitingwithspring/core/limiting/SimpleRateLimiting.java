@@ -3,10 +3,12 @@ package org.khasanof.ratelimitingwithspring.core.limiting;
 import io.github.bucket4j.Bucket;
 import io.github.bucket4j.ConsumptionProbe;
 import org.khasanof.ratelimitingwithspring.core.RateLimiting;
+import org.khasanof.ratelimitingwithspring.core.exceptions.InvalidParamException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import java.io.Serializable;
 import java.time.Instant;
@@ -122,22 +124,32 @@ public class SimpleRateLimiting implements RateLimiting {
 
     @Override
     public Long availableRefill() {
-        return null;
+        return localRateLimiting.getRefillCount();
     }
 
     @Override
     public void replaceConfiguration(LocalRateLimiting rateLimiting) {
-
+        // TODO rewrite
     }
 
     @Override
     public void addRefill(Long refillCount) {
-
+        Assert.notNull(refillCount, "refillCount must not null");
+        if (refillCount >= 1) {
+            localRateLimiting.setRefillCount(refillCount);
+        } else {
+            throw new InvalidParamException("refillCount param is less than one! must be greater or equal one");
+        }
     }
 
     @Override
     public void addTokens(Long tokenCount) {
-
+        Assert.notNull(tokenCount, "tokenCount must not null");
+        if (tokenCount >= 1) {
+            localRateLimiting.setToken(tokenCount);
+        } else {
+            throw new InvalidParamException("tokenCount param is less than one! must be greater or equal one");
+        }
     }
 
     @Override

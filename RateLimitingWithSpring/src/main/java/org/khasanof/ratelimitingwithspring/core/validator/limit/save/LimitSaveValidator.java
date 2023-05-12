@@ -1,21 +1,18 @@
 package org.khasanof.ratelimitingwithspring.core.validator.limit.save;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.khasanof.ratelimitingwithspring.core.exceptions.InvalidValidationException;
 import org.khasanof.ratelimitingwithspring.core.strategy.limit.classes.RSLimit;
 import org.khasanof.ratelimitingwithspring.core.strategy.limit.classes.RSLimitPlan;
 import org.khasanof.ratelimitingwithspring.core.utils.BaseUtils;
-import org.khasanof.ratelimitingwithspring.core.validator.BaseValidator;
 import org.khasanof.ratelimitingwithspring.core.utils.functional.ThrowingPredicate;
+import org.khasanof.ratelimitingwithspring.core.validator.BaseValidator;
 import org.khasanof.ratelimitingwithspring.core.validator.ValidatorResult;
 import org.springframework.stereotype.Component;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Stream;
 
 /**
@@ -88,9 +85,13 @@ public class LimitSaveValidator implements BaseValidator {
     }
 
     private ValidatorResult checkPlans(List<RSLimitPlan> plans) {
-        return new ValidatorResult().success(plans.stream()
-                .map(this::checkPlan)
-                .allMatch(ThrowingPredicate::isTrue));
+        if (Objects.nonNull(plans) && !plans.isEmpty()) {
+            return new ValidatorResult().success(plans.stream()
+                    .map(this::checkPlan)
+                    .allMatch(ThrowingPredicate::isTrue));
+        } else {
+            return new ValidatorResult().failed("RSLimit field => plans is null or empty!");
+        }
     }
 
     private ValidatorResult checkPlan(RSLimitPlan plan) {
