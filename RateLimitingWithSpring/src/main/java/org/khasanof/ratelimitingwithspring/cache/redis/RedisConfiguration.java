@@ -63,7 +63,7 @@ public class RedisConfiguration {
     public RedisCacheManagerBuilderCustomizer redisCacheManagerBuilderCustomizer() {
         return (builder) -> builder
                 .withCacheConfiguration("limits",
-                        RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofSeconds(20)));
+                        RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofDays(1)));
     }
 
 }
