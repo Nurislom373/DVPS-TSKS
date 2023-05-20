@@ -21,16 +21,12 @@ import org.khasanof.ratelimitingwithspring.core.domain.embeddable.LimitsEmbeddab
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = true)
 @Table(name = "limited", uniqueConstraints = {
         @UniqueConstraint(columnNames = "id"),
         @UniqueConstraint(columnNames = {"api_id", "plan"})
 })
-public class Limited {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Limited extends Auditable {
 
     @ManyToOne
     @JoinColumn(name = "api_id", referencedColumnName = "id",

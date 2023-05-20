@@ -20,15 +20,12 @@ import org.khasanof.ratelimitingwithspring.core.domain.embeddable.LimitsEmbeddab
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 @Table(name = "pricing_api", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"id"}),
         @UniqueConstraint(columnNames = {"key", "limited_id"})
 })
-public class PricingApi {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class PricingApi extends Auditable {
 
     @Column(name = "key", nullable = false)
     private String key;

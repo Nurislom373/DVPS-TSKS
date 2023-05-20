@@ -5,7 +5,6 @@ import lombok.*;
 import org.khasanof.ratelimitingwithspring.core.domain.embeddable.LimitsEmbeddable;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * Author: Nurislom
@@ -22,17 +21,13 @@ import java.util.Set;
 @Builder
 @ToString
 @NoArgsConstructor
-@EqualsAndHashCode
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 @Table(name = "pricing_tariff", uniqueConstraints = {
         @UniqueConstraint(name = "uniqueId", columnNames = "id"),
         @UniqueConstraint(name = "uniqueKeyTariff", columnNames = {"key", "package_id"})
 })
-public class PricingTariff {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class PricingTariff extends Auditable {
 
     @Column(name = "key", nullable = false, updatable = false)
     private String key;

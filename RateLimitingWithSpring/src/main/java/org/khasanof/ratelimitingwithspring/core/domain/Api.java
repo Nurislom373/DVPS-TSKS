@@ -23,14 +23,11 @@ import java.util.Map;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 @Table(name = "api", uniqueConstraints = {
         @UniqueConstraint(columnNames = "id")
 })
-public class Api implements Serializable {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Api extends Auditable {
 
     @Basic(optional = false)
     private String url;
