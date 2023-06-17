@@ -1,8 +1,9 @@
-package org.khasanof.ratelimitingwithspring.core.common.search;
+package org.khasanof.ratelimitingwithspring.core.common.search.impls;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.khasanof.ratelimitingwithspring.core.RateLimiting;
+import org.khasanof.ratelimitingwithspring.core.common.search.RateLimitingSearch;
 import org.khasanof.ratelimitingwithspring.core.common.search.classes.PTA;
 import org.khasanof.ratelimitingwithspring.core.common.search.classes.RLSearch;
 import org.khasanof.ratelimitingwithspring.core.domain.Api;
@@ -29,10 +30,11 @@ import java.util.Optional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class RateLimitingSearchKeys {
+public class RateLimitingSearchConcurrentMap implements RateLimitingSearch {
 
     private final ConcurrentMapUtility mapUtility;
 
+    @Override
     public RateLimiting searchKeys(RLSearch search) {
         Assert.notNull(search, "search param is null!");
 

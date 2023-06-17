@@ -1,7 +1,7 @@
 package org.khasanof.ratelimitingwithspring.core.event;
 
-import lombok.RequiredArgsConstructor;
-import org.khasanof.ratelimitingwithspring.cache.redis.RedisUtility;
+import org.khasanof.ratelimitingwithspring.cache.CacheOperations;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
@@ -15,10 +15,13 @@ import org.springframework.stereotype.Component;
  * Package: org.khasanof.ratelimitingwithspring.core.event
  */
 @Component
-@RequiredArgsConstructor
 public class RedisHashUpdateEventHandler {
 
-    private final RedisUtility redisUtility;
+    private final CacheOperations redisUtility;
+
+    public RedisHashUpdateEventHandler(@Qualifier("ehCacheService") CacheOperations redisUtility) {
+        this.redisUtility = redisUtility;
+    }
 
     @EventListener
     public void handleEvent(LimitUpdateEvent event) {

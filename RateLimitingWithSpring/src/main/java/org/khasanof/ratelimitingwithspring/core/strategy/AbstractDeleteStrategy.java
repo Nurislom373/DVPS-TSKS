@@ -5,6 +5,7 @@ import org.khasanof.ratelimitingwithspring.core.RateLimiting;
 import org.khasanof.ratelimitingwithspring.core.common.search.classes.PTA;
 
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Author: Nurislom
@@ -20,6 +21,6 @@ public abstract class AbstractDeleteStrategy<R> {
 
     protected final R repository;
 
-    public abstract void delete(Map.Entry<String, Map<PTA, RateLimiting>> entry);
+    public abstract void delete(Map.Entry<String, PTA> setEntry);
 
 }

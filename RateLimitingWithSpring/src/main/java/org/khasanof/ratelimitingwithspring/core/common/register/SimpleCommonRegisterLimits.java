@@ -2,16 +2,16 @@ package org.khasanof.ratelimitingwithspring.core.common.register;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.khasanof.ratelimitingwithspring.core.RateLimiting;
+import org.khasanof.ratelimitingwithspring.cache.ehcache.EhCacheService;
 import org.khasanof.ratelimitingwithspring.core.common.register.classes.REGSLimit;
 import org.khasanof.ratelimitingwithspring.core.common.register.classes.REGSTariff;
 import org.khasanof.ratelimitingwithspring.core.common.register.classes.REGSTariffApi;
 import org.khasanof.ratelimitingwithspring.core.common.search.classes.PTA;
 import org.khasanof.ratelimitingwithspring.core.domain.*;
+import org.khasanof.ratelimitingwithspring.core.limiting.LocalRateLimiting;
 import org.khasanof.ratelimitingwithspring.core.repository.*;
 import org.khasanof.ratelimitingwithspring.core.utils.BaseUtils;
-import org.khasanof.ratelimitingwithspring.core.utils.CacheValueBuilder;
-import org.khasanof.ratelimitingwithspring.core.utils.ConcurrentMapUtility;
+import org.khasanof.ratelimitingwithspring.core.utils.valueBuilder.CacheValueBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
@@ -38,7 +38,7 @@ public class SimpleCommonRegisterLimits implements CommonRegisterLimits {
     private final PricingTariffRepository pricingTariffRepository;
     private final TariffRepository tariffRepository;
     private final ApiRepository apiRepository;
-    private final ConcurrentMapUtility mapUtility;
+    private final EhCacheService ehCacheService;
     private final CacheValueBuilder cacheValueBuilder;
 
     @Override
@@ -52,8 +52,8 @@ public class SimpleCommonRegisterLimits implements CommonRegisterLimits {
                 .peek(pricingApiRepository::saveAndFlush)
                 .toList();
 
-        Map<PTA, RateLimiting> ptaRateLimitingMap = cacheValueBuilder.convertApiListToMap(apiEntityList);
-        mapUtility.add(key, ptaRateLimitingMap);
+        Map<PTA, LocalRateLimiting> ptaRateLimitingMap = cacheValueBuilder.pricingAPIListToMap(apiEntityList);
+        ehCacheService.addValues(key, ptaRateLimitingMap);
     }
 
     @Override
@@ -66,8 +66,8 @@ public class SimpleCommonRegisterLimits implements CommonRegisterLimits {
                 .peek(pricingTariffRepository::saveAndFlush)
                 .toList();
 
-        Map<PTA, RateLimiting> ptaRateLimitingMap = cacheValueBuilder.convertTariffListToMap(pricingTariffs);
-        mapUtility.add(key, ptaRateLimitingMap);
+        Map<PTA, LocalRateLimiting> ptaRateLimitingMap = cacheValueBuilder.pricingTariffListToMap(pricingTariffs);
+        ehCacheService.addValues(key, ptaRateLimitingMap);
     }
 
     private PricingTariff buildPricingTariffEntity(String key, REGSTariff tariff) {

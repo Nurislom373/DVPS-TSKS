@@ -1,6 +1,7 @@
 package org.khasanof.ratelimitingwithspring.core;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -16,9 +17,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
 
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Component
@@ -31,6 +33,7 @@ public class RateLimitInterceptor implements HandlerInterceptor {
     private final CommonLimitsService commonLimitsService;
 
     private final ReadLimitsPropertiesConfig propertiesConfig;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -68,12 +71,7 @@ public class RateLimitInterceptor implements HandlerInterceptor {
                 response.addHeader(HEADER_LIMIT_REMAINING, String.valueOf(availableToken));
                 return true;
             } else {
-                response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-                response.addHeader(HEADER_RETRY_AFTER, String.valueOf(TimeUnit.NANOSECONDS.toSeconds(
-                        rateLimiting.getNanosToWaitForRefill()))); // refill seconds
-                response.sendError(result.getStatus().value(), result.getMessage()); // 429, 400
-
-                return false;
+                return makeResponseToResult(response, result);
             }
         } else {
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
@@ -81,6 +79,16 @@ public class RateLimitInterceptor implements HandlerInterceptor {
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             return false;
         }
+    }
+
+    private boolean makeResponseToResult(HttpServletResponse response, SimpleRateLimiting.Result result) throws IOException {
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.addHeader(HEADER_RETRY_AFTER, String.valueOf(result.getRefillNanoSeconds())); // refill seconds
+        response.sendError(result.getStatus().value()); // 429, 400
+        Map<String, String> error = new HashMap<>();
+        error.put("message", result.getMessage());
+        objectMapper.writeValue(response.getOutputStream(), error);
+        return false;
     }
 
 

@@ -2,6 +2,7 @@ package org.khasanof.ratelimitingwithspring.cache.ehcache;
 
 import org.ehcache.spi.serialization.Serializer;
 import org.ehcache.spi.serialization.SerializerException;
+import org.khasanof.ratelimitingwithspring.cache.MergeValue;
 
 import java.io.*;
 import java.nio.ByteBuffer;

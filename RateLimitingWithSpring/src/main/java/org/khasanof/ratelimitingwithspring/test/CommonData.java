@@ -35,7 +35,7 @@ public class CommonData implements CommandLineRunner {
      */
     @Override
     public void run(String... args) throws Exception {
-        keyFive();
+//        registerTariffsFirst();
     }
 
     private void limitRegister() {
@@ -85,7 +85,7 @@ public class CommonData implements CommandLineRunner {
         );
 
 //        commonLimitsService.registrationOfLimits(key2, limits);
-        commonLimitsService.registrationOfLimits(key1, limits);
+//        commonLimitsService.registrationOfLimits(key1, limits);
 //        commonLimitsService.registrationOfTariffs(key1, key1Tariff);
     }
 

@@ -1,6 +1,6 @@
 package org.khasanof.ratelimitingwithspring.cache.redis;
 
-import org.khasanof.ratelimitingwithspring.cache.ehcache.MergeValue;
+import org.khasanof.ratelimitingwithspring.cache.MergeValue;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.serializer.support.DeserializingConverter;
 import org.springframework.core.serializer.support.SerializingConverter;

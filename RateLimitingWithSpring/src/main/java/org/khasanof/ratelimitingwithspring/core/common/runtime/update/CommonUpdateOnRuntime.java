@@ -2,17 +2,16 @@ package org.khasanof.ratelimitingwithspring.core.common.runtime.update;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.khasanof.ratelimitingwithspring.cache.ehcache.EhCacheService;
 import org.khasanof.ratelimitingwithspring.core.common.search.classes.PTA;
-import org.khasanof.ratelimitingwithspring.core.domain.*;
+import org.khasanof.ratelimitingwithspring.core.domain.PricingApi;
+import org.khasanof.ratelimitingwithspring.core.domain.PricingTariff;
 import org.khasanof.ratelimitingwithspring.core.domain.embeddable.LimitsEmbeddable;
 import org.khasanof.ratelimitingwithspring.core.domain.enums.PricingType;
-import org.khasanof.ratelimitingwithspring.core.exceptions.NotFoundException;
 import org.khasanof.ratelimitingwithspring.core.limiting.LocalRateLimiting;
-import org.khasanof.ratelimitingwithspring.core.RateLimiting;
 import org.khasanof.ratelimitingwithspring.core.repository.PricingApiRepository;
 import org.khasanof.ratelimitingwithspring.core.repository.PricingTariffRepository;
 import org.khasanof.ratelimitingwithspring.core.utils.BaseUtils;
-import org.khasanof.ratelimitingwithspring.core.utils.ConcurrentMapUtility;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -35,27 +34,26 @@ import java.util.stream.Collectors;
 public class CommonUpdateOnRuntime implements UpdateOnRuntime {
 
     private final PricingTariffRepository pricingTariffRepository;
-    private final ConcurrentMapUtility concurrentMapUtility;
     private final PricingApiRepository pricingApiRepository;
+    private final EhCacheService ehCacheService;
 
     @Override
     public void updateWithKey(String key) {
-        updateWithKey(key, concurrentMapUtility.get(key)
-                .orElseThrow(RuntimeException::new));
+        // TODO rewriting..
     }
 
     @Override
-    public void updateWithKey(String key, Map<PTA, RateLimiting> limitingMap) {
-        Map<PricingType, List<Map.Entry<PTA, RateLimiting>>> listMap = limitingMap.entrySet().stream()
+    public void updateWithKey(String key, Map<PTA, LocalRateLimiting> limitingMap) {
+        Map<PricingType, List<Map.Entry<PTA, LocalRateLimiting>>> listMap = limitingMap.entrySet().stream()
                 .collect(Collectors.groupingBy(e -> e.getKey().getPricingType()));
 
         log.info("key - {}, Pricings Size - {}", key, limitingMap.size());
 
-        List<Map.Entry<PTA, RateLimiting>> entriesApi = listMap.get(PricingType.API);
-        List<Map.Entry<PTA, RateLimiting>> entriesTariff = listMap.get(PricingType.TARIFF);
+        List<Map.Entry<PTA, LocalRateLimiting>> entriesApi = listMap.get(PricingType.API);
+        List<Map.Entry<PTA, LocalRateLimiting>> entriesTariff = listMap.get(PricingType.TARIFF);
 
         if (Objects.nonNull(entriesApi)) {
-            for (Map.Entry<PTA, RateLimiting> entry : entriesApi) {
+            for (Map.Entry<PTA, LocalRateLimiting> entry : entriesApi) {
                 PricingApi pricingApiWithEntry = getPricingApiWithEntry(key, entry);
                 if (updatePricing(entry.getValue(), pricingApiWithEntry)) {
                     log.info("Update Api - {}", pricingApiWithEntry);
@@ -67,7 +65,7 @@ public class CommonUpdateOnRuntime implements UpdateOnRuntime {
 
         if (Objects.nonNull(entriesTariff)) {
             List<PricingTariff> tariffList = getPricingTariffWithEntry(key);
-            for (Map.Entry<PTA, RateLimiting> entry : entriesTariff) {
+            for (Map.Entry<PTA, LocalRateLimiting> entry : entriesTariff) {
                 PricingTariff tariff = matchPricingReturn(entry, tariffList);
                 if (updatePricing(entry.getValue(), tariff)) {
                     log.info("Update Tariff - {}", tariff);
@@ -78,7 +76,7 @@ public class CommonUpdateOnRuntime implements UpdateOnRuntime {
         log.warn("entriesTariff is null!");
     }
 
-    private PricingApi getPricingApiWithEntry(String key, Map.Entry<PTA, RateLimiting> entry) {
+    private PricingApi getPricingApiWithEntry(String key, Map.Entry<PTA, LocalRateLimiting> entry) {
         return pricingApiRepository.findByQuery(key, entry.getKey().getApis().get(0))
                 .orElseThrow(() -> new RuntimeException("PricingApi not found!"));
     }
@@ -87,19 +85,19 @@ public class CommonUpdateOnRuntime implements UpdateOnRuntime {
         return pricingTariffRepository.findAllByKey(key);
     }
 
-    private PricingTariff matchPricingReturn(Map.Entry<PTA, RateLimiting> entry, List<PricingTariff> tariffs) {
+    private PricingTariff matchPricingReturn(Map.Entry<PTA, LocalRateLimiting> entry, List<PricingTariff> tariffs) {
         return tariffs.stream().filter(f -> BaseUtils.areEqual(
                         BaseUtils.returnIds(entry.getKey().getApis()), f.getApis()))
                 .peek(p -> log.info("Show Filtering PricingTariff - {}", p))
                 .findFirst().orElseThrow(() -> new RuntimeException("PricingTariff not found"));
     }
 
-    private boolean updatePricing(RateLimiting rateLimiting, PricingTariff tariff) {
-        return copyProperties(rateLimiting.getLocalRateLimiting(), tariff);
+    private boolean updatePricing(LocalRateLimiting localRateLimiting, PricingTariff tariff) {
+        return copyProperties(localRateLimiting, tariff);
     }
 
-    private boolean updatePricing(RateLimiting rateLimiting, PricingApi tariff) {
-        return copyProperties(rateLimiting.getLocalRateLimiting(), tariff);
+    private boolean updatePricing(LocalRateLimiting localRateLimiting, PricingApi tariff) {
+        return copyProperties(localRateLimiting, tariff);
     }
 
     private boolean copyProperties(LocalRateLimiting localRateLimiting, PricingTariff tariff) {

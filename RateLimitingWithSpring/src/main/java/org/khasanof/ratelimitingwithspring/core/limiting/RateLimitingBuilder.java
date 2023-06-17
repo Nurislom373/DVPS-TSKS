@@ -1,10 +1,7 @@
 package org.khasanof.ratelimitingwithspring.core.limiting;
 
-import io.github.bucket4j.Bandwidth;
-import io.github.bucket4j.Bucket;
-import io.github.bucket4j.Refill;
-
 import java.time.Duration;
+import java.time.Instant;
 
 public class RateLimitingBuilder {
 
@@ -32,16 +29,12 @@ public class RateLimitingBuilder {
     }
 
     public SimpleRateLimiting build() {
-        Bandwidth bandwidth = Bandwidth.classic(rateLimiting.getUndiminishedCount(),
-                Refill.intervally(rateLimiting.getUndiminishedCount(), rateLimiting.getDuration()))
-                .withInitialTokens(rateLimiting.getToken());
-        Bucket bucket = Bucket.builder()
-                .addLimit(bandwidth)
-                .build();
-        rateLimiting.setBucket(bucket);
-        SimpleRateLimiting limiting = new SimpleRateLimiting();
+        rateLimiting.setCreatedAt(Instant.now());
+        SimpleRateLimiting limiting = new SimpleRateLimiting(null);
         limiting.addLocalBuilder(rateLimiting);
         return limiting;
     }
+
+
 
 }

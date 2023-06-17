@@ -2,14 +2,14 @@ package org.khasanof.ratelimitingwithspring.core.common.load;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.khasanof.ratelimitingwithspring.cache.ehcache.EhCacheService;
 import org.khasanof.ratelimitingwithspring.core.common.search.classes.PTA;
 import org.khasanof.ratelimitingwithspring.core.domain.PricingApi;
 import org.khasanof.ratelimitingwithspring.core.domain.PricingTariff;
-import org.khasanof.ratelimitingwithspring.core.RateLimiting;
+import org.khasanof.ratelimitingwithspring.core.limiting.LocalRateLimiting;
 import org.khasanof.ratelimitingwithspring.core.repository.PricingApiRepository;
 import org.khasanof.ratelimitingwithspring.core.repository.PricingTariffRepository;
-import org.khasanof.ratelimitingwithspring.core.utils.ConcurrentMapUtility;
-import org.khasanof.ratelimitingwithspring.core.utils.CacheValueBuilder;
+import org.khasanof.ratelimitingwithspring.core.utils.valueBuilder.CacheValueBuilder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -33,35 +33,35 @@ public class CommonLoadPTAStartUp implements LoadingPTAStartUp {
 
     private final PricingApiRepository pricingApiRepository;
     private final PricingTariffRepository pricingTariffRepository;
-    private final CacheValueBuilder redisValueBuilder;
-    private final ConcurrentMapUtility mapUtility;
+    private final CacheValueBuilder cacheValueBuilder;
+    private final EhCacheService ehCacheService;
 
     @Override
     public void loadStartUp() {
         long count = Stream.of(loadPricingApi(), loadPricingTariff())
                 .flatMap(m -> m.entrySet().stream()
-                        .peek(e -> mapUtility.add(e.getKey(), e.getValue()))
+                        .peek(e -> ehCacheService.addValues(e.getKey(), e.getValue()))
                 ).count();
         log.info("All Saved Count : {}", count);
     }
 
-    private Map<String, Map<PTA, RateLimiting>> loadPricingApi() {
+    private Map<String, Map<PTA, LocalRateLimiting>> loadPricingApi() {
         long count = pricingApiRepository.count();
         if (count >= 1) {
             log.info("PricingApi Found : {}", count);
             List<PricingApi> list = pricingApiRepository.findAll();
-            return redisValueBuilder.convertApiListToInnerMap(list);
+            return cacheValueBuilder.pricingAPIListToInnerMap(list);
         }
         log.warn("PricingApi Not Found!");
         return new HashMap<>();
     }
 
-    private Map<String, Map<PTA, RateLimiting>> loadPricingTariff() {
+    private Map<String, Map<PTA, LocalRateLimiting>> loadPricingTariff() {
         long count = pricingTariffRepository.count();
         if (count >= 1) {
             log.info("PricingTariff Found : {}", count);
             List<PricingTariff> list = pricingTariffRepository.findAll();
-            return redisValueBuilder.convertTariffListToInnerMap(list);
+            return cacheValueBuilder.pricingTariffListToInnerMap(list);
         }
         log.warn("PricingTariff Not Found!");
         return new HashMap<>();

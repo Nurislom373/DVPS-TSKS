@@ -1,17 +1,21 @@
 package org.khasanof.ratelimitingwithspring.core.limiting;
 
-import io.github.bucket4j.Bucket;
-import io.github.bucket4j.ConsumptionProbe;
 import org.khasanof.ratelimitingwithspring.core.RateLimiting;
+import org.khasanof.ratelimitingwithspring.core.common.search.classes.PTA;
+import org.khasanof.ratelimitingwithspring.core.event.LimitUpdateEvent;
 import org.khasanof.ratelimitingwithspring.core.exceptions.InvalidParamException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+import org.springframework.web.context.annotation.RequestScope;
 
 import java.io.Serializable;
+import java.time.Duration;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
 /**
@@ -24,13 +28,22 @@ import java.util.Objects;
  * Package: org.khasanof.ratelimitingwithspring.core
  */
 @Service
-public class SimpleRateLimiting implements RateLimiting {
+@RequestScope
+public class SimpleRateLimiting implements RateLimiting, Serializable {
 
     public final Logger log = LoggerFactory.getLogger(this.getClass());
 
+    private final ApplicationEventPublisher eventPublisher;
+
     private LocalRateLimiting localRateLimiting;
+    private PTA pta;
+    private String key;
 
     private long nanosToWaitForRefill;
+
+    public SimpleRateLimiting(ApplicationEventPublisher eventPublisher) {
+        this.eventPublisher = eventPublisher;
+    }
 
     @Override
     public Result consumeRequest() {
@@ -44,77 +57,84 @@ public class SimpleRateLimiting implements RateLimiting {
 
     @Override
     public long getNanosToWaitForRefill() {
-        if (localRateLimiting.getRefillCount() >= 1) {
-            return this.nanosToWaitForRefill;
-        }
-        return 0;
+        return this.nanosToWaitForRefill;
     }
 
+    // This Method Copy New Class
     private Result consumerMuchAsPossible(int token) {
+        Instant endOfLimitInstant = localRateLimitingToSeconds(localRateLimiting);
+        System.out.println("rateLimitingToSeconds = " + endOfLimitInstant);
         if (localRateLimiting.isNoLimit()) {
-
-            if (localRateLimiting.getCreatedAt().isAfter(Instant.now())) {
+            if (Instant.now().compareTo(endOfLimitInstant) < 0) {
                 log.info("Working Well");
-                return new Result(true, Message.GET_NO_LIMIT, HttpStatus.OK);
+                localRateLimiting.setUpdatedAt(Instant.now());
+                eventPush(new LimitUpdateEvent(key, pta, localRateLimiting));
+                return new SimpleRateLimiting.Result(true, Message.GET_NO_LIMIT, HttpStatus.OK);
             } else {
-
                 if (localRateLimiting.getRefillCount() >= 1) {
-
                     log.info("Refill Count : {}", localRateLimiting.getRefillCount());
                     localRateLimiting.setRefillCount(localRateLimiting.getRefillCount() - 1);
                     localRateLimiting.setToken(localRateLimiting.getUndiminishedCount());
-                    return new Result(true, Message.GET_REFILL, HttpStatus.OK);
+                    localRateLimiting.setRefillUpdatedAt(Instant.now());
+                    localRateLimiting.setUpdatedAt(Instant.now());
+                    eventPush(new LimitUpdateEvent(key, pta, localRateLimiting));
+                    return new SimpleRateLimiting.Result(true, Message.GET_REFILL, HttpStatus.OK);
                 } else {
                     log.warn("Your limit has been reached!");
-                    return new Result(false, Message.LIMIT_HAS_BEEN_REACHED, HttpStatus.BAD_REQUEST);
+                    return new SimpleRateLimiting.Result(false, Message.LIMIT_HAS_BEEN_REACHED, HttpStatus.BAD_REQUEST);
                 }
-
             }
         } else {
             System.out.println("localRateLimiting = " + localRateLimiting);
-            Bucket bucket = localRateLimiting.getBucket();
-
-            long beforeConsumedTokens = bucket.getAvailableTokens();
-            log.info("Available Tokens Before Consumed : {}", beforeConsumedTokens);
-            ConsumptionProbe consumptionProbe = bucket.tryConsumeAndReturnRemaining(token);
-            if (consumptionProbe.isConsumed()) {
-
-                long afterConsumedTokens = bucket.getAvailableTokens();
-                log.info("Local Rate Limiting Tokens : {}", localRateLimiting.getToken());
-                log.info("Available Tokens After Consumed  : {}", afterConsumedTokens);
-
-                if (afterConsumedTokens < localRateLimiting.getToken()) {
-
-                    log.info("Working Well");
+            log.info("Available Tokens Before Consumed : {}", localRateLimiting.getToken());
+            if (Instant.now().compareTo(endOfLimitInstant) < 0) {
+                if (localRateLimiting.getToken() >= 1) {
                     localRateLimiting.setToken(localRateLimiting.getToken() - token);
-                    return new Result(true, Message.GET_TOKEN, HttpStatus.OK);
+                    log.info("Available Tokens After Consumed : {}", localRateLimiting.getToken());
+                    localRateLimiting.setUpdatedAt(Instant.now());
+                    eventPush(new LimitUpdateEvent(key, pta, localRateLimiting));
+                    return new SimpleRateLimiting.Result(true, Message.GET_TOKEN, HttpStatus.OK);
                 } else {
-
-                    if (localRateLimiting.getRefillCount() >= 1) {
-
-                        log.info("Refill Count : {}", localRateLimiting.getRefillCount());
-                        localRateLimiting.setRefillCount(localRateLimiting.getRefillCount() - 1);
-                        localRateLimiting.setToken(afterConsumedTokens);
-                        return new Result(true, Message.GET_REFILL, HttpStatus.OK);
-                    } else {
-
-                        log.warn("Your limit has been reached. Token Count : {}, Refill Count : {}",
-                                afterConsumedTokens, localRateLimiting.getRefillCount());
-                        return new Result(false, Message.LIMIT_HAS_BEEN_REACHED, HttpStatus.BAD_REQUEST);
-                    }
+                    long endOfLimitInstantToSeconds = getEndOfLimitInstantToSeconds(endOfLimitInstant);
+                    localRateLimiting.setUpdatedAt(Instant.now());
+                    setNanosToWaitForRefill(endOfLimitInstantToSeconds);
+                    return new SimpleRateLimiting.Result(false, Message.TOO_MANY_REQUEST,
+                            HttpStatus.TOO_MANY_REQUESTS, getNanosToWaitForRefill());
                 }
-
             } else {
-
-                log.warn("getNanosToWaitForRefill - {}", consumptionProbe.getNanosToWaitForRefill());
-                log.warn("getNanosToWaitForReset - {}", consumptionProbe.getNanosToWaitForReset());
-
-                setNanosToWaitForRefill(consumptionProbe.getNanosToWaitForRefill());
-
-                log.warn("Too Many Request!");
-                return new Result(false, Message.TOO_MANY_REQUEST, HttpStatus.TOO_MANY_REQUESTS);
+                if (localRateLimiting.getRefillCount() >= 1) {
+                    localRateLimiting.setRefillCount(localRateLimiting.getRefillCount() - 1);
+                    localRateLimiting.setToken(localRateLimiting.getUndiminishedCount() - 1);
+                    localRateLimiting.setRefillUpdatedAt(Instant.now());
+                    localRateLimiting.setUpdatedAt(Instant.now());
+                    log.info("Refill Count : {}", localRateLimiting.getRefillCount());
+                    eventPush(new LimitUpdateEvent(key, pta, localRateLimiting));
+                    return new SimpleRateLimiting.Result(true, Message.GET_REFILL, HttpStatus.OK);
+                } else {
+                    log.warn("Your limit has been reached. Token Count : {}, Refill Count : {}",
+                            localRateLimiting.getToken(), localRateLimiting.getRefillCount());
+                    setNanosToWaitForRefill(0);
+                    localRateLimiting.setUpdatedAt(Instant.now());
+                    return new SimpleRateLimiting.Result(false, Message.LIMIT_HAS_BEEN_REACHED,
+                            HttpStatus.BAD_REQUEST, getNanosToWaitForRefill());
+                }
             }
         }
+    }
+
+    private Instant localRateLimitingToSeconds(LocalRateLimiting localRateLimiting) {
+        if (Objects.nonNull(localRateLimiting.getRefillUpdatedAt())) {
+            return instantToEpochSeconds(localRateLimiting.getRefillUpdatedAt(), localRateLimiting.getDuration());
+        }
+        return instantToEpochSeconds(localRateLimiting.getCreatedAt(), localRateLimiting.getDuration());
+    }
+
+    private Instant instantToEpochSeconds(Instant date, Duration duration) {
+        return date.plus(duration.toSeconds(), ChronoUnit.SECONDS);
+    }
+
+    private long getEndOfLimitInstantToSeconds(Instant endOfLimitInstant) {
+        return endOfLimitInstant.minus(Instant.now().getEpochSecond(), ChronoUnit.SECONDS).getEpochSecond();
     }
 
     @Override
@@ -129,7 +149,8 @@ public class SimpleRateLimiting implements RateLimiting {
 
     @Override
     public void replaceConfiguration(LocalRateLimiting rateLimiting) {
-        // TODO rewrite
+        Assert.notNull(rateLimiting, "rateLimiting must not be null!");
+        this.localRateLimiting = rateLimiting;
     }
 
     @Override
@@ -157,6 +178,10 @@ public class SimpleRateLimiting implements RateLimiting {
         return this.localRateLimiting;
     }
 
+    private void eventPush(LimitUpdateEvent event) {
+        eventPublisher.publishEvent(event);
+    }
+
     public void addLocalBuilder(LocalRateLimiting rateLimiting) {
         this.localRateLimiting = rateLimiting;
     }
@@ -165,16 +190,32 @@ public class SimpleRateLimiting implements RateLimiting {
         this.nanosToWaitForRefill = nanosToWaitForRefill;
     }
 
+    public void setPta(PTA pta) {
+        this.pta = pta;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
     public static class Result implements Serializable {
 
         private boolean result;
         private HttpStatus status;
         private String message;
+        private long refillNanoSeconds;
 
         public Result(boolean result, String message, HttpStatus status) {
             this.result = result;
             this.message = message;
             this.status = status;
+        }
+
+        public Result(boolean result, String message, HttpStatus status, long refillNanoSeconds) {
+            this.result = result;
+            this.message = message;
+            this.status = status;
+            this.refillNanoSeconds = refillNanoSeconds;
         }
 
         public boolean isResult() {
@@ -199,6 +240,14 @@ public class SimpleRateLimiting implements RateLimiting {
 
         public void setStatus(HttpStatus status) {
             this.status = status;
+        }
+
+        public long getRefillNanoSeconds() {
+            return refillNanoSeconds;
+        }
+
+        public void setRefillNanoSeconds(long refillNanoSeconds) {
+            this.refillNanoSeconds = refillNanoSeconds;
         }
 
         @Override
@@ -238,6 +287,4 @@ public class SimpleRateLimiting implements RateLimiting {
         public static String TOO_MANY_REQUEST = "Too many request";
         public static String LIMIT_HAS_BEEN_REACHED = "Your limit has been reached";
     }
-
-
 }

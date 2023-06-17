@@ -4,14 +4,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.khasanof.ratelimitingwithspring.core.RateLimiting;
 import org.khasanof.ratelimitingwithspring.core.common.search.classes.PTA;
+import org.khasanof.ratelimitingwithspring.core.domain.PricingApi;
 import org.khasanof.ratelimitingwithspring.core.repository.PricingApiRepository;
 import org.khasanof.ratelimitingwithspring.core.strategy.AbstractDeleteStrategy;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Author: Nurislom
@@ -31,13 +29,11 @@ public class LimitDeleteStrategy extends AbstractDeleteStrategy<PricingApiReposi
     }
 
     @Override
-    public void delete(Map.Entry<String, Map<PTA, RateLimiting>> entry) {
+    public void delete(Map.Entry<String, PTA> entry) {
         log.info("Enter LIMIT Delete Method");
-        entry.getValue().keySet().stream()
-                .map(p -> repository.findByQuery(entry.getKey(), p.getApis().get(0)))
-                .map(optional -> optional
-                        .orElseThrow(() -> new RuntimeException("Match API not found!")))
-                .forEach(repository::delete);
-        log.info("Deleted PricingApi Count : {}", entry.getValue().size());
+        PricingApi pricingApi = repository.findByQuery(entry.getKey(), entry.getValue().getApis().get(0))
+                .orElseThrow(() -> new RuntimeException("Match API not found!"));
+        repository.delete(pricingApi);
+        log.info("Deleted PricingApi : {}", entry);
     }
 }

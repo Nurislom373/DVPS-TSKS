@@ -1,7 +1,7 @@
 package org.khasanof.ratelimitingwithspring.core.limiting;
 
-import io.github.bucket4j.Bucket;
 import lombok.*;
+import org.springframework.data.redis.core.RedisHash;
 
 import java.io.Serializable;
 import java.time.Duration;
@@ -23,6 +23,7 @@ import java.time.Instant;
 @AllArgsConstructor
 @EqualsAndHashCode
 @NoArgsConstructor
+@RedisHash("local")
 public class LocalRateLimiting implements Serializable {
 
     private Long undiminishedCount;
@@ -35,9 +36,10 @@ public class LocalRateLimiting implements Serializable {
 
     private Long refillCount;
 
-    private Bucket bucket;
-
     private Instant createdAt;
 
+    private Instant refillUpdatedAt;
+
+    private Instant updatedAt;
 
 }

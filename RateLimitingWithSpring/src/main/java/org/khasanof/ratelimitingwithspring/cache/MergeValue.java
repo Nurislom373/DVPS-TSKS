@@ -1,8 +1,9 @@
-package org.khasanof.ratelimitingwithspring.cache.ehcache;
+package org.khasanof.ratelimitingwithspring.cache;
 
 import lombok.*;
 import org.khasanof.ratelimitingwithspring.core.RateLimiting;
 import org.khasanof.ratelimitingwithspring.core.common.search.classes.PTA;
+import org.khasanof.ratelimitingwithspring.core.limiting.LocalRateLimiting;
 import org.springframework.data.redis.core.RedisHash;
 
 import java.io.Serializable;
@@ -22,10 +23,6 @@ import java.util.Map;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-@RedisHash("mergeValue")
 public class MergeValue implements Serializable {
-
-    private String key;
-
-    private Map<PTA, RateLimiting> map;
+    private Map<PTA, LocalRateLimiting> map;
 }

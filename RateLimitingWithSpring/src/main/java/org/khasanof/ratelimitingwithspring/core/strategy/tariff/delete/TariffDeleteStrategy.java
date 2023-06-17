@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -20,14 +21,13 @@ public class TariffDeleteStrategy extends AbstractDeleteStrategy<PricingTariffRe
     }
 
     @Override
-    public void delete(Map.Entry<String, Map<PTA, RateLimiting>> entry) {
+    public void delete(Map.Entry<String, PTA> entry) {
         log.info("Enter TARIFF Delete Method");
-        entry.getValue().keySet().stream()
-                .map(m -> repository.findAllByKey(entry.getKey())
-                        .stream().filter(f -> equals(f, m))
-                        .findFirst().orElseThrow(() -> new RuntimeException("PricingTariff not found"))
-                ).forEach(repository::delete);
-        log.info("Deleted PricingTariff Count : {}", entry.getValue().size());
+        PricingTariff tariff = repository.findAllByKey(entry.getKey())
+                .stream().filter(f -> equals(f, entry.getValue()))
+                .findFirst().orElseThrow(() -> new RuntimeException("PricingTariff not found"));
+        repository.delete(tariff);
+        log.info("Deleted PricingTariff : {}", entry);
     }
 
     private boolean equals(PricingTariff tariff, PTA pta) {

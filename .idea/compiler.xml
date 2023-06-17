@@ -39,6 +39,8 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="khasanof-rate-limiting" target="17" />
+      <module name="RateLimitingTests" target="17" />
       <module name="RateLimitingWithSpring" target="17" />
       <module name="UiCaching" target="17" />
     </bytecodeTargetLevel>

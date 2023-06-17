@@ -1,22 +1,22 @@
 package org.khasanof.ratelimitingwithspring.core.common;
 
 import org.khasanof.ratelimitingwithspring.core.AbstractCommonLimitsService;
+import org.khasanof.ratelimitingwithspring.core.RateLimiting;
 import org.khasanof.ratelimitingwithspring.core.common.load.genericLoad.RSLimitLoadPostConstruct;
 import org.khasanof.ratelimitingwithspring.core.common.read.CommonReadConfigAndSave;
 import org.khasanof.ratelimitingwithspring.core.common.register.CommonRegisterLimits;
 import org.khasanof.ratelimitingwithspring.core.common.register.classes.REGSLimit;
 import org.khasanof.ratelimitingwithspring.core.common.register.classes.REGSTariff;
-import org.khasanof.ratelimitingwithspring.core.exceptions.AlreadyRegisteredException;
-import org.khasanof.ratelimitingwithspring.core.exceptions.NotRegisteredException;
-import org.khasanof.ratelimitingwithspring.core.validator.register.RegisterLTValidator;
-import org.khasanof.ratelimitingwithspring.core.validator.register.RegisterLimitsValidator;
-import org.khasanof.ratelimitingwithspring.core.validator.ValidatorResult;
-import org.khasanof.ratelimitingwithspring.core.common.search.RateLimitingSearchKeys;
+import org.khasanof.ratelimitingwithspring.core.common.search.RateLimitingSearch;
 import org.khasanof.ratelimitingwithspring.core.common.search.classes.RLSearch;
 import org.khasanof.ratelimitingwithspring.core.config.ReadLimitsPropertiesConfig;
-import org.khasanof.ratelimitingwithspring.core.RateLimiting;
+import org.khasanof.ratelimitingwithspring.core.exceptions.AlreadyRegisteredException;
 import org.khasanof.ratelimitingwithspring.core.strategy.limit.classes.RSLimit;
+import org.khasanof.ratelimitingwithspring.core.validator.ValidatorResult;
+import org.khasanof.ratelimitingwithspring.core.validator.register.RegisterLTValidator;
+import org.khasanof.ratelimitingwithspring.core.validator.register.RegisterLimitsValidator;
 import org.khasanof.ratelimitingwithspring.core.validator.register.RegisterTariffValidator;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -35,16 +35,16 @@ import java.util.Map;
 public class CommonLimitsService extends AbstractCommonLimitsService {
 
     private final CommonRegisterLimits registerLimits;
-    private final RateLimitingSearchKeys limitingSearchKeys;
+    private final RateLimitingSearch rateLimitingSearch;
     private final RSLimitLoadPostConstruct rsLimitLoadPostConstruct;
 
     public CommonLimitsService(ReadLimitsPropertiesConfig propertiesConfig, CommonReadConfigAndSave readConfigAndSave,
                                RegisterLimitsValidator registerLimitsValidator, RegisterTariffValidator registerTariffValidator,
-                               CommonRegisterLimits registerLimits, RateLimitingSearchKeys limitingSearchKeys,
+                               CommonRegisterLimits registerLimits, @Qualifier("rateLimitingSearchRedisCache") RateLimitingSearch rateLimitingSearch,
                                RSLimitLoadPostConstruct rsLimitLoadPostConstruct, RegisterLTValidator validator) {
         super(propertiesConfig, readConfigAndSave, registerLimitsValidator, registerTariffValidator, validator);
         this.registerLimits = registerLimits;
-        this.limitingSearchKeys = limitingSearchKeys;
+        this.rateLimitingSearch = rateLimitingSearch;
         this.rsLimitLoadPostConstruct = rsLimitLoadPostConstruct;
     }
 
@@ -68,7 +68,7 @@ public class CommonLimitsService extends AbstractCommonLimitsService {
 
     // rewrite search
     public RateLimiting searchKeys(String key, String url, String method, Map<String, String> attributes) {
-        return limitingSearchKeys.searchKeys(new RLSearch(key, url, method, attributes));
+        return rateLimitingSearch.searchKeys(new RLSearch(key, url, method, attributes));
     }
 
     public List<RSLimit> getLimits() {

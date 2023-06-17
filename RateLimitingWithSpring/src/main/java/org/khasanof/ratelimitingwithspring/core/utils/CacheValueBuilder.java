@@ -12,6 +12,7 @@ import org.khasanof.ratelimitingwithspring.core.domain.enums.TimeType;
 import org.khasanof.ratelimitingwithspring.core.repository.ApiRepository;
 import org.springframework.stereotype.Component;
 
+import java.io.Serializable;
 import java.time.Duration;
 import java.time.Period;
 import java.util.AbstractMap;
