@@ -55,3 +55,5 @@ private void callBack(Sender sender) {
     sender.execute(messageBuilder);
 }
 ```
+
+source code example [link](src/test/java/org/khasanof)
