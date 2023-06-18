@@ -8,8 +8,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="UiCachingStrategy" />
-        <module name="RateLimitingTests" />
-        <module name="khasanof-rate-limiting" />
+        <module name="fluent-telegrambot" />
         <module name="ReactiveUiCaching" />
         <module name="DVPS-TSKS" />
       </profile>
@@ -39,6 +38,8 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="khasanof-rate-limiting" target="17" />
+      <module name="RateLimitingTests" target="17" />
       <module name="RateLimitingWithSpring" target="17" />
       <module name="UiCaching" target="17" />
     </bytecodeTargetLevel>

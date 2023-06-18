@@ -5,8 +5,7 @@
     <option name="originalFiles">
       <list>
         <option value="$PROJECT_DIR$/pom.xml" />
-        <option value="$PROJECT_DIR$/RateLimitingWithSpring/pom.xml" />
-        <option value="$PROJECT_DIR$/RateLimitingTests/pom.xml" />
+        <option value="$PROJECT_DIR$/fluent-bot-lib/pom.xml" />
       </list>
     </option>
   </component>
