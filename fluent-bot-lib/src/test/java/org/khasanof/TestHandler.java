@@ -31,7 +31,7 @@ public class TestHandler {
     private static final ReplyKeyboardMarkup REPLY_KEYBOARD_MARKUP = new ReplyKeyboardMarkup();
 
     @HandleMessage(value = "/start")
-    private void start(Sender sender) throws TelegramApiException {
+    private void start(Sender sender) {
         String text = "Hello World!";
         MessageBuilder messageBuilder = new MessageBuilder()
                 .message(text)
