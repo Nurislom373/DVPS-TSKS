@@ -40,7 +40,7 @@ public class TestHandler {
     }
 
     @HandleCallback(value = "BOOM")
-    private void callBack(Sender sender) throws TelegramApiException {
+    private void callBack(Sender sender) {
         String text = "<b> Choose bot language: </b>";
         MessageBuilder messageBuilder = new MessageBuilder()
                 .message(text)

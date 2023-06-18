@@ -45,4 +45,13 @@ private void start(Sender sender) {
 }
 ```
 
-
+```java
+@HandleCallback(value = "BOOM")
+private void callBack(Sender sender) {
+    String text = "<b> Choose bot language: </b>";
+    MessageBuilder messageBuilder = new MessageBuilder()
+        .message(text)
+        .parseMode("html");
+    sender.execute(messageBuilder);
+}
+```
