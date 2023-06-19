@@ -1,5 +1,6 @@
 package org.khasanof.core.sender;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.khasanof.core.enums.ExecutorType;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -14,6 +15,7 @@ import org.telegram.telegrambots.meta.bots.AbsSender;
  * <br/>
  * Package: org.khasanof.core.sender
  */
+@Getter
 @RequiredArgsConstructor
 public abstract class AbstractSender {
     protected final ExecutorType type;

@@ -1,5 +1,7 @@
 package org.khasanof.main.annotation;
 
+import org.khasanof.core.enums.MessageScope;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -19,5 +21,7 @@ import java.lang.annotation.Target;
 public @interface HandleCallback {
 
     String value() default "";
+
+    MessageScope scope() default MessageScope.EQUALS;
 
 }

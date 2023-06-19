@@ -1,15 +1,22 @@
 package org.khasanof;
 
+import lombok.SneakyThrows;
+import org.khasanof.core.publisher.Publisher;
 import org.khasanof.core.sender.MessageBuilder;
 import org.khasanof.main.annotation.HandleCallback;
 import org.khasanof.main.annotation.HandleMessage;
 import org.khasanof.main.inferaces.sender.Sender;
+import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButtonPollType;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
+import org.telegram.telegrambots.meta.bots.AbsSender;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.ArrayList;
@@ -45,7 +52,21 @@ public class TestHandler {
         MessageBuilder messageBuilder = new MessageBuilder()
                 .message(text)
                 .parseMode("html");
-        sender.execute(messageBuilder);
+        AnswerCallbackQuery answerCallbackQuery = new AnswerCallbackQuery();
+        answerCallbackQuery.setText("Nurislom");
+        answerCallbackQuery.setShowAlert(true);
+        sender.execute(answerCallbackQuery);
+    }
+
+    @SneakyThrows
+    @HandleCallback(value = "EN")
+    private void callBackTwoParam(Update update, String value) {
+        System.out.println("update = " + update);
+        System.out.println("sender = " + value);
+        System.out.println("Enter Method");
+        String text = "I Got it!";
+        SendMessage sendMessage = new SendMessage(update.getCallbackQuery().getMessage().getChatId().toString(), text);
+//        sender.execute(sendMessage);
     }
 
     @HandleMessage(value = "/world")
@@ -63,7 +84,18 @@ public class TestHandler {
                 .message(text)
                 .replyKeyboard(enterMenu())
                 .parseMode("html");
-        sender.execute(messageBuilder);
+
+        SendMessage sendMessage = Publisher.send().message()
+                .text(text)
+                .parseMode("html")
+                .getInstance();
+
+        String text2 = "I Got it!";
+        SendMessage sendMessage2 = new SendMessage();
+        sendMessage2.setText(text2);
+
+        sender.execute(sendMessage);
+        sender.execute(sendMessage2);
     }
 
     public static InlineKeyboardMarkup language() {

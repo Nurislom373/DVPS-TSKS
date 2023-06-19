@@ -44,7 +44,7 @@ public class SimpleCollector implements Collector {
     public Map.Entry<Method, Class> getMethodValueAnn(String value, Class<? extends Annotation> annotation) {
         return keyMethods.get(annotation).entrySet()
                 .stream().filter(aClass -> methodHasVal(aClass.getKey(), value, annotation))
-                .findFirst().orElseThrow(() -> new RuntimeException("Method not found!"));
+                .findFirst().orElse(null);
     }
 
     private boolean methodHasVal(Method method, String value, Class<? extends Annotation> annotation) {
