@@ -1,11 +1,13 @@
 package org.khasanof.core.collector.impls;
 
 import org.khasanof.core.collector.Collector;
+import org.khasanof.core.executors.matcher.CompositeMatcher;
 import org.khasanof.main.annotation.HandleCallback;
 import org.khasanof.main.annotation.HandleMessage;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -22,6 +24,7 @@ public class SimpleCollector implements Collector {
 
     private static final Map<Class<? extends Annotation>, Map<Method, Class>> keyMethods;
     private static final HasAnnotationCollector hasAnnotationCollector = new HasAnnotationCollector();
+    private final CompositeMatcher matcher = new CompositeMatcher();
 
     static {
         keyMethods = new ConcurrentHashMap<>(){{
@@ -32,15 +35,6 @@ public class SimpleCollector implements Collector {
     }
 
     @Override
-    public Map.Entry<Method, Class> getMethodValue(String value) {
-        return keyMethods.entrySet()
-                .stream()
-                .flatMap(classSetEntry -> classSetEntry.getValue().entrySet()
-                        .stream().filter(any -> methodHasVal(any.getKey(), value, classSetEntry.getKey())))
-                .findFirst().orElseThrow(() -> new RuntimeException("Method not found!"));
-    }
-
-    @Override
     public Map.Entry<Method, Class> getMethodValueAnn(String value, Class<? extends Annotation> annotation) {
         return keyMethods.get(annotation).entrySet()
                 .stream().filter(aClass -> methodHasVal(aClass.getKey(), value, annotation))
@@ -48,21 +42,7 @@ public class SimpleCollector implements Collector {
     }
 
     private boolean methodHasVal(Method method, String value, Class<? extends Annotation> annotation) {
-        if (annotation.equals(HandleCallback.class)) {
-            return methodHasValCallback(method, value);
-        } else if (annotation.equals(HandleMessage.class)) {
-            return methodHasValMessage(method, value);
-        }
-        return false;
+       return matcher.chooseMatcher(method, value, annotation);
     }
-
-    private boolean methodHasValMessage(Method method, String value) {
-        return method.getAnnotation(HandleMessage.class).value().equals(value);
-    }
-
-    private boolean methodHasValCallback(Method method, String value) {
-        return method.getAnnotation(HandleCallback.class).value().equals(value);
-    }
-
 
 }

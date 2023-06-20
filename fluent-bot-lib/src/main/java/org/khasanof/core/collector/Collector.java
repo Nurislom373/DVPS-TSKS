@@ -15,8 +15,6 @@ import java.util.Map;
  */
 public interface Collector {
 
-    Map.Entry<Method, Class> getMethodValue(String value);
-
     Map.Entry<Method, Class> getMethodValueAnn(String value, Class<? extends Annotation> annotation);
 
 }

@@ -1,8 +1,12 @@
 package org.khasanof;
 
 import lombok.SneakyThrows;
+import org.khasanof.core.enums.HandleType;
+import org.khasanof.core.enums.MessageScope;
 import org.khasanof.core.publisher.Publisher;
 import org.khasanof.core.sender.MessageBuilder;
+import org.khasanof.main.annotation.Handle;
+import org.khasanof.main.annotation.HandleAny;
 import org.khasanof.main.annotation.HandleCallback;
 import org.khasanof.main.annotation.HandleMessage;
 import org.khasanof.main.inferaces.sender.Sender;
@@ -32,11 +36,13 @@ import java.util.List;
  * <br/>
  * Package: org.khasanof
  */
+@Handle
 public class TestHandler {
 
     private static final InlineKeyboardMarkup INLINE_KEYBOARD_MARKUP = new InlineKeyboardMarkup();
     private static final ReplyKeyboardMarkup REPLY_KEYBOARD_MARKUP = new ReplyKeyboardMarkup();
 
+    @HandleAny(type = HandleType.MESSAGE)
     @HandleMessage(value = "/start")
     private void start(Sender sender) {
         String text = "Hello World!";
@@ -46,30 +52,34 @@ public class TestHandler {
         sender.execute(messageBuilder);
     }
 
-    @HandleCallback(value = "BOOM")
-    private void callBack(Sender sender) {
+    @HandleCallback(values = {"RU", "UZ"})
+    private void callBack(Sender sender) throws TelegramApiException {
+        System.out.println("Enter Sender !");
         String text = "<b> Choose bot language: </b>";
         MessageBuilder messageBuilder = new MessageBuilder()
                 .message(text)
                 .parseMode("html");
-        AnswerCallbackQuery answerCallbackQuery = new AnswerCallbackQuery();
-        answerCallbackQuery.setText("Nurislom");
-        answerCallbackQuery.setShowAlert(true);
-        sender.execute(answerCallbackQuery);
+//        AnswerCallbackQuery answerCallbackQuery = new AnswerCallbackQuery();
+//        answerCallbackQuery.setCallbackQueryId(update.getCallbackQuery().getId());
+//        answerCallbackQuery.setText("Nurislom");
+//        answerCallbackQuery.setShowAlert(true);
+        sender.execute(messageBuilder);
     }
 
     @SneakyThrows
-    @HandleCallback(value = "EN")
-    private void callBackTwoParam(Update update, String value) {
-        System.out.println("update = " + update);
-        System.out.println("sender = " + value);
+    @HandleCallback(values = {"EN"})
+    private void callBackTwoParam(Sender sender) {
+        System.out.println("sender = " + sender);
         System.out.println("Enter Method");
         String text = "I Got it!";
-        SendMessage sendMessage = new SendMessage(update.getCallbackQuery().getMessage().getChatId().toString(), text);
-//        sender.execute(sendMessage);
+//        SendMessage sendMessage = new SendMessage(update.getCallbackQuery().getMessage().getChatId().toString(), text);
+        MessageBuilder messageBuilder = new MessageBuilder()
+                .message(text)
+                .parseMode("html");
+        sender.execute(messageBuilder);
     }
 
-    @HandleMessage(value = "/world")
+    @HandleMessage(value = "wo", scope = MessageScope.EQUALS_IGNORE_CASE)
     public void world(Sender sender) throws TelegramApiException {
         String text = """
                 <b> What is Lorem Ipsum? </b> \s
@@ -100,10 +110,10 @@ public class TestHandler {
 
     public static InlineKeyboardMarkup language() {
         InlineKeyboardButton uz = new InlineKeyboardButton("Uzbek");
-        uz.setCallbackData("BOOM");
+        uz.setCallbackData("UZ");
 
         InlineKeyboardButton ru = new InlineKeyboardButton("Russia");
-        ru.setCallbackData("BOOM");
+        ru.setCallbackData("RU");
 
         InlineKeyboardButton en = new InlineKeyboardButton("English");
         en.setCallbackData("EN");

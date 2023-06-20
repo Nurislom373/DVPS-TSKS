@@ -20,6 +20,11 @@ import java.util.stream.Stream;
 public class HasAnnotationCollector {
 
     private final ClassloaderInPackage classloader = new ClassloaderInPackage();
+    private final Map<Method, Class> methodClassMap = new HashMap<>();
+
+    public HasAnnotationCollector() {
+
+    }
 
     public Map<Method, Class> methodsWithAnnotation(Class<? extends Annotation> annotation){
         HandlerScanner handlerScanner = (HandlerScanner) classloader.findAllClassesWithHandlerScannerClass()
@@ -39,6 +44,11 @@ public class HasAnnotationCollector {
         return Arrays.stream(clazz.getDeclaredMethods())
                 .filter(f -> f.isAnnotationPresent(annotation))
                 .map(method -> new AbstractMap.SimpleEntry<>(method, clazz));
+    }
+
+    void setMethodClassMap() {
+        HandlerScanner handlerScanner = (HandlerScanner) classloader.findAllClassesWithHandlerScannerClass()
+                .getAnnotation(HandlerScanner.class);
     }
 
 }

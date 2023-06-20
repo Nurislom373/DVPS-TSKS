@@ -1,12 +1,16 @@
 package org.khasanof.core.collector.impls;
 
 import com.google.common.reflect.ClassPath;
+import org.khasanof.core.enums.HandleClasses;
+import org.khasanof.main.annotation.Handle;
 import org.khasanof.main.annotation.HandlerScanner;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.annotation.Annotation;
+import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -31,6 +35,14 @@ public class ClassloaderInPackage {
                 .collect(Collectors.toSet());
     }
 
+    private Set<Class> validClassGet(Set<Class> classes) {
+        return classes.stream().filter(clazz -> Arrays.stream(clazz.getDeclaredMethods())
+                        .anyMatch(method -> HandleClasses.getAllAnnotations().stream()
+                                .anyMatch(method::isAnnotationPresent)))
+                .collect(Collectors.toSet());
+
+    }
+
     public Class findAllClassesWithHandlerScannerClass() {
         try {
             return ClassPath.from(ClassLoader.getSystemClassLoader())
@@ -45,6 +57,10 @@ public class ClassloaderInPackage {
 
     private boolean hasAnnotation(Class clazz) {
         return clazz.isAnnotationPresent(HandlerScanner.class);
+    }
+
+    private boolean hasAnnotation(Class aClass, Class<? extends Annotation> annotation) {
+        return aClass.isAnnotationPresent(annotation);
     }
 
     private Class getClass(String className, String packageName) {

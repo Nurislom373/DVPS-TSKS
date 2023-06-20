@@ -1,7 +1,5 @@
 package org.khasanof.main.annotation;
 
-import org.khasanof.core.enums.MessageScope;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -12,16 +10,11 @@ import java.lang.annotation.Target;
  * <br/>
  * Date: 18.06.2023
  * <br/>
- * Time: 10:53
+ * Time: 21:53
  * <br/>
  * Package: org.khasanof.main.annotation
  */
-@Target({ElementType.METHOD})
+@Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface HandleCallback {
-
-    String[] values() default {};
-
-    MessageScope scope() default MessageScope.EQUALS;
-
+public @interface Handle {
 }
