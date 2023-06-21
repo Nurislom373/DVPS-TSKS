@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
  * <br/>
  * Package: org.khasanof.core.enums
  */
+@Getter
 @RequiredArgsConstructor
 public enum HandleClasses {
 
@@ -33,6 +34,11 @@ public enum HandleClasses {
     public static Set<Class<? extends Annotation>> getAllAnnotations() {
         return Arrays.stream(values()).map(an -> an.type)
                 .collect(Collectors.toSet());
+    }
+
+    public static HandleClasses getHandleWithType(Class<? extends Annotation> annotation) {
+        return Arrays.stream(values()).filter(handle -> handle.type.equals(annotation))
+                .findFirst().orElseThrow(() -> new RuntimeException("Match type not found!"));
     }
 
 }

@@ -20,8 +20,10 @@ public class CommonMessageExecutor extends AbstractExecutor implements MessageEx
 
     @Override
     public void execute(Update update) {
-        invoke(collector.getMethodValueAnn(update.getMessage().getText().trim(), HandleMessage.class),
-                new SimpleSender(update, FluentBot.getInstance(), getType()));
+        if (update.getMessage().hasText()) {
+            invoke(collector.getMethodValueAnn(update.getMessage().getText().trim(), HandleMessage.class),
+                    new SimpleSender(update, FluentBot.getInstance(), getType()));
+        }
     }
 
     @Override

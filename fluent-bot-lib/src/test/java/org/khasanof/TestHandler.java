@@ -5,22 +5,18 @@ import org.khasanof.core.enums.HandleType;
 import org.khasanof.core.enums.MessageScope;
 import org.khasanof.core.publisher.Publisher;
 import org.khasanof.core.sender.MessageBuilder;
-import org.khasanof.main.annotation.Handle;
+import org.khasanof.main.annotation.HandleUpdate;
 import org.khasanof.main.annotation.HandleAny;
 import org.khasanof.main.annotation.HandleCallback;
 import org.khasanof.main.annotation.HandleMessage;
 import org.khasanof.main.inferaces.sender.Sender;
-import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
-import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButtonPollType;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
-import org.telegram.telegrambots.meta.bots.AbsSender;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.ArrayList;
@@ -36,13 +32,12 @@ import java.util.List;
  * <br/>
  * Package: org.khasanof
  */
-@Handle
+@HandleUpdate
 public class TestHandler {
 
     private static final InlineKeyboardMarkup INLINE_KEYBOARD_MARKUP = new InlineKeyboardMarkup();
     private static final ReplyKeyboardMarkup REPLY_KEYBOARD_MARKUP = new ReplyKeyboardMarkup();
 
-    @HandleAny(type = HandleType.MESSAGE)
     @HandleMessage(value = "/start")
     private void start(Sender sender) {
         String text = "Hello World!";
@@ -79,7 +74,7 @@ public class TestHandler {
         sender.execute(messageBuilder);
     }
 
-    @HandleMessage(value = "wo", scope = MessageScope.EQUALS_IGNORE_CASE)
+    @HandleMessage(value = "wow", scope = MessageScope.START_WITH)
     public void world(Sender sender) throws TelegramApiException {
         String text = """
                 <b> What is Lorem Ipsum? </b> \s

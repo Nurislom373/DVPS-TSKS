@@ -1,13 +1,13 @@
 package org.khasanof.core.collector.impls;
 
 import org.khasanof.core.collector.Collector;
+import org.khasanof.core.enums.HandleClasses;
 import org.khasanof.core.executors.matcher.CompositeMatcher;
 import org.khasanof.main.annotation.HandleCallback;
 import org.khasanof.main.annotation.HandleMessage;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -22,21 +22,12 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class SimpleCollector implements Collector {
 
-    private static final Map<Class<? extends Annotation>, Map<Method, Class>> keyMethods;
-    private static final HasAnnotationCollector hasAnnotationCollector = new HasAnnotationCollector();
+    private static final AnnotationCollector ANNOTATION_COLLECTOR = new AnnotationCollector();
     private final CompositeMatcher matcher = new CompositeMatcher();
-
-    static {
-        keyMethods = new ConcurrentHashMap<>(){{
-            put(HandleMessage.class, hasAnnotationCollector.methodsWithAnnotation(HandleMessage.class));
-            put(HandleCallback.class, hasAnnotationCollector.methodsWithAnnotation(HandleCallback.class));
-        }};
-        keyMethods.entrySet().forEach(System.out::println);
-    }
 
     @Override
     public Map.Entry<Method, Class> getMethodValueAnn(String value, Class<? extends Annotation> annotation) {
-        return keyMethods.get(annotation).entrySet()
+        return ANNOTATION_COLLECTOR.methodsWithAnnotation(annotation).entrySet()
                 .stream().filter(aClass -> methodHasVal(aClass.getKey(), value, annotation))
                 .findFirst().orElse(null);
     }
