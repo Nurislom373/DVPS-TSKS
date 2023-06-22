@@ -25,7 +25,6 @@ import java.util.stream.Stream;
  */
 @Slf4j
 @Service
-@NamedQueries()
 public class MainTransactionsService {
 
     private final ContextTransactionService contextTransactionService;
