@@ -9,5 +9,5 @@ package org.khasanof.main.annotation;
  * <br/>
  * Package: org.khasanof.main.annotation
  */
-public @interface ExMethodBefore {
+public @interface MethodBeforeExecution {
 }

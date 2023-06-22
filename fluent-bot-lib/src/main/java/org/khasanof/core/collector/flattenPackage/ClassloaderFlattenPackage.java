@@ -1,17 +1,16 @@
-package org.khasanof.core.collector.impls;
+package org.khasanof.core.collector.flattenPackage;
 
-import com.google.common.reflect.ClassPath;
 import org.khasanof.core.enums.HandleClasses;
 import org.khasanof.main.annotation.HandleUpdate;
-import org.khasanof.main.annotation.HandlerScanner;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -24,11 +23,26 @@ import java.util.stream.Collectors;
  * <br/>
  * Package: org.khasanof.core.collector
  */
-public class ClassloaderInPackage {
+public class ClassloaderFlattenPackage {
 
-    public Set<Class> getAllValidClasses(String packageName) {
-        Set<Class> classes = findAllClassesUsingClassLoader(packageName);
-        return validClassGet(classes);
+    private final FlattenPackageCollector flattenPackageCollector = new FlattenPackageCollector();
+
+    public Set<Class> getAllClasses(String packageName) {
+        Set<Class> collect = flattenPackageCollector.getFolder(packageName)
+                .stream().map(this::findAllClassesUsingClassLoader)
+                .filter(Objects::nonNull).flatMap(Collection::stream)
+                .collect(Collectors.toSet());
+        System.out.println("collect.size() = " + collect.size());
+        return validClassGet(collect);
+    }
+
+    private Set<Class> validClassGet(Set<Class> classes) {
+        return classes.stream()
+                .peek(System.out::println)
+                .filter(aClass -> hasAnnotationClassLevel(aClass, HandleUpdate.class))
+                .filter(clazz -> Arrays.stream(clazz.getDeclaredMethods())
+                        .anyMatch(method -> hasAnnotationMethodLevel(method, HandleClasses.getAllAnnotations())))
+                .collect(Collectors.toSet());
     }
 
     private Set<Class> findAllClassesUsingClassLoader(String packageName) {
@@ -36,36 +50,15 @@ public class ClassloaderInPackage {
                 .getResourceAsStream(packageName.replaceAll("[.]", "/"));
         BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
         return reader.lines()
+                .peek(line -> System.out.println("Line : " + line))
                 .filter(line -> line.endsWith(".class"))
-                .map(line -> getClass(line, packageName))
+                .map(line -> getClass(line, packageName.replaceAll("/", ".")))
+                .peek(line -> System.out.println("File Line : " + line))
                 .collect(Collectors.toSet());
-    }
-
-    private Set<Class> validClassGet(Set<Class> classes) {
-        return classes.stream()
-                .filter(aClass -> hasAnnotationClassLevel(aClass, HandleUpdate.class))
-                .filter(clazz -> Arrays.stream(clazz.getDeclaredMethods())
-                        .anyMatch(method -> hasAnnotationMethodLevel(method, HandleClasses.getAllAnnotations())))
-                .collect(Collectors.toSet());
-    }
-
-    public Class findAllClassesWithHandlerScannerClass() {
-        try {
-            return ClassPath.from(ClassLoader.getSystemClassLoader())
-                    .getAllClasses()
-                    .stream().map(clazz -> clazz.load())
-                    .filter(this::hasAnnotationClassLevel)
-                    .findFirst().orElseThrow(() -> new RuntimeException("Class not found!"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private boolean hasAnnotationClassLevel(Class clazz) {
-        return clazz.isAnnotationPresent(HandlerScanner.class);
     }
 
     private boolean hasAnnotationClassLevel(Class aClass, Class<? extends Annotation> annotation) {
+        System.out.println("aClass = " + aClass);
         return aClass.isAnnotationPresent(annotation);
     }
 
@@ -91,13 +84,15 @@ public class ClassloaderInPackage {
     }
 
     private Class getClass(String className, String packageName) {
+        System.out.println("className = " + className);
+        System.out.println("packageName = " + packageName);
         try {
             return Class.forName(packageName + "."
                     + className.substring(0, className.lastIndexOf('.')));
         } catch (ClassNotFoundException e) {
             // handle the exception
+            return null;
         }
-        return null;
     }
 
 }

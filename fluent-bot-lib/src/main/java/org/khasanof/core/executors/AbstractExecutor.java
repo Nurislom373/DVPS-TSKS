@@ -30,12 +30,8 @@ public abstract class AbstractExecutor {
             if (Objects.nonNull(entry)) {
                 Method method = entry.getKey();
                 method.setAccessible(true);
-                if (methodArgsCheck(method)) {
-                    Object[] objects = classCastParams(method.getParameterTypes(), sender);
-                    method.invoke(entry.getValue().newInstance(), objects);
-                } else {
-                    throw new RuntimeException("Invalid Params!");
-                }
+                Object[] objects = classCastParams(method.getParameterTypes(), sender);
+                method.invoke(entry.getValue().newInstance(), objects);
             } else {
                 System.out.println("Method not found!");
             }
@@ -46,7 +42,7 @@ public abstract class AbstractExecutor {
 
     private Object[] classCastParams(Class<?>[] classes, AbstractSender sender) {
         if (classes.length == 1) {
-            return new Object[] {sender};
+            return new Object[]{sender};
         } else {
             Object[] objs = new Object[2];
             if (classes[0].equals(Update.class)) {

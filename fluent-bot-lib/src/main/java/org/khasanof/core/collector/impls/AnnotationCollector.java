@@ -1,5 +1,9 @@
 package org.khasanof.core.collector.impls;
 
+import org.khasanof.core.collector.flattenPackage.ClassloaderFlattenPackage;
+import org.khasanof.core.collector.loader.HandleScannerLoader;
+import org.khasanof.core.collector.methodChecker.AbstractMethodChecker;
+import org.khasanof.core.collector.methodChecker.SimpleMethodChecker;
 import org.khasanof.core.enums.HandleClasses;
 import org.khasanof.main.annotation.HandlerScanner;
 
@@ -18,8 +22,10 @@ import java.util.*;
  */
 public class AnnotationCollector {
 
-    private final ClassloaderInPackage classloader = new ClassloaderInPackage();
+    private final ClassloaderFlattenPackage classloader = new ClassloaderFlattenPackage();
+    private final HandleScannerLoader handleScannerLoader = new HandleScannerLoader();
     private final Map<HandleClasses, Map<Method, Class>> collectMap = new HashMap<>();
+    private final AbstractMethodChecker methodChecker = new SimpleMethodChecker();
 
     public AnnotationCollector() {
         setMethodClassMap();
@@ -33,8 +39,8 @@ public class AnnotationCollector {
         for (Iterator<Class> iterator = getScanner().iterator(); iterator.hasNext();) {
             Class clazz = iterator.next();
             Arrays.stream(clazz.getDeclaredMethods()).forEach(method -> {
-                HandleClasses key = getMethodAnnotation(method);
-                if (Objects.nonNull(key)) {
+                if (methodChecker.valid(method)) {
+                    HandleClasses key = getMethodAnnotation(method);
                     if (collectMap.containsKey(key)) {
                         collectMap.get(key).put(method, clazz);
                     } else {
@@ -49,9 +55,9 @@ public class AnnotationCollector {
     }
 
     private Set<Class> getScanner() {
-        HandlerScanner handlerScanner = (HandlerScanner) classloader.findAllClassesWithHandlerScannerClass()
+        HandlerScanner handlerScanner = (HandlerScanner) handleScannerLoader.findAllClassesWithHandlerScannerClass()
                 .getAnnotation(HandlerScanner.class);
-        Set<Class> allValidClasses = classloader.getAllValidClasses(handlerScanner.value());
+        Set<Class> allValidClasses = classloader.getAllClasses(handlerScanner.value());
         return allValidClasses;
     }
 
