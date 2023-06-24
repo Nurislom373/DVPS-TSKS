@@ -1,10 +1,7 @@
 package org.khasanof.core.handler;
 
-import org.khasanof.core.executors.CommonCallbackExecutor;
-import org.khasanof.core.executors.CommonMessageExecutor;
-import org.khasanof.main.inferaces.executor.CallbackExecutor;
+import org.khasanof.core.executors.CommonUpdateExecutor;
 import org.khasanof.main.inferaces.MainHandler;
-import org.khasanof.main.inferaces.executor.MessageExecutor;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.concurrent.ExecutorService;
@@ -23,15 +20,11 @@ public class CommonMainHandler implements MainHandler {
 
     private static MainHandler mainHandler;
     private final ExecutorService executorService = Executors.newCachedThreadPool();
-    private final CallbackExecutor callbackExecutor = new CommonCallbackExecutor();
-    private final MessageExecutor messageExecutor = new CommonMessageExecutor();
+    private final CommonUpdateExecutor executor = new CommonUpdateExecutor();
 
     @Override
     public void process(Update update) {
-        executorService.execute(() -> {
-            if (update.hasMessage()) messageExecutor.execute(update);
-            else if (update.hasCallbackQuery()) callbackExecutor.execute(update);
-        });
+        executorService.execute(() -> executor.execute(update));
     }
 
     public static MainHandler getInstance() {

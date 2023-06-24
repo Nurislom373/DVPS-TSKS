@@ -1,7 +1,8 @@
-package org.khasanof.core.executors.matcher;
+package org.khasanof.core.executors.matcher.impls;
 
 import lombok.NoArgsConstructor;
 import org.khasanof.core.enums.MessageScope;
+import org.khasanof.core.executors.matcher.GenericMatcher;
 import org.khasanof.main.annotation.HandleMessage;
 
 import java.util.HashMap;
@@ -30,6 +31,11 @@ public class SimpleMessageMatcher extends GenericMatcher<HandleMessage> {
     public boolean matcher(HandleMessage handleMessage, String value) {
         return functionMap.get(handleMessage.scope())
                 .apply(handleMessage, value);
+    }
+
+    @Override
+    public Class<HandleMessage> getType() {
+        return HandleMessage.class;
     }
 
     private void setFunctionMap() {

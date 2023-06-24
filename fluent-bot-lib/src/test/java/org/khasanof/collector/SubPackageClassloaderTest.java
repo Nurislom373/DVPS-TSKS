@@ -1,9 +1,8 @@
 package org.khasanof.collector;
 
 import org.junit.jupiter.api.Test;
-import org.khasanof.core.collector.flattenPackage.FlattenPackageCollector;
+import org.khasanof.core.collector.flattenPackage.impls.SimpleFlattenPackageCollector;
 
-import java.io.IOException;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -19,12 +18,14 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class SubPackageClassloaderTest {
 
-    FlattenPackageCollector subPackageClassCollector = new FlattenPackageCollector();
+    SimpleFlattenPackageCollector subPackageClassCollector = new SimpleFlattenPackageCollector();
 
     @Test
-    void getClassWithPackageNameTest() throws IOException {
-        Set<String> set = subPackageClassCollector.getFolder("org.khasanof");
+    void getClassWithPackageNameTest() {
+        Set<String> set = subPackageClassCollector.getFolders("org.khasanof");
+        set.forEach(System.out::println);
         assertNotNull(set);
+        assertEquals(set.size(), 8);
     }
 
 }

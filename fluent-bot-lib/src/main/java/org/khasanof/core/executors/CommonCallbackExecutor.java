@@ -16,6 +16,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
  * <br/>
  * Package: org.khasanof.core.executors
  */
+@Deprecated
 public class CommonCallbackExecutor extends AbstractExecutor implements CallbackExecutor {
 
     @Override

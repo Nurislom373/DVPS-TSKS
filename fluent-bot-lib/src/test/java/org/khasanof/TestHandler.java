@@ -5,18 +5,18 @@ import org.khasanof.core.enums.HandleType;
 import org.khasanof.core.enums.MessageScope;
 import org.khasanof.core.publisher.Publisher;
 import org.khasanof.core.sender.MessageBuilder;
-import org.khasanof.main.annotation.HandleUpdate;
-import org.khasanof.main.annotation.HandleAny;
-import org.khasanof.main.annotation.HandleCallback;
-import org.khasanof.main.annotation.HandleMessage;
+import org.khasanof.main.annotation.*;
 import org.khasanof.main.inferaces.sender.Sender;
+import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButtonPollType;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
+import org.telegram.telegrambots.meta.bots.AbsSender;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.ArrayList;
@@ -39,43 +39,48 @@ public class TestHandler {
     private static final ReplyKeyboardMarkup REPLY_KEYBOARD_MARKUP = new ReplyKeyboardMarkup();
 
     @HandleMessage(value = "/start")
-    private void start(Sender sender) {
+    private void start(Update update, AbsSender sender) throws TelegramApiException {
         String text = "Hello World!";
-        MessageBuilder messageBuilder = new MessageBuilder()
-                .message(text)
-                .replyKeyboard(language());
-        sender.execute(messageBuilder);
+        SendMessage message = new SendMessage(update.getMessage().getChatId().toString(), text);
+        message.setReplyMarkup(language());
+        sender.execute(message);
+    }
+
+    @HandleMessages(values = {
+            @HandleMessage(value = "may", scope = MessageScope.START_WITH),
+            @HandleMessage(value = "yam", scope = MessageScope.END_WITH)
+    })
+    void multiMessageHandler(Update update, AbsSender sender) throws TelegramApiException {
+        SendMessage message = new SendMessage(update.getMessage().getChatId().toString(), "Hello Everyone! MultiHandler");
+        sender.execute(message);
     }
 
     @HandleCallback(values = {"RU", "UZ"})
-    private void callBack(Sender sender) throws TelegramApiException {
+    private void callBack(Update update, AbsSender sender) throws TelegramApiException {
         System.out.println("Enter Sender !");
+
         String text = "<b> Choose bot language: </b>";
-        MessageBuilder messageBuilder = new MessageBuilder()
-                .message(text)
-                .parseMode("html");
-//        AnswerCallbackQuery answerCallbackQuery = new AnswerCallbackQuery();
-//        answerCallbackQuery.setCallbackQueryId(update.getCallbackQuery().getId());
-//        answerCallbackQuery.setText("Nurislom");
-//        answerCallbackQuery.setShowAlert(true);
-        sender.execute(messageBuilder);
+        SendMessage message = new SendMessage(update.getCallbackQuery().getMessage().getChatId().toString(), text);
+        sender.execute(message);
+
+        AnswerCallbackQuery answerCallbackQuery = new AnswerCallbackQuery();
+        answerCallbackQuery.setCallbackQueryId(update.getCallbackQuery().getId());
+        answerCallbackQuery.setText("Nurislom");
+        answerCallbackQuery.setShowAlert(true);
+        sender.execute(answerCallbackQuery);
     }
 
-    @SneakyThrows
     @HandleCallback(values = {"EN"})
-    private void callBackTwoParam(Sender sender) {
+    private void callBackTwoParam(Update update, AbsSender sender) throws TelegramApiException {
         System.out.println("sender = " + sender);
         System.out.println("Enter Method");
         String text = "I Got it!";
-//        SendMessage sendMessage = new SendMessage(update.getCallbackQuery().getMessage().getChatId().toString(), text);
-        MessageBuilder messageBuilder = new MessageBuilder()
-                .message(text)
-                .parseMode("html");
-        sender.execute(messageBuilder);
+        SendMessage sendMessage = new SendMessage(update.getCallbackQuery().getMessage().getChatId().toString(), text);
+        sender.execute(sendMessage);
     }
 
     @HandleMessage(value = "wow", scope = MessageScope.START_WITH)
-    public void world(Sender sender) throws TelegramApiException {
+    public void world(Update update, AbsSender sender) throws TelegramApiException {
         String text = """
                 <b> What is Lorem Ipsum? </b> \s
                 Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the\s
@@ -85,19 +90,11 @@ public class TestHandler {
                 the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop\s
                 publishing software like Aldus PageMaker including versions of Lorem Ipsum.
                 """;
-        MessageBuilder messageBuilder = new MessageBuilder()
-                .message(text)
-                .replyKeyboard(enterMenu())
-                .parseMode("html");
 
-        SendMessage sendMessage = Publisher.send().message()
-                .text(text)
-                .parseMode("html")
-                .getInstance();
+        SendMessage sendMessage = new SendMessage(update.getMessage().getChatId().toString(), text);
 
         String text2 = "I Got it!";
-        SendMessage sendMessage2 = new SendMessage();
-        sendMessage2.setText(text2);
+        SendMessage sendMessage2 = new SendMessage(update.getMessage().getChatId().toString(), text2);
 
         sender.execute(sendMessage);
         sender.execute(sendMessage2);

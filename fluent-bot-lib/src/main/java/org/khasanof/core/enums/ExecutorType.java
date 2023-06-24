@@ -1,5 +1,9 @@
 package org.khasanof.core.enums;
 
+import org.khasanof.main.annotation.HandleMessages;
+
+import java.lang.annotation.Annotation;
+
 /**
  * Author: Nurislom
  * <br/>
@@ -10,5 +14,14 @@ package org.khasanof.core.enums;
  * Package: org.khasanof.core.enums
  */
 public enum ExecutorType {
-    CALLBACK, MESSAGE
+    CALLBACK, MESSAGE, CALLBACKS, MESSAGES;
+
+    public static ExecutorType classToType(Class<? extends Annotation> clazz) {
+        if (clazz.equals(HandleMessages.class)) {
+            return MESSAGE;
+        } else {
+            return CALLBACK;
+        }
+    }
+
 }

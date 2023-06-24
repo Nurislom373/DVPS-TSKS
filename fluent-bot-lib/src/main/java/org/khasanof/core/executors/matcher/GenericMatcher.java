@@ -15,4 +15,6 @@ public abstract class GenericMatcher<T extends Annotation> {
 
     public abstract boolean matcher(T annotation, String value);
 
+    public abstract Class<T> getType();
+
 }

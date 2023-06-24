@@ -1,6 +1,6 @@
-package org.khasanof.core.collector.flattenPackage;
+package org.khasanof.core.collector.flattenPackage.impls;
 
-import lombok.extern.slf4j.Slf4j;
+import org.khasanof.core.collector.flattenPackage.PackageCollector;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -18,9 +18,14 @@ import java.util.stream.Collectors;
  * <br/>
  * Package: org.khasanof.core.collector
  */
-public class FlattenPackageCollector {
+public class SimpleFlattenPackageCollector implements PackageCollector {
 
-    public Set<String> getFolder(String packageName) {
+    @Override
+    public Set<String> getFolders(String packageName) {
+        return execute(packageName);
+    }
+
+    private Set<String> execute(String packageName) {
         final Map<Boolean, Set<String>> folders = new ConcurrentHashMap<>() {{
             put(false, new HashSet<>() {{
                 add(packageName.replaceAll("[.]", "/"));

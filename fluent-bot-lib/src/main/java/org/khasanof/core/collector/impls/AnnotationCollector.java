@@ -1,6 +1,7 @@
 package org.khasanof.core.collector.impls;
 
-import org.khasanof.core.collector.flattenPackage.ClassloaderFlattenPackage;
+import lombok.Getter;
+import org.khasanof.core.collector.ClassloaderPackageCollector;
 import org.khasanof.core.collector.loader.HandleScannerLoader;
 import org.khasanof.core.collector.methodChecker.AbstractMethodChecker;
 import org.khasanof.core.collector.methodChecker.SimpleMethodChecker;
@@ -20,9 +21,10 @@ import java.util.*;
  * <br/>
  * Package: org.khasanof.core.collector
  */
+@Getter
 public class AnnotationCollector {
 
-    private final ClassloaderFlattenPackage classloader = new ClassloaderFlattenPackage();
+    private final ClassloaderPackageCollector classloader = new ClassloaderPackageCollector();
     private final HandleScannerLoader handleScannerLoader = new HandleScannerLoader();
     private final Map<HandleClasses, Map<Method, Class>> collectMap = new HashMap<>();
     private final AbstractMethodChecker methodChecker = new SimpleMethodChecker();
@@ -57,6 +59,7 @@ public class AnnotationCollector {
     private Set<Class> getScanner() {
         HandlerScanner handlerScanner = (HandlerScanner) handleScannerLoader.findAllClassesWithHandlerScannerClass()
                 .getAnnotation(HandlerScanner.class);
+        handleScannerLoader.setBasePackage(handlerScanner.value());
         Set<Class> allValidClasses = classloader.getAllClasses(handlerScanner.value());
         return allValidClasses;
     }

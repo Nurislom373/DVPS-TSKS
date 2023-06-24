@@ -16,6 +16,10 @@ import java.io.IOException;
  */
 public class HandleScannerLoader {
 
+    private String basePackage;
+
+    // TODO write get annotation value method!
+
     public Class findAllClassesWithHandlerScannerClass() {
         try {
             return ClassPath.from(ClassLoader.getSystemClassLoader())
@@ -32,4 +36,11 @@ public class HandleScannerLoader {
         return clazz.isAnnotationPresent(HandlerScanner.class);
     }
 
+    public void setBasePackage(String basePackage) {
+        this.basePackage = basePackage;
+    }
+
+    public String getBasePackage() {
+        return basePackage;
+    }
 }

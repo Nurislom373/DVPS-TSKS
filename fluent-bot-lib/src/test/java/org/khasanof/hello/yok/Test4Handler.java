@@ -22,8 +22,8 @@ public class Test4Handler {
 
     @HandleMessage(value = "jeck", scope = MessageScope.START_WITH)
     void jectMethod(Update update, AbsSender sender) throws TelegramApiException {
-//        SendMessage message = new SendMessage(update.getMessage().getChatId().toString(), "Hello Everyone! : ");
-//        sender.execute(message);
+        SendMessage message = new SendMessage(update.getMessage().getChatId().toString(), "Hello Everyone! : ");
+        sender.execute(message);
     }
 
 }

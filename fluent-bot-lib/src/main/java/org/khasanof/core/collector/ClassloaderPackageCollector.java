@@ -1,5 +1,8 @@
-package org.khasanof.core.collector.flattenPackage;
+package org.khasanof.core.collector;
 
+import org.khasanof.core.collector.flattenPackage.PackageCollector;
+import org.khasanof.core.collector.flattenPackage.impls.RecursiveFlattenPackageCollector;
+import org.khasanof.core.collector.flattenPackage.impls.SimpleFlattenPackageCollector;
 import org.khasanof.core.enums.HandleClasses;
 import org.khasanof.main.annotation.HandleUpdate;
 
@@ -23,12 +26,12 @@ import java.util.stream.Collectors;
  * <br/>
  * Package: org.khasanof.core.collector
  */
-public class ClassloaderFlattenPackage {
+public class ClassloaderPackageCollector {
 
-    private final FlattenPackageCollector flattenPackageCollector = new FlattenPackageCollector();
+    private final PackageCollector flattenPackageCollector = new RecursiveFlattenPackageCollector();
 
     public Set<Class> getAllClasses(String packageName) {
-        Set<Class> collect = flattenPackageCollector.getFolder(packageName)
+        Set<Class> collect = flattenPackageCollector.getFolders(packageName)
                 .stream().map(this::findAllClassesUsingClassLoader)
                 .filter(Objects::nonNull).flatMap(Collection::stream)
                 .collect(Collectors.toSet());
