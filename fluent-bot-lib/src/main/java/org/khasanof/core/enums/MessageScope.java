@@ -14,5 +14,6 @@ public enum MessageScope {
     END_WITH,
     CONTAINS,
     EQUALS,
+    REGEX,
     EQUALS_IGNORE_CASE
 }

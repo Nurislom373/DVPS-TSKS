@@ -1,4 +1,4 @@
-package org.khasanof.main.annotation;
+package org.khasanof.main.annotation.methods;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -8,13 +8,16 @@ import java.lang.annotation.Target;
 /**
  * Author: Nurislom
  * <br/>
- * Date: 21.06.2023
+ * Date: 22.06.2023
  * <br/>
- * Time: 23:41
+ * Time: 20:34
  * <br/>
  * Package: org.khasanof.main.annotation
  */
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface HandleFile {
+public @interface HandleMessages {
+
+    HandleMessage[] values();
+
 }

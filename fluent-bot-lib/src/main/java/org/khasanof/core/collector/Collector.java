@@ -1,5 +1,7 @@
 package org.khasanof.core.collector;
 
+import org.khasanof.core.enums.HandleType;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -16,5 +18,9 @@ import java.util.Map;
 public interface Collector {
 
     Map.Entry<Method, Class> getMethodValueAnn(String value, Class<? extends Annotation> annotation);
+
+    Map.Entry<Method, Class> getHandleAnyMethod(HandleType handleType);
+
+    boolean hasHandleAnyMethod();
 
 }

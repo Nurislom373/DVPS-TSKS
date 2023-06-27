@@ -2,7 +2,7 @@ package org.khasanof;
 
 import org.junit.jupiter.api.Test;
 import org.khasanof.core.executors.matcher.GenericMatcher;
-import org.khasanof.main.annotation.HandleMessage;
+import org.khasanof.main.annotation.methods.HandleMessage;
 import org.reflections.Reflections;
 
 import java.util.Set;

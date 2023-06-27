@@ -1,9 +1,8 @@
 package org.khasanof.core.executors.matcher.impls;
 
-import lombok.NoArgsConstructor;
 import org.khasanof.core.enums.MessageScope;
 import org.khasanof.core.executors.matcher.GenericMatcher;
-import org.khasanof.main.annotation.HandleMessage;
+import org.khasanof.main.annotation.methods.HandleMessage;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,8 +17,7 @@ import java.util.function.BiFunction;
  * <br/>
  * Package: org.khasanof.core.executors.matcher
  */
-@NoArgsConstructor
-public class SimpleMessageMatcher extends GenericMatcher<HandleMessage> {
+public class SimpleMessageMatcher extends GenericMatcher<HandleMessage, String> {
 
     private final Map<MessageScope, BiFunction<HandleMessage, String, Boolean>> functionMap = new HashMap<>();
 

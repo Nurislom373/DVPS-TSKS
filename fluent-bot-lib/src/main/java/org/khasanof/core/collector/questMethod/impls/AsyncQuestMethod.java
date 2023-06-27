@@ -1,13 +1,11 @@
 package org.khasanof.core.collector.questMethod.impls;
 
-import lombok.SneakyThrows;
-import org.khasanof.core.collector.impls.AnnotationCollector;
+import org.khasanof.core.collector.impls.CommonMethodAdapter;
 import org.khasanof.core.collector.questMethod.QuestMethod;
 import org.khasanof.core.enums.HandleClasses;
 import org.khasanof.core.enums.HandleType;
 import org.khasanof.core.executors.matcher.CompositeMatcher;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Objects;
@@ -20,7 +18,7 @@ import java.util.concurrent.CompletableFuture;
  */
 public class AsyncQuestMethod implements QuestMethod {
 
-    final AnnotationCollector annotationCollector = new AnnotationCollector();
+    final CommonMethodAdapter annotationCollector = new CommonMethodAdapter();
     final CompositeMatcher matcher = new CompositeMatcher();
 
     @Override
@@ -57,6 +55,13 @@ public class AsyncQuestMethod implements QuestMethod {
             }));
         }
         return supplyAsync.join();
+    }
+
+    @Override
+    public Map.Entry<Method, Class> getHandleAnyMethod(HandleType handleType) {
+        return annotationCollector.getCollectMap().get(HandleClasses.HANDLE_ANY).entrySet()
+                .stream().filter(clazz -> matcher.chooseMatcher(clazz.getKey(), handleType))
+                .findFirst().orElse(null);
     }
 
 

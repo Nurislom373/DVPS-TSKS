@@ -1,6 +1,7 @@
 package org.khasanof.uicachingstrategy.service;
 
 import jakarta.persistence.NamedQueries;
+import jakarta.persistence.Table;
 import lombok.extern.slf4j.Slf4j;
 import org.khasanof.uicachingstrategy.domain.TransactionEntity;
 import org.khasanof.uicachingstrategy.enums.FromToEnum;

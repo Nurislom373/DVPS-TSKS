@@ -1,13 +1,14 @@
 package org.khasanof;
 
-import lombok.SneakyThrows;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.khasanof.core.enums.HandleType;
 import org.khasanof.core.enums.MessageScope;
-import org.khasanof.core.publisher.Publisher;
-import org.khasanof.core.sender.MessageBuilder;
+import org.khasanof.core.enums.Proceed;
 import org.khasanof.main.annotation.*;
-import org.khasanof.main.inferaces.sender.Sender;
+import org.khasanof.main.annotation.methods.*;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
+import org.telegram.telegrambots.meta.api.methods.send.SendDice;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -37,18 +38,60 @@ public class TestHandler {
 
     private static final InlineKeyboardMarkup INLINE_KEYBOARD_MARKUP = new InlineKeyboardMarkup();
     private static final ReplyKeyboardMarkup REPLY_KEYBOARD_MARKUP = new ReplyKeyboardMarkup();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @HandleMessage(value = "/start")
+    @HandleMessage(value = "/start", scope = MessageScope.EQUALS)
     private void start(Update update, AbsSender sender) throws TelegramApiException {
         String text = "Hello World!";
         SendMessage message = new SendMessage(update.getMessage().getChatId().toString(), text);
         message.setReplyMarkup(language());
+
+        SendDice dice = new SendDice(update.getMessage().getChatId().toString());
+//        dice.setEmoji("\uD83C\uDFB2"); // 1
+//        dice.setEmoji("\uD83C\uDFAF"); // 2
+//        dice.setEmoji("\uD83C\uDFC0"); // 3
+        dice.setEmoji("⚽"); // 4
+//        dice.setEmoji("\uD83C\uDFB0"); // 5
+
+        sender.execute(message);
+        sender.execute(dice);
+    }
+
+    @HandleAny(type = HandleType.MESSAGE, proceed = Proceed.PROCEED)
+    private void handleAnyMessages(Update update, AbsSender sender) throws TelegramApiException {
+        String text = "I'm handle this message : " + update.getMessage().getText();
+        SendMessage message = new SendMessage(update.getMessage().getChatId().toString(), text);
+        sender.execute(message);
+    }
+
+    @HandleAny(type = HandleType.AUDIO, proceed = Proceed.NOT_PROCEED)
+    private void handleAnyCallbacks(Update update, AbsSender sender) throws TelegramApiException, JsonProcessingException {
+        String value = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(update.getMessage().getAudio());
+        String text = "I'm handle this audio : \n" + value;
+        SendMessage message = new SendMessage(update.getMessage().getChatId().toString(), text);
+        sender.execute(message);
+    }
+
+    @HandleAny(type = HandleType.STICKER, proceed = Proceed.NOT_PROCEED)
+    private void handleAnyStickers(Update update, AbsSender sender) throws TelegramApiException, JsonProcessingException {
+        String value = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(update.getMessage().getSticker());
+        String text = "I'm handle this sticker : \n" + value;
+        SendMessage message = new SendMessage(update.getMessage().getChatId().toString(), text);
+        sender.execute(message);
+    }
+
+    @HandleAny(type = HandleType.DOCUMENT, proceed = Proceed.NOT_PROCEED)
+    private void handleAnyDocument(Update update, AbsSender sender) throws TelegramApiException, JsonProcessingException {
+        String value = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(update.getMessage().getDocument());
+        String text = "I'm handle this document : \n" + value;
+        SendMessage message = new SendMessage(update.getMessage().getChatId().toString(), text);
         sender.execute(message);
     }
 
     @HandleMessages(values = {
             @HandleMessage(value = "may", scope = MessageScope.START_WITH),
-            @HandleMessage(value = "yam", scope = MessageScope.END_WITH)
+            @HandleMessage(value = "yam", scope = MessageScope.END_WITH),
+            @HandleMessage(value = "boom", scope = MessageScope.EQUALS_IGNORE_CASE)
     })
     void multiMessageHandler(Update update, AbsSender sender) throws TelegramApiException {
         SendMessage message = new SendMessage(update.getMessage().getChatId().toString(), "Hello Everyone! MultiHandler");
@@ -80,7 +123,7 @@ public class TestHandler {
     }
 
     @HandleMessage(value = "wow", scope = MessageScope.START_WITH)
-    public void world(Update update, AbsSender sender) throws TelegramApiException {
+    public void world(AbsSender sender, Update update) throws TelegramApiException {
         String text = """
                 <b> What is Lorem Ipsum? </b> \s
                 Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the\s

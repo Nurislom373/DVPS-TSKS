@@ -1,7 +1,7 @@
 package org.khasanof.core.executors.matcher.impls;
 
 import org.khasanof.core.executors.matcher.GenericMatcher;
-import org.khasanof.main.annotation.HandleMessages;
+import org.khasanof.main.annotation.methods.HandleMessages;
 
 import java.util.Arrays;
 
@@ -10,7 +10,7 @@ import java.util.Arrays;
  * @see org.khasanof.core.executors.matcher
  * @since 24.06.2023 1:00
  */
-public class SimpleMessagesMatcher extends GenericMatcher<HandleMessages> {
+public class SimpleMessagesMatcher extends GenericMatcher<HandleMessages, String> {
 
     final SimpleMessageMatcher matcher = new SimpleMessageMatcher();
 

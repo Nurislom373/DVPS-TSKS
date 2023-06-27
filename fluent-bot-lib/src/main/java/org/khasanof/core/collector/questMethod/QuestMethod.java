@@ -16,4 +16,7 @@ public interface QuestMethod {
 
     Map.Entry<Method, Class> getMethodValueAnn(String value, HandleClasses type);
 
+    Map.Entry<Method, Class> getHandleAnyMethod(HandleType handleType);
+
+
 }

@@ -1,10 +1,14 @@
 package org.khasanof.core.executors.matcher;
 
+import org.checkerframework.checker.units.qual.A;
 import org.reflections.Reflections;
 
 import java.lang.annotation.Annotation;
+import java.util.AbstractMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /**
  * @author <a href="https://github.com/Nurislom373">Nurislom</a>
@@ -18,6 +22,12 @@ public class AdapterMatcher {
 
     public AdapterMatcher() {
         setMatchers();
+    }
+
+    public void setUp(Set<Class<? extends Annotation>> classes, Map<Class<? extends Annotation>, Supplier<GenericMatcher>> supplierMap) {
+        classes.stream().map(clazz -> new AbstractMap.SimpleEntry<>(clazz, (Supplier<GenericMatcher>) () -> findMatcher(clazz)))
+                .forEach(classSupplierSimpleEntry -> supplierMap.put(classSupplierSimpleEntry.getKey(),
+                        classSupplierSimpleEntry.getValue()));
     }
 
     public GenericMatcher findMatcher(Class<? extends Annotation> annotation) {

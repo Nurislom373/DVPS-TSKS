@@ -1,8 +1,7 @@
 package org.khasanof.core.executors.matcher.impls;
 
-import lombok.NoArgsConstructor;
 import org.khasanof.core.executors.matcher.GenericMatcher;
-import org.khasanof.main.annotation.HandleCallback;
+import org.khasanof.main.annotation.methods.HandleCallback;
 
 import java.util.Arrays;
 
@@ -15,8 +14,7 @@ import java.util.Arrays;
  * <br/>
  * Package: org.khasanof.core.executors.matcher
  */
-@NoArgsConstructor
-public class SimpleCallbackMatcher extends GenericMatcher<HandleCallback> {
+public class SimpleCallbackMatcher extends GenericMatcher<HandleCallback, String> {
 
     @Override
     public boolean matcher(HandleCallback handleCallback, String value) {

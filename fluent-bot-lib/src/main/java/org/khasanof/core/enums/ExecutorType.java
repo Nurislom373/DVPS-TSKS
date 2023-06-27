@@ -1,6 +1,6 @@
 package org.khasanof.core.enums;
 
-import org.khasanof.main.annotation.HandleMessages;
+import org.khasanof.main.annotation.methods.HandleMessages;
 
 import java.lang.annotation.Annotation;
 

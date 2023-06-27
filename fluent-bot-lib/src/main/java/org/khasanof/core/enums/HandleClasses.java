@@ -2,8 +2,7 @@ package org.khasanof.core.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.checkerframework.checker.units.qual.A;
-import org.khasanof.main.annotation.*;
+import org.khasanof.main.annotation.methods.*;
 
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
@@ -27,7 +26,8 @@ public enum HandleClasses {
     HANDLE_CALLBACKS(HandleCallbacks.class),
     HANDLE_MESSAGES(HandleMessages.class),
     HANDLE_CALLBACK(HandleCallback.class),
-    HANDLE_MESSAGE(HandleMessage.class);
+    HANDLE_MESSAGE(HandleMessage.class),
+    HANDLE_DOCUMENT(HandleDocument.class);
 
     private final Class<? extends Annotation> type;
 

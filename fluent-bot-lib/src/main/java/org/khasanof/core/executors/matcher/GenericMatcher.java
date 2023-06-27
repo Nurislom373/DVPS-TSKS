@@ -11,9 +11,9 @@ import java.lang.annotation.Annotation;
  * <br/>
  * Package: org.khasanof.core.executors.matcher
  */
-public abstract class GenericMatcher<T extends Annotation> {
+public abstract class GenericMatcher<T extends Annotation, V> {
 
-    public abstract boolean matcher(T annotation, String value);
+    public abstract boolean matcher(T annotation, V value);
 
     public abstract Class<T> getType();
 

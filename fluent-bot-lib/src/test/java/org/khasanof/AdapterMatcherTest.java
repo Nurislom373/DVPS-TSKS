@@ -3,8 +3,7 @@ package org.khasanof;
 import org.junit.jupiter.api.Test;
 import org.khasanof.core.executors.matcher.AdapterMatcher;
 import org.khasanof.core.executors.matcher.GenericMatcher;
-import org.khasanof.main.annotation.HandleMessage;
-import org.khasanof.main.annotation.HandleMessages;
+import org.khasanof.main.annotation.methods.HandleMessages;
 
 /**
  * @author <a href="https://github.com/Nurislom373">Nurislom</a>

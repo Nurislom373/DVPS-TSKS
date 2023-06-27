@@ -1,12 +1,9 @@
 package org.khasanof.core.executors;
 
-import org.khasanof.core.enums.ExecutorType;
-import org.khasanof.core.sender.SimpleSender;
-import org.khasanof.main.FluentBot;
+import org.khasanof.core.model.MethodArgs;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-import java.lang.reflect.Method;
-import java.util.Map;
+import static org.khasanof.main.FluentBot.getInstance;
 
 /**
  * @author <a href="https://github.com/Nurislom373">Nurislom</a>
@@ -19,7 +16,7 @@ public class CommonUpdateExecutor extends AbstractExecutor {
     private final DeterminationUpdateType determinationUpdateType = new DeterminationUpdateType(collector);
 
     public void execute(Update update) {
-        Map.Entry<Map.Entry<Method, Class>, ExecutorType> typeEntry = determinationUpdateType.determination(update);
-        invoke(typeEntry.getKey(), new SimpleSender(update, FluentBot.getInstance(), typeEntry.getValue()));
+        determinationUpdateType.determination(update)
+                .entrySet().forEach((entry) -> invoke(entry, new MethodArgs(update, getInstance())));
     }
 }

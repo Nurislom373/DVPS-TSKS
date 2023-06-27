@@ -1,9 +1,9 @@
 package org.khasanof.core.collector.impls;
 
+import org.khasanof.core.collector.AbstractCollector;
 import org.khasanof.core.collector.Collector;
-import org.khasanof.core.collector.questMethod.QuestMethod;
-import org.khasanof.core.collector.questMethod.impls.AsyncQuestMethod;
 import org.khasanof.core.enums.HandleClasses;
+import org.khasanof.core.enums.HandleType;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -18,13 +18,21 @@ import java.util.Map;
  * <br/>
  * Package: org.khasanof.core.collector
  */
-public class SimpleCollector implements Collector {
-
-    private final QuestMethod questMethod = new AsyncQuestMethod();
+public class SimpleCollector extends AbstractCollector implements Collector {
 
     @Override
     public Map.Entry<Method, Class> getMethodValueAnn(String value, Class<? extends Annotation> annotation) {
         return questMethod.getMethodValueAnn(value, HandleClasses.getHandleWithType(annotation));
+    }
+
+    @Override
+    public Map.Entry<Method, Class> getHandleAnyMethod(HandleType handleType) {
+        return questMethod.getHandleAnyMethod(handleType);
+    }
+
+    @Override
+    public boolean hasHandleAnyMethod() {
+        return methodAdapter.hasHandleAnyMethod();
     }
 
 }

@@ -1,4 +1,4 @@
-package org.khasanof.main.annotation;
+package org.khasanof.main.annotation.methods;
 
 import org.khasanof.core.enums.HandleType;
 import org.khasanof.core.enums.Proceed;

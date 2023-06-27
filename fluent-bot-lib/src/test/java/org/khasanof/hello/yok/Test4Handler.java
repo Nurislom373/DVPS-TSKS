@@ -1,7 +1,7 @@
 package org.khasanof.hello.yok;
 
 import org.khasanof.core.enums.MessageScope;
-import org.khasanof.main.annotation.HandleMessage;
+import org.khasanof.main.annotation.methods.HandleMessage;
 import org.khasanof.main.annotation.HandleUpdate;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;

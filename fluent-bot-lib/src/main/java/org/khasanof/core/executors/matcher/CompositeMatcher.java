@@ -1,11 +1,8 @@
 package org.khasanof.core.executors.matcher;
 
-import org.khasanof.core.executors.matcher.impls.SimpleCallbackMatcher;
-import org.khasanof.core.executors.matcher.impls.SimpleMessageMatcher;
-import org.khasanof.main.annotation.HandleCallback;
-import org.khasanof.main.annotation.HandleCallbacks;
-import org.khasanof.main.annotation.HandleMessage;
-import org.khasanof.main.annotation.HandleMessages;
+import org.khasanof.core.enums.HandleClasses;
+import org.khasanof.core.enums.HandleType;
+import org.khasanof.main.annotation.methods.HandleAny;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -36,11 +33,13 @@ public class CompositeMatcher {
                 .matcher(method.getAnnotation(annotation), value);
     }
 
+    public boolean chooseMatcher(Method method, HandleType handleType) {
+        return supplierMap.get(HandleAny.class)
+                .get().matcher(method.getAnnotation(HandleAny.class), handleType);
+    }
+
     void setSupplierMap() {
-        supplierMap.put(HandleCallback.class, SimpleCallbackMatcher::new);
-        supplierMap.put(HandleMessage.class, SimpleMessageMatcher::new);
-        supplierMap.put(HandleCallbacks.class, () -> adapterMatcher.findMatcher(HandleCallbacks.class));
-        supplierMap.put(HandleMessages.class, () -> adapterMatcher.findMatcher(HandleMessages.class));
+        adapterMatcher.setUp(HandleClasses.getAllAnnotations(), supplierMap);
     }
 
 }

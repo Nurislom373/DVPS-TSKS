@@ -22,19 +22,23 @@ import java.util.*;
  * Package: org.khasanof.core.collector
  */
 @Getter
-public class AnnotationCollector {
+public class CommonMethodAdapter {
 
     private final ClassloaderPackageCollector classloader = new ClassloaderPackageCollector();
     private final HandleScannerLoader handleScannerLoader = new HandleScannerLoader();
     private final Map<HandleClasses, Map<Method, Class>> collectMap = new HashMap<>();
     private final AbstractMethodChecker methodChecker = new SimpleMethodChecker();
 
-    public AnnotationCollector() {
+    public CommonMethodAdapter() {
         setMethodClassMap();
     }
 
     public Map<Method, Class> methodsWithAnnotation(Class<? extends Annotation> annotation) {
         return collectMap.get(HandleClasses.getHandleWithType(annotation));
+    }
+
+    public boolean hasHandleAnyMethod() {
+        return collectMap.containsKey(HandleClasses.HANDLE_ANY);
     }
 
     void setMethodClassMap() {

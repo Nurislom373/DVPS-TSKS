@@ -1,4 +1,4 @@
-package org.khasanof.main.annotation;
+package org.khasanof.main.annotation.methods;
 
 import org.khasanof.core.enums.MessageScope;
 
@@ -23,4 +23,7 @@ public @interface HandleMessage {
     String value() default "/";
 
     MessageScope scope() default MessageScope.EQUALS;
+
+    RegexPattern[] pattern() default {};
+
 }
