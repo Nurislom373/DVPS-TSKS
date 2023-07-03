@@ -26,16 +26,37 @@ public enum MatchFunctions {
 
     M_HS_TEXT((update -> setFunction(update.getMessage(),
             Message::hasText, Message::getText, HandleType.MESSAGE)), MatchType.MESSAGE),
+
     M_HS_STICKER((update -> setFunction(update.getMessage(),
             Message::hasSticker, Message::getSticker, HandleType.STICKER)), MatchType.MESSAGE),
+
     M_HS_DOCUMENT((update -> setFunction(update.getMessage(),
             Message::hasDocument, Message::getDocument, HandleType.DOCUMENT)), MatchType.MESSAGE),
+
     M_HS_PHOTO((update -> setFunction(update.getMessage(),
             Message::hasPhoto, Message::getPhoto, HandleType.PHOTO)), MatchType.MESSAGE),
+
     M_HS_AUDIO((update -> setFunction(update.getMessage(),
             Message::hasAudio, Message::getAudio, HandleType.AUDIO)), MatchType.MESSAGE),
+
+    M_HS_LOCATION((update -> setFunction(update.getMessage(),
+            Message::hasLocation, Message::getLocation, HandleType.LOCATION)), MatchType.MESSAGE),
+
+    M_HS_CONTACT((update -> setFunction(update.getMessage(),
+            Message::hasContact, Message::getContact, HandleType.CONTACT)), MatchType.MESSAGE),
+
+    M_HS_POLL((update -> setFunction(update.getMessage(),
+            Message::hasPoll, Message::getPoll, HandleType.POLL)), MatchType.MESSAGE),
+
+    M_HS_VIDEO_NOTE((update -> setFunction(update.getMessage(),
+            Message::hasVideoNote, Message::getVideoNote, HandleType.VIDEO_NOTE)), MatchType.MESSAGE),
+
+    M_HS_VOICE((update -> setFunction(update.getMessage(),
+            Message::hasVoice, Message::getVoice, HandleType.VOICE)), MatchType.MESSAGE),
+
     M_HS_VIDEO((update -> setFunction(update.getMessage(),
             Message::hasVideo, Message::getVideo, HandleType.VIDEO)), MatchType.MESSAGE);
+
 
     private final Function<Update, RecordFunction> method;
     private final MatchType matchType;

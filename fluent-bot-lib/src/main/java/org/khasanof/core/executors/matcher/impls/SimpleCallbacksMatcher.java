@@ -6,7 +6,7 @@ import org.khasanof.main.annotation.methods.HandleCallbacks;
 import java.util.Arrays;
 
 /**
- * @author <a href="https://github.com/Nurislom373">Nurislom</a>
+ * @author Nurislom
  * @see org.khasanof.core.executors.matcher
  * @since 24.06.2023 0:57
  */
