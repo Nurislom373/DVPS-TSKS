@@ -1,6 +1,6 @@
 package org.khasanof.hello.yok;
 
-import org.khasanof.core.enums.MessageScope;
+import org.khasanof.core.enums.MatchScope;
 import org.khasanof.main.annotation.methods.HandleMessage;
 import org.khasanof.main.annotation.HandleUpdate;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -20,7 +20,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 @HandleUpdate
 public class Test4Handler {
 
-    @HandleMessage(value = "jeck", scope = MessageScope.START_WITH)
+    @HandleMessage(value = "jeck", scope = MatchScope.START_WITH)
     void jectMethod(Update update, AbsSender sender) throws TelegramApiException {
         SendMessage message = new SendMessage(update.getMessage().getChatId().toString(), "Hello Everyone! : ");
         sender.execute(message);

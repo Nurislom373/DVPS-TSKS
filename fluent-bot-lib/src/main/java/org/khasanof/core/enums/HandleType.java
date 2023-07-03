@@ -1,5 +1,9 @@
 package org.khasanof.core.enums;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 /**
  * Author: Nurislom
  * <br/>
@@ -9,11 +13,22 @@ package org.khasanof.core.enums;
  * <br/>
  * Package: org.khasanof.core.enums
  */
+@Getter
+@AllArgsConstructor
+@RequiredArgsConstructor
 public enum HandleType {
-    MESSAGE, CALLBACK, STICKER,
-    PHOTO, DOCUMENT, VIDEO,
+    MESSAGE(HandleClasses.HANDLE_MESSAGE),
+    CALLBACK(HandleClasses.HANDLE_CALLBACK), STICKER,
+    PHOTO, DOCUMENT(HandleClasses.HANDLE_DOCUMENT), VIDEO,
     VOICE, CONTACT, VIDEO_NOTE,
     LOCATION, MEDIA_GROUP, AUDIO,
     ANIMATION, CHAT_ACTION, VENUE,
-    DICE, POLL
+    DICE, POLL;
+
+    private HandleClasses handleClasses;
+
+    public static boolean hasHandleAnnotation(HandleType type) {
+        return type.handleClasses != null;
+    }
+
 }

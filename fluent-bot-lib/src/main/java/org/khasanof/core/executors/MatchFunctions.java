@@ -1,5 +1,6 @@
 package org.khasanof.core.executors;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -9,9 +10,9 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -23,9 +24,18 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public enum MatchFunctions {
 
-    HAS_TEXT((update -> setFunction(update.getMessage(), Message::hasText, Message::getText, HandleType.MESSAGE)), MatchType.MESSAGE),
-    HAS_AUDIO((update -> setFunction(update.getMessage(), Message::hasAudio, Message::getAudio, HandleType.AUDIO)), MatchType.MESSAGE),
-    HAS_VIDEO((update -> setFunction(update.getMessage(), Message::hasVideo, Message::getVideo, HandleType.VIDEO)), MatchType.MESSAGE);
+    M_HS_TEXT((update -> setFunction(update.getMessage(),
+            Message::hasText, Message::getText, HandleType.MESSAGE)), MatchType.MESSAGE),
+    M_HS_STICKER((update -> setFunction(update.getMessage(),
+            Message::hasSticker, Message::getSticker, HandleType.STICKER)), MatchType.MESSAGE),
+    M_HS_DOCUMENT((update -> setFunction(update.getMessage(),
+            Message::hasDocument, Message::getDocument, HandleType.DOCUMENT)), MatchType.MESSAGE),
+    M_HS_PHOTO((update -> setFunction(update.getMessage(),
+            Message::hasPhoto, Message::getPhoto, HandleType.PHOTO)), MatchType.MESSAGE),
+    M_HS_AUDIO((update -> setFunction(update.getMessage(),
+            Message::hasAudio, Message::getAudio, HandleType.AUDIO)), MatchType.MESSAGE),
+    M_HS_VIDEO((update -> setFunction(update.getMessage(),
+            Message::hasVideo, Message::getVideo, HandleType.VIDEO)), MatchType.MESSAGE);
 
     private final Function<Update, RecordFunction> method;
     private final MatchType matchType;
@@ -37,8 +47,8 @@ public enum MatchFunctions {
 
     public static <T> RecordFunction setFunction(T message, Function<T, Boolean> booleanFunction, Function<T, Object> objectFunction,
                                                  HandleType type) {
-        return new RecordFunction(Map.entry(booleanFunction.apply(message), () -> Map.entry(Map.entry(objectFunction.apply(message)
-                .getClass(), type), objectFunction.apply(message))));
+        return new RecordFunction(Map.entry(booleanFunction.apply(message),
+                () -> Map.entry(type, objectFunction.apply(message))));
     }
 
     @Getter
@@ -48,19 +58,19 @@ public enum MatchFunctions {
 
         MESSAGE(Update::hasMessage, true),
         CALLBACK(Update::hasCallbackQuery, false,
-                (update -> setSupplyMethod(update.getCallbackQuery(), HandleType.CALLBACK)));
+                (update -> setSupplyMethod(update.getCallbackQuery().getData(), HandleType.CALLBACK)));
 
         private final Function<Update, Boolean> method;
         private final boolean hasSubFunctions;
-        private Function<Update, Map.Entry<Map.Entry<Class<?>, HandleType>, Object>> supplyMethod;
+        private Function<Update, Map.Entry<HandleType, Object>> supplyMethod;
 
         public static MatchType getMatchType(Update update) {
             return Arrays.stream(values()).filter(matchType -> matchType.method.apply(update))
                     .findFirst().orElse(null);
         }
 
-        public static <T> Map.Entry<Map.Entry<Class<?>, HandleType>, Object> setSupplyMethod(T data, HandleType type) {
-            return Map.entry(Map.entry(data.getClass(), type), data);
+        public static <T> Map.Entry<HandleType, Object> setSupplyMethod(T data, HandleType type) {
+            return Map.entry(type, data);
         }
 
     }

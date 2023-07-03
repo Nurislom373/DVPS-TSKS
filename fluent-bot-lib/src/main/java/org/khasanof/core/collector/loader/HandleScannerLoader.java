@@ -16,17 +16,21 @@ import java.io.IOException;
  */
 public class HandleScannerLoader {
 
-    private String basePackage;
+    private HandlerScanner scanner;
+
+    {
+        setScanner();
+    }
 
     // TODO write get annotation value method!
-
-    public Class findAllClassesWithHandlerScannerClass() {
+    private HandlerScanner findAllClassesWithHandlerScannerClass() {
         try {
             return ClassPath.from(ClassLoader.getSystemClassLoader())
                     .getAllClasses()
                     .stream().map(clazz -> clazz.load())
                     .filter(this::hasAnnotationClassLevel)
-                    .findFirst().orElseThrow(() -> new RuntimeException("HandlerScanner annotated class not found!"));
+                    .findFirst().orElseThrow(() -> new RuntimeException("HandlerScanner annotated class not found!"))
+                    .getAnnotation(HandlerScanner.class);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -36,11 +40,11 @@ public class HandleScannerLoader {
         return clazz.isAnnotationPresent(HandlerScanner.class);
     }
 
-    public void setBasePackage(String basePackage) {
-        this.basePackage = basePackage;
+    public void setScanner() {
+        this.scanner = findAllClassesWithHandlerScannerClass();
     }
 
     public String getBasePackage() {
-        return basePackage;
+        return scanner.value();
     }
 }

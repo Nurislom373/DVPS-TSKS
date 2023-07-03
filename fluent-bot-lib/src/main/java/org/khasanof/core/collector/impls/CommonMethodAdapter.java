@@ -28,6 +28,7 @@ public class CommonMethodAdapter {
     private final HandleScannerLoader handleScannerLoader = new HandleScannerLoader();
     private final Map<HandleClasses, Map<Method, Class>> collectMap = new HashMap<>();
     private final AbstractMethodChecker methodChecker = new SimpleMethodChecker();
+    private final CommonInterfaceAdapter interfaceAdapter = new CommonInterfaceAdapter();
 
     public CommonMethodAdapter() {
         setMethodClassMap();
@@ -43,28 +44,37 @@ public class CommonMethodAdapter {
 
     void setMethodClassMap() {
         for (Iterator<Class> iterator = getScanner().iterator(); iterator.hasNext();) {
-            Class clazz = iterator.next();
+            final Class clazz = iterator.next();
             Arrays.stream(clazz.getDeclaredMethods()).forEach(method -> {
                 if (methodChecker.valid(method)) {
                     HandleClasses key = getMethodAnnotation(method);
                     if (collectMap.containsKey(key)) {
-                        collectMap.get(key).put(method, clazz);
+                        Class classInstance = getClassInstance(clazz);
+                        if (Objects.nonNull(classInstance)) {
+                            collectMap.get(key).put(method, classInstance);
+                        }
                     } else {
                         collectMap.put(key, new HashMap<>() {{
-                            put(method, clazz);
+                            Class classInstance = getClassInstance(clazz);
+                            if (Objects.nonNull(classInstance)) {
+                                put(method, classInstance);
+                            }
                         }});
                     }
+                } else {
+                    System.out.println("method = " + method);
                 }
             });
         }
         collectMap.forEach((key, value) -> System.out.println(key + " : " + value.size()));
     }
 
+    private Class getClassInstance(Class clazz) {
+        return clazz.isInterface() ? interfaceAdapter.getInterfaceSubclass(clazz) : clazz;
+    }
+
     private Set<Class> getScanner() {
-        HandlerScanner handlerScanner = (HandlerScanner) handleScannerLoader.findAllClassesWithHandlerScannerClass()
-                .getAnnotation(HandlerScanner.class);
-        handleScannerLoader.setBasePackage(handlerScanner.value());
-        Set<Class> allValidClasses = classloader.getAllClasses(handlerScanner.value());
+        Set<Class> allValidClasses = classloader.getAllClasses(handleScannerLoader.getBasePackage());
         return allValidClasses;
     }
 

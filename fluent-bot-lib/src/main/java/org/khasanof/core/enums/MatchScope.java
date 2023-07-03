@@ -9,11 +9,12 @@ package org.khasanof.core.enums;
  * <br/>
  * Package: org.khasanof.core.enums
  */
-public enum MessageScope {
+public enum MatchScope {
     START_WITH,
     END_WITH,
     CONTAINS,
     EQUALS,
     REGEX,
-    EQUALS_IGNORE_CASE
+    EQUALS_IGNORE_CASE,
+    EXPRESSION
 }

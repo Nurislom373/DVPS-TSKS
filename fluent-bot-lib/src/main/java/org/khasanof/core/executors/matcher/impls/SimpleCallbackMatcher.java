@@ -4,6 +4,7 @@ import org.khasanof.core.executors.matcher.GenericMatcher;
 import org.khasanof.main.annotation.methods.HandleCallback;
 
 import java.util.Arrays;
+import java.util.Map;
 
 /**
  * Author: Nurislom
@@ -18,8 +19,9 @@ public class SimpleCallbackMatcher extends GenericMatcher<HandleCallback, String
 
     @Override
     public boolean matcher(HandleCallback handleCallback, String value) {
-        return Arrays.asList(handleCallback.values())
-                .contains(value);
+        return Arrays.stream(handleCallback.values())
+                .anyMatch(any -> matchFunctions.get(Map.entry(handleCallback.scope(),
+                        getScopeType(value, handleCallback.scope()))).apply(any, value));
     }
 
     @Override

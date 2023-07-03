@@ -21,7 +21,7 @@ public class SimpleQuestMethod implements QuestMethod {
     private final CompositeMatcher matcher = new CompositeMatcher();
 
     @Override
-    public Map.Entry<Method, Class> getMethodValueAnn(String value, HandleClasses type) {
+    public Map.Entry<Method, Class> getMethodValueAnn(Object value, HandleClasses type) {
         return annotationCollector.methodsWithAnnotation(type.getType()).entrySet()
                 .stream().filter(aClass -> methodHasVal(aClass.getKey(), value, type.getType()))
                 .findFirst().orElse(null);
@@ -34,7 +34,7 @@ public class SimpleQuestMethod implements QuestMethod {
                 .findFirst().orElse(null);
     }
 
-    private boolean methodHasVal(Method method, String value, Class<? extends Annotation> annotation) {
+    private boolean methodHasVal(Method method, Object value, Class<? extends Annotation> annotation) {
         return matcher.chooseMatcher(method, value, annotation);
     }
 

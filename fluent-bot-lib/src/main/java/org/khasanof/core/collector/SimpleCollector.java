@@ -1,4 +1,4 @@
-package org.khasanof.core.collector.impls;
+package org.khasanof.core.collector;
 
 import org.khasanof.core.collector.AbstractCollector;
 import org.khasanof.core.collector.Collector;
@@ -21,7 +21,7 @@ import java.util.Map;
 public class SimpleCollector extends AbstractCollector implements Collector {
 
     @Override
-    public Map.Entry<Method, Class> getMethodValueAnn(String value, Class<? extends Annotation> annotation) {
+    public Map.Entry<Method, Class> getMethodValueAnn(Object value, Class<? extends Annotation> annotation) {
         return questMethod.getMethodValueAnn(value, HandleClasses.getHandleWithType(annotation));
     }
 

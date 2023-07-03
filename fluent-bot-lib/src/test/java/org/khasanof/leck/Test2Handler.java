@@ -1,6 +1,6 @@
 package org.khasanof.leck;
 
-import org.khasanof.core.enums.MessageScope;
+import org.khasanof.core.enums.MatchScope;
 import org.khasanof.main.annotation.methods.HandleMessage;
 import org.khasanof.main.annotation.HandleUpdate;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -25,7 +25,7 @@ import java.io.File;
 @HandleUpdate
 public class Test2Handler {
 
-    @HandleMessage(value = "hello", scope = MessageScope.CONTAINS)
+    @HandleMessage(value = "hello", scope = MatchScope.CONTAINS)
     void handleAny(Update update, AbsSender sender) throws TelegramApiException {
         for (int i = 0; i < 5; i++) {
             SendMessage message = new SendMessage(update.getMessage().getChatId().toString(), "Hello Everyone! : " + i);

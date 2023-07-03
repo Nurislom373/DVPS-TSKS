@@ -2,10 +2,11 @@ package org.khasanof;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.khasanof.core.enums.DocumentScope;
 import org.khasanof.core.enums.HandleType;
-import org.khasanof.core.enums.MessageScope;
+import org.khasanof.core.enums.MatchScope;
 import org.khasanof.core.enums.Proceed;
-import org.khasanof.main.annotation.*;
+import org.khasanof.main.annotation.HandleUpdate;
 import org.khasanof.main.annotation.methods.*;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendDice;
@@ -40,7 +41,7 @@ public class TestHandler {
     private static final ReplyKeyboardMarkup REPLY_KEYBOARD_MARKUP = new ReplyKeyboardMarkup();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @HandleMessage(value = "/start", scope = MessageScope.EQUALS)
+    @HandleMessage(value = "/start", scope = MatchScope.EQUALS)
     private void start(Update update, AbsSender sender) throws TelegramApiException {
         String text = "Hello World!";
         SendMessage message = new SendMessage(update.getMessage().getChatId().toString(), text);
@@ -80,7 +81,7 @@ public class TestHandler {
         sender.execute(message);
     }
 
-    @HandleAny(type = HandleType.DOCUMENT, proceed = Proceed.NOT_PROCEED)
+    @HandleAny(type = HandleType.DOCUMENT, proceed = Proceed.PROCEED)
     private void handleAnyDocument(Update update, AbsSender sender) throws TelegramApiException, JsonProcessingException {
         String value = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(update.getMessage().getDocument());
         String text = "I'm handle this document : \n" + value;
@@ -89,12 +90,13 @@ public class TestHandler {
     }
 
     @HandleMessages(values = {
-            @HandleMessage(value = "may", scope = MessageScope.START_WITH),
-            @HandleMessage(value = "yam", scope = MessageScope.END_WITH),
-            @HandleMessage(value = "boom", scope = MessageScope.EQUALS_IGNORE_CASE)
+            @HandleMessage(value = "may", scope = MatchScope.START_WITH),
+            @HandleMessage(value = "yam", scope = MatchScope.END_WITH),
+            @HandleMessage(value = "boom", scope = MatchScope.EQUALS_IGNORE_CASE)
     })
     void multiMessageHandler(Update update, AbsSender sender) throws TelegramApiException {
         SendMessage message = new SendMessage(update.getMessage().getChatId().toString(), "Hello Everyone! MultiHandler");
+        message.setReplyMarkup(multiInline());
         sender.execute(message);
     }
 
@@ -113,6 +115,17 @@ public class TestHandler {
         sender.execute(answerCallbackQuery);
     }
 
+    @HandleCallbacks(values = {
+            @HandleCallback(values = {"NEXT", "PREV"}),
+            @HandleCallback(values = {"TOP", "BOTTOM"}),
+            @HandleCallback(values = {"[1-3]"}, scope = MatchScope.REGEX)
+    })
+    private void multiCallback(Update update, AbsSender sender) throws TelegramApiException {
+        String text = "NPTB one handle \uD83D\uDE0E";
+        SendMessage sendMessage = new SendMessage(update.getCallbackQuery().getMessage().getChatId().toString(), text);
+        sender.execute(sendMessage);
+    }
+
     @HandleCallback(values = {"EN"})
     private void callBackTwoParam(Update update, AbsSender sender) throws TelegramApiException {
         System.out.println("sender = " + sender);
@@ -122,7 +135,48 @@ public class TestHandler {
         sender.execute(sendMessage);
     }
 
-    @HandleMessage(value = "wow", scope = MessageScope.START_WITH)
+    @HandleDocument(
+            value = "([a-zA-Z0-9\\s_\\\\.\\-\\(\\):])+(.jpeg|.png|.pdf)$",
+            match = MatchScope.REGEX,
+            scope = DocumentScope.FILE_NAME
+    )
+    private void handleDocumentOne(AbsSender sender, Update update) throws TelegramApiException {
+        String text = "I Handle 1 File \uD83D\uDE02";
+        SendMessage sendMessage = new SendMessage(update.getMessage().getChatId().toString(), text);
+        sender.execute(sendMessage);
+    }
+
+    @HandleDocument(
+            value = "photo",
+            match = MatchScope.START_WITH,
+            scope = DocumentScope.FILE_NAME
+    )
+    private void handleDocumentTwo(AbsSender sender, Update update) throws TelegramApiException {
+        String text = "I Handle 2 File \uD83D\uDE02";
+        SendMessage sendMessage = new SendMessage(update.getMessage().getChatId().toString(), text);
+        sender.execute(sendMessage);
+    }
+
+    @HandleDocument(
+            value = ".jpeg",
+            match = MatchScope.END_WITH,
+            scope = DocumentScope.FILE_NAME
+    )
+    private void handleDocumentThree(AbsSender sender, Update update) throws TelegramApiException {
+        String text = "I Handle 3 File \uD83D\uDE02";
+        SendMessage sendMessage = new SendMessage(update.getMessage().getChatId().toString(), text);
+        sender.execute(sendMessage);
+    }
+
+//    @DocumentExpression(value = "END_WITH(value, '.jpeg') || START_WITH(value, 'photossssss')", scope = DocumentScope.FILE_NAME)
+//    @DocumentExpression(value = "value >= 100 && value <= 205967", scope = DocumentScope.FILE_SIZE)
+    private void handleDocumentExpression(AbsSender sender, Update update) throws TelegramApiException {
+        String text = "I Handle File Nurislom\uD83D\uDE02";
+        SendMessage sendMessage = new SendMessage(update.getMessage().getChatId().toString(), text);
+        sender.execute(sendMessage);
+    }
+
+    @HandleMessage(value = "[1-5]", scope = MatchScope.REGEX)
     public void world(AbsSender sender, Update update) throws TelegramApiException {
         String text = """
                 <b> What is Lorem Ipsum? </b> \s
@@ -161,6 +215,41 @@ public class TestHandler {
         row2.add(uz);
 
         INLINE_KEYBOARD_MARKUP.setKeyboard(Arrays.asList(row1, row2));
+        return INLINE_KEYBOARD_MARKUP;
+    }
+
+    public static InlineKeyboardMarkup multiInline() {
+        InlineKeyboardButton next = new InlineKeyboardButton("NEXT");
+        next.setCallbackData("NEXT");
+
+        InlineKeyboardButton prev = new InlineKeyboardButton("PREV");
+        prev.setCallbackData("PREV");
+
+        InlineKeyboardButton top = new InlineKeyboardButton("TOP");
+        top.setCallbackData("TOP");
+
+        InlineKeyboardButton bottom = new InlineKeyboardButton("BOTTOM");
+        bottom.setCallbackData("BOTTOM");
+
+        InlineKeyboardButton lst1 = new InlineKeyboardButton("LST-1");
+        lst1.setCallbackData("LST-1");
+
+        InlineKeyboardButton lst2 = new InlineKeyboardButton("LST-2");
+        lst2.setCallbackData("LST-5");
+
+        List<InlineKeyboardButton> row1 = new ArrayList<>();
+        row1.add(next);
+        row1.add(prev);
+
+        List<InlineKeyboardButton> row2 = new ArrayList<>();
+        row2.add(top);
+        row2.add(bottom);
+
+        List<InlineKeyboardButton> row3 = new ArrayList<>();
+        row3.add(lst1);
+        row3.add(lst2);
+
+        INLINE_KEYBOARD_MARKUP.setKeyboard(Arrays.asList(row1, row2, row3));
         return INLINE_KEYBOARD_MARKUP;
     }
 

@@ -18,7 +18,7 @@ public class HandleAnyFunctionMatcher {
 
     final Function<Update, MatchFunctions.MatchType> function = MatchFunctions.MatchType::getMatchType;
 
-    public Map.Entry<Map.Entry<Class<?>, HandleType>, Object> matchFunctions(Update update) {
+    public Map.Entry<HandleType, Object> matchFunctions(Update update) {
         MatchFunctions.MatchType matchType = function.apply(update);
         System.out.println("MatchType function result : " + matchType);
         if (Objects.nonNull(matchType)) {

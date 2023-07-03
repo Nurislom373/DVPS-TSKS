@@ -10,4 +10,4 @@ import java.util.function.Supplier;
  * @see org.khasanof.core.executors
  * @since 27.06.2023 22:50
  */
-public record RecordFunction(Map.Entry<Boolean, Supplier<Map.Entry<Map.Entry<Class<?>, HandleType>, Object>>> supplierEntry) {}
+public record RecordFunction(Map.Entry<Boolean, Supplier<Map.Entry<HandleType, Object>>> supplierEntry) {}

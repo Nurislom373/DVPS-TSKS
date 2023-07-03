@@ -1,12 +1,9 @@
 package org.khasanof.core.executors;
 
 import org.khasanof.core.collector.Collector;
-import org.khasanof.core.collector.impls.SimpleCollector;
+import org.khasanof.core.collector.SimpleCollector;
 import org.khasanof.core.model.MethodArgs;
-import org.khasanof.core.sender.AbstractSender;
-import org.khasanof.main.inferaces.sender.Sender;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.bots.AbsSender;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

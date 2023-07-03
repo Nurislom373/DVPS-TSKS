@@ -1,6 +1,6 @@
 package org.khasanof.main.annotation.methods;
 
-import org.khasanof.core.enums.MessageScope;
+import org.khasanof.core.enums.MatchScope;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -22,6 +22,6 @@ public @interface HandleCallback {
 
     String[] values() default {};
 
-    MessageScope scope() default MessageScope.EQUALS;
+    MatchScope scope() default MatchScope.EQUALS;
 
 }

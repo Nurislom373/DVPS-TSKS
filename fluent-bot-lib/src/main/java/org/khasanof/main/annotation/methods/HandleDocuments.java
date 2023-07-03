@@ -8,12 +8,12 @@ import java.lang.annotation.Target;
 /**
  * @author Nurislom
  * @see org.khasanof.main.annotation.methods
- * @since 25.06.2023 23:50
+ * @since 04.07.2023 0:33
  */
-@Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})
+@Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface RegexPattern {
+public @interface HandleDocuments {
 
-    String pattern();
+    HandleDocument[] values();
 
 }

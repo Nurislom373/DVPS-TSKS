@@ -28,7 +28,7 @@ public class CompositeMatcher {
         setSupplierMap();
     }
 
-    public boolean chooseMatcher(Method method, String value, Class<? extends Annotation> annotation) {
+    public boolean chooseMatcher(Method method, Object value, Class<? extends Annotation> annotation) {
         return supplierMap.get(annotation).get()
                 .matcher(method.getAnnotation(annotation), value);
     }

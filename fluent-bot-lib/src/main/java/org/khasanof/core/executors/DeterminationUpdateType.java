@@ -1,8 +1,6 @@
 package org.khasanof.core.executors;
 
-import org.checkerframework.checker.units.qual.C;
 import org.khasanof.core.collector.Collector;
-import org.khasanof.core.enums.HandleClasses;
 import org.khasanof.core.enums.HandleType;
 import org.khasanof.core.enums.Proceed;
 import org.khasanof.main.annotation.methods.HandleAny;
@@ -10,7 +8,6 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.AbstractMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -32,11 +29,12 @@ public class DeterminationUpdateType {
     public Map<Method, Class> determination(Update update) {
         Map<Method, Class> methods = new LinkedHashMap<>();
         if (collector.hasHandleAnyMethod()) {
-            Map.Entry<Map.Entry<Class<?>, HandleType>, Object> typeEntry = handleTypeEntry(update);
-            Map.Entry<Method, Class> handleAnyMethod = collector.getHandleAnyMethod(typeEntry.getKey().getValue());
+            Map.Entry<HandleType, Object> typeEntry = handleTypeEntry(update);
+            Map.Entry<Method, Class> handleAnyMethod = collector.getHandleAnyMethod(typeEntry.getKey());
             if (Objects.nonNull(handleAnyMethod)) {
                 methods.put(handleAnyMethod.getKey(), handleAnyMethod.getValue());
-                Proceed proceed = handleAnyMethod.getKey().getAnnotation(HandleAny.class).proceed();
+                Proceed proceed = handleAnyMethod.getKey().getAnnotation(HandleAny.class)
+                        .proceed();
                 if (proceed.equals(Proceed.PROCEED)) {
                     pushMatchMethod(update, methods);
                 }
@@ -50,22 +48,25 @@ public class DeterminationUpdateType {
     }
 
     private void pushMatchMethod(Update update, Map<Method, Class> methods) {
-        Map.Entry<String, Class<? extends Annotation>> entry = switchAndGet(update);
-        Map.Entry<Method, Class> classEntry = collector.getMethodValueAnn(entry.getKey(), entry.getValue());
-        methods.put(classEntry.getKey(), classEntry.getValue());
-    }
-
-    private Map.Entry<String, Class<? extends Annotation>> switchAndGet(Update update) {
-        if (update.hasMessage()) {
-            return new AbstractMap.SimpleEntry<>(update.getMessage().getText().trim(),
-                    HandleClasses.HANDLE_MESSAGE.getType());
-        } else {
-            return new AbstractMap.SimpleEntry<>(update.getCallbackQuery().getData(),
-                    HandleClasses.HANDLE_CALLBACK.getType());
+        Map.Entry<Object, Class<? extends Annotation>> entry = switchAndGet(update);
+        if (Objects.nonNull(entry)) {
+            Map.Entry<Method, Class> classEntry = collector.getMethodValueAnn(entry.getKey(), entry.getValue());
+            if (Objects.nonNull(classEntry))
+                methods.put(classEntry.getKey(), classEntry.getValue());
+            else
+                System.out.println("Method not found!");
         }
     }
 
-    private Map.Entry<Map.Entry<Class<?>, HandleType>, Object> handleTypeEntry(Update update) {
+    private Map.Entry<Object, Class<? extends Annotation>> switchAndGet(Update update) {
+        Map.Entry<HandleType, Object> objectEntry = anyFunctionMatcher.matchFunctions(update);
+        if (HandleType.hasHandleAnnotation(objectEntry.getKey())) {
+            return Map.entry(objectEntry.getValue(), objectEntry.getKey().getHandleClasses().getType());
+        }
+        return null;
+    }
+
+    private Map.Entry<HandleType, Object> handleTypeEntry(Update update) {
         return anyFunctionMatcher.matchFunctions(update);
     }
 

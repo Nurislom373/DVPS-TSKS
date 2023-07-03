@@ -1,5 +1,6 @@
 package org.khasanof.uicachingstrategy.service;
 
+import jakarta.persistence.Entity;
 import jakarta.persistence.NamedQueries;
 import jakarta.persistence.Table;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +27,7 @@ import java.util.stream.Stream;
  */
 @Slf4j
 @Service
+@Table
 public class MainTransactionsService {
 
     private final ContextTransactionService contextTransactionService;
