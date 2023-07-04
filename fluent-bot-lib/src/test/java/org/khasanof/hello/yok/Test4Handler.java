@@ -2,7 +2,7 @@ package org.khasanof.hello.yok;
 
 import org.khasanof.core.enums.MatchScope;
 import org.khasanof.main.annotation.methods.HandleMessage;
-import org.khasanof.main.annotation.HandleUpdate;
+import org.khasanof.main.annotation.UpdateController;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.bots.AbsSender;
@@ -17,7 +17,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
  * <br/>
  * Package: org.khasanof.hello.yok
  */
-@HandleUpdate
+@UpdateController
 public class Test4Handler {
 
     @HandleMessage(value = "jeck", scope = MatchScope.START_WITH)

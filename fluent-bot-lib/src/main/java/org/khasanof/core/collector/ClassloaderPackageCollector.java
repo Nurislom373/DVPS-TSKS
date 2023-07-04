@@ -2,9 +2,8 @@ package org.khasanof.core.collector;
 
 import org.khasanof.core.collector.flattenPackage.PackageCollector;
 import org.khasanof.core.collector.flattenPackage.impls.RecursiveFlattenPackageCollector;
-import org.khasanof.core.collector.flattenPackage.impls.SimpleFlattenPackageCollector;
+import org.khasanof.core.enums.ClassLevelTypes;
 import org.khasanof.core.enums.HandleClasses;
-import org.khasanof.main.annotation.HandleUpdate;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -42,7 +41,7 @@ public class ClassloaderPackageCollector {
     private Set<Class> validClassGet(Set<Class> classes) {
         return classes.stream()
                 .peek(System.out::println)
-                .filter(aClass -> hasAnnotationClassLevel(aClass, HandleUpdate.class))
+                .filter(aClass -> hasAnnotationClassLevel(aClass, ClassLevelTypes.getAllAnnotations()))
                 .filter(clazz -> Arrays.stream(clazz.getDeclaredMethods())
                         .anyMatch(method -> hasAnnotationMethodLevel(method, HandleClasses.getAllAnnotations())))
                 .collect(Collectors.toSet());
@@ -60,9 +59,9 @@ public class ClassloaderPackageCollector {
                 .collect(Collectors.toSet());
     }
 
-    private boolean hasAnnotationClassLevel(Class aClass, Class<? extends Annotation> annotation) {
+    private boolean hasAnnotationClassLevel(Class aClass, Set<Class<? extends Annotation>> annotations) {
         System.out.println("aClass = " + aClass);
-        return aClass.isAnnotationPresent(annotation);
+        return annotations.stream().anyMatch(aClass::isAnnotationPresent);
     }
 
     private boolean hasAnnotationMethodLevel(Method method, Set<Class<? extends Annotation>> annotations) {

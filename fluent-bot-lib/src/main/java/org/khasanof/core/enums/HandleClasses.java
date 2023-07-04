@@ -3,6 +3,7 @@ package org.khasanof.core.enums;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.khasanof.main.annotation.exception.HandleException;
 import org.khasanof.main.annotation.methods.*;
 
 import java.lang.annotation.Annotation;
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
 public enum HandleClasses {
 
     HANDLE_ANY(HandleAny.class, false),
+    HANDLE_EXCEPTION(HandleException.class, false),
 
     HANDLE_CALLBACKS(HandleCallbacks.class, false),
     HANDLE_MESSAGES(HandleMessages.class, false),

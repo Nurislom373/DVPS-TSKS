@@ -28,7 +28,7 @@ public class DeterminationUpdateType {
 
     public Map<Method, Class> determination(Update update) {
         Map<Method, Class> methods = new LinkedHashMap<>();
-        if (collector.hasHandleAnyMethod()) {
+        if (collector.hasHandle(HandleAny.class)) {
             Map.Entry<HandleType, Object> typeEntry = handleTypeEntry(update);
             Map.Entry<Method, Class> handleAnyMethod = collector.getHandleAnyMethod(typeEntry.getKey());
             if (Objects.nonNull(handleAnyMethod)) {

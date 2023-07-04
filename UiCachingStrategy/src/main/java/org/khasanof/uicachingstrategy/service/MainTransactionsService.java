@@ -10,6 +10,7 @@ import org.khasanof.uicachingstrategy.repository.TransactionRepository;
 import org.khasanof.uicachingstrategy.service.context.ContextTransactionService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -27,7 +28,6 @@ import java.util.stream.Stream;
  */
 @Slf4j
 @Service
-@Table
 public class MainTransactionsService {
 
     private final ContextTransactionService contextTransactionService;

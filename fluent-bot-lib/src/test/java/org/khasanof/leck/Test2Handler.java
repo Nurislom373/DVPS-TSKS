@@ -2,7 +2,7 @@ package org.khasanof.leck;
 
 import org.khasanof.core.enums.MatchScope;
 import org.khasanof.main.annotation.methods.HandleMessage;
-import org.khasanof.main.annotation.HandleUpdate;
+import org.khasanof.main.annotation.UpdateController;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.methods.send.SendSticker;
@@ -22,7 +22,7 @@ import java.io.File;
  * <br/>
  * Package: org.khasanof
  */
-@HandleUpdate
+@UpdateController
 public class Test2Handler {
 
     @HandleMessage(value = "hello", scope = MatchScope.CONTAINS)

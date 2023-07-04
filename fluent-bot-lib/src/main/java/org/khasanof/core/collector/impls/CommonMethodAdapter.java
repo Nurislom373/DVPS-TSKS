@@ -6,10 +6,10 @@ import org.khasanof.core.collector.loader.HandleScannerLoader;
 import org.khasanof.core.collector.methodChecker.AbstractMethodChecker;
 import org.khasanof.core.collector.methodChecker.SimpleMethodChecker;
 import org.khasanof.core.enums.HandleClasses;
-import org.khasanof.main.annotation.HandlerScanner;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.*;
 
 /**
@@ -38,8 +38,8 @@ public class CommonMethodAdapter {
         return collectMap.get(HandleClasses.getHandleWithType(annotation));
     }
 
-    public boolean hasHandleAnyMethod() {
-        return collectMap.containsKey(HandleClasses.HANDLE_ANY);
+    public boolean hasHandle(Class<? extends Annotation> annotation) {
+        return collectMap.containsKey(HandleClasses.getHandleWithType(annotation));
     }
 
     void setMethodClassMap() {
@@ -61,8 +61,6 @@ public class CommonMethodAdapter {
                             }
                         }});
                     }
-                } else {
-                    System.out.println("method = " + method);
                 }
             });
         }
@@ -70,7 +68,8 @@ public class CommonMethodAdapter {
     }
 
     private Class getClassInstance(Class clazz) {
-        return clazz.isInterface() ? interfaceAdapter.getInterfaceSubclass(clazz) : clazz;
+        return clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers()) ?
+                interfaceAdapter.getInterfaceSubclass(clazz) : clazz;
     }
 
     private Set<Class> getScanner() {

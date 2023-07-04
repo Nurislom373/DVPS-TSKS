@@ -2,6 +2,7 @@ package org.khasanof.core.executors;
 
 import org.khasanof.core.collector.Collector;
 import org.khasanof.core.collector.SimpleCollector;
+import org.khasanof.core.custom.FluentContext;
 import org.khasanof.core.model.MethodArgs;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
@@ -22,6 +23,7 @@ import java.util.Objects;
 public abstract class AbstractExecutor {
 
     protected final Collector collector = new SimpleCollector();
+    private final CommonExceptionExecutor exceptionExecutor = new CommonExceptionExecutor(collector);
 
     protected void invoke(Map.Entry<Method, Class> entry, MethodArgs args) {
         try {
@@ -33,8 +35,15 @@ public abstract class AbstractExecutor {
             } else {
                 System.out.println("Method not found!");
             }
-        } catch (IllegalAccessException | InvocationTargetException | InstantiationException e) {
+        } catch (IllegalAccessException | InstantiationException e) {
             throw new RuntimeException(e);
+        } catch (InvocationTargetException e) {
+            try {
+                exceptionExecutor.director(new MethodArgs(args.update(), args.sender(), e.getCause()));
+                FluentContext.booleanLocal.set(true);
+            } catch (Throwable ex) {
+                throw new RuntimeException(ex);
+            }
         }
     }
 

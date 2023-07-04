@@ -8,4 +8,10 @@ import org.telegram.telegrambots.meta.bots.AbsSender;
  * @see org.khasanof.core.model
  * @since 25.06.2023 23:19
  */
-public record MethodArgs(Update update, AbsSender sender) {}
+public record MethodArgs(Update update, AbsSender sender, Throwable throwable) {
+
+    public MethodArgs(Update update, AbsSender sender) {
+        this(update, sender, null);
+    }
+
+}

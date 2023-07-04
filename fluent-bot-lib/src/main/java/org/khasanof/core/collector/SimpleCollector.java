@@ -1,7 +1,5 @@
 package org.khasanof.core.collector;
 
-import org.khasanof.core.collector.AbstractCollector;
-import org.khasanof.core.collector.Collector;
 import org.khasanof.core.enums.HandleClasses;
 import org.khasanof.core.enums.HandleType;
 
@@ -31,8 +29,8 @@ public class SimpleCollector extends AbstractCollector implements Collector {
     }
 
     @Override
-    public boolean hasHandleAnyMethod() {
-        return methodAdapter.hasHandleAnyMethod();
+    public boolean hasHandle(Class<? extends Annotation> annotation) {
+        return methodAdapter.hasHandle(annotation);
     }
 
 }

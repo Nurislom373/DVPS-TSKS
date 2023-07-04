@@ -6,7 +6,8 @@ import org.khasanof.core.enums.DocumentScope;
 import org.khasanof.core.enums.HandleType;
 import org.khasanof.core.enums.MatchScope;
 import org.khasanof.core.enums.Proceed;
-import org.khasanof.main.annotation.HandleUpdate;
+import org.khasanof.core.exceptions.NotFoundException;
+import org.khasanof.main.annotation.UpdateController;
 import org.khasanof.main.annotation.methods.*;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendDice;
@@ -21,6 +22,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.lang.annotation.AnnotationFormatError;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -34,7 +36,7 @@ import java.util.List;
  * <br/>
  * Package: org.khasanof
  */
-@HandleUpdate
+@UpdateController
 public class TestHandler {
 
     private static final InlineKeyboardMarkup INLINE_KEYBOARD_MARKUP = new InlineKeyboardMarkup();
@@ -63,6 +65,7 @@ public class TestHandler {
         String text = "I'm handle this message : " + update.getMessage().getText();
         SendMessage message = new SendMessage(update.getMessage().getChatId().toString(), text);
         sender.execute(message);
+        throw new RuntimeException("Jeck pot! Exception \uD83D\uDE0E");
     }
 
     @HandleAny(type = HandleType.AUDIO, proceed = Proceed.NOT_PROCEED)
@@ -118,7 +121,7 @@ public class TestHandler {
     @HandleCallbacks(values = {
             @HandleCallback(values = {"NEXT", "PREV"}),
             @HandleCallback(values = {"TOP", "BOTTOM"}),
-            @HandleCallback(values = {"[1-3]"}, scope = MatchScope.REGEX)
+            @HandleCallback(values = {"LST"}, scope = MatchScope.START_WITH)
     })
     private void multiCallback(Update update, AbsSender sender) throws TelegramApiException {
         String text = "NPTB one handle \uD83D\uDE0E";

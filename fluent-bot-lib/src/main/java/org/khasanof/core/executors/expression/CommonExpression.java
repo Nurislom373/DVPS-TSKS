@@ -5,6 +5,7 @@ import com.ezylang.evalex.Expression;
 import com.ezylang.evalex.config.ExpressionConfiguration;
 import com.ezylang.evalex.parser.ParseException;
 import org.khasanof.core.executors.expression.functions.EndWithFunction;
+import org.khasanof.core.executors.expression.functions.EqualsFunction;
 import org.khasanof.core.executors.expression.functions.StartWithFunction;
 
 import java.util.Map;
@@ -19,7 +20,8 @@ public class CommonExpression {
     private final ExpressionConfiguration configuration = ExpressionConfiguration.defaultConfiguration()
             .withAdditionalFunctions(
                     Map.entry("END_WITH", new EndWithFunction()),
-                    Map.entry("START_WITH", new StartWithFunction())
+                    Map.entry("START_WITH", new StartWithFunction()),
+                    Map.entry("EQUALS", new EqualsFunction())
             );
 
     public boolean isMatch(String expression, Object updVal) {

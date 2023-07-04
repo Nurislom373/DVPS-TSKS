@@ -1,0 +1,38 @@
+package org.khasanof.core.custom;
+
+import java.util.Spliterator;
+import java.util.function.BiConsumer;
+import java.util.stream.Stream;
+
+/**
+ * @author Nurislom
+ * @see org.khasanof.core.custom
+ * @since 05.07.2023 0:09
+ */
+public class BreakerForEach {
+
+    public static class Breaker {
+        private boolean shouldBreak = false;
+
+        public void stop() {
+            shouldBreak = true;
+        }
+
+        boolean get() {
+            return shouldBreak;
+        }
+    }
+
+    public static <T> void forEach(Stream<T> stream, BiConsumer<T, Breaker> consumer) {
+        Spliterator<T> spliterator = stream.spliterator();
+        boolean hadNext = true;
+        Breaker breaker = new Breaker();
+
+        while (hadNext && !breaker.get()) {
+            hadNext = spliterator.tryAdvance(elem -> {
+                consumer.accept(elem, breaker);
+            });
+        }
+    }
+
+}

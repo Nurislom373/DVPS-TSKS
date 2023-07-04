@@ -1,7 +1,7 @@
 package org.khasanof;
 
 import org.khasanof.core.enums.MatchScope;
-import org.khasanof.main.annotation.HandleUpdate;
+import org.khasanof.main.annotation.UpdateController;
 import org.khasanof.main.annotation.methods.HandleMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.bots.AbsSender;
@@ -12,7 +12,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
  * @see org.khasanof
  * @since 26.06.2023 12:17
  */
-@HandleUpdate
+@UpdateController
 public interface HelloInterfaceHandler {
 
     @HandleMessage(value = "/inter", scope = MatchScope.EQUALS)

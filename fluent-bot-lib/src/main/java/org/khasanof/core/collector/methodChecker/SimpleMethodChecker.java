@@ -1,7 +1,10 @@
 package org.khasanof.core.collector.methodChecker;
 
 import org.khasanof.core.enums.HandleClasses;
+import org.khasanof.main.annotation.exception.HandleException;
 import org.khasanof.main.inferaces.sender.Sender;
+import org.reflections.ReflectionUtils;
+import org.reflections.Reflections;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 
@@ -31,19 +34,31 @@ public class SimpleMethodChecker extends AbstractMethodChecker {
                             .contains(annotation.annotationType()));
         }
         int parameterCount = method.getParameterCount();
-        if (parameterCount == 0 || parameterCount > 2) {
-            if (!annotationValid) {
-                return false;
+        if (isExceptionHandle(method)) {
+            if (parameterCount != 3) {
+                throw new RuntimeException("Method parameter is invalid!");
             } else {
-                throw new RuntimeException("There is an error in the method parameters with handle annotations!");
+                return method.getParameterTypes()[0].equals(Throwable.class);
             }
         } else {
-            parameterValid = paramsTypeCheck(method.getParameterTypes());
-            if (!parameterValid) {
-                throw new RuntimeException("There is an error in the method parameters with handle annotations!");
+            if (parameterCount == 0 || parameterCount > 2) {
+                if (!annotationValid) {
+                    return false;
+                } else {
+                    throw new RuntimeException("There is an error in the method parameters with handle annotations!");
+                }
+            } else {
+                parameterValid = paramsTypeCheck(method.getParameterTypes());
+                if (!parameterValid) {
+                    throw new RuntimeException("There is an error in the method parameters with handle annotations!");
+                }
             }
+            return annotationValid;
         }
-        return annotationValid;
+    }
+
+    private boolean isExceptionHandle(Method method) {
+        return method.isAnnotationPresent(HandleException.class);
     }
 
 
