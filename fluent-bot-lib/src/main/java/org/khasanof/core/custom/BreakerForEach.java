@@ -23,6 +23,11 @@ public class BreakerForEach {
         }
     }
 
+    public static <T> void forEach(Stream<T> stream, BiConsumer<T, Breaker> consumer, Runnable runnable) {
+        forEach(stream, consumer);
+        runnable.run();
+    }
+
     public static <T> void forEach(Stream<T> stream, BiConsumer<T, Breaker> consumer) {
         Spliterator<T> spliterator = stream.spliterator();
         boolean hadNext = true;
@@ -34,5 +39,7 @@ public class BreakerForEach {
             });
         }
     }
+
+
 
 }

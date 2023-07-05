@@ -10,21 +10,21 @@ import org.khasanof.core.executors.expression.EvalFunction;
 
 /**
  * @author Nurislom
- * @see org.khasanof.core.executors.expression
- * @since 02.07.2023 19:23
+ * @see org.khasanof.core.executors.expression.functions
+ * @since 05.07.2023 22:27
  */
 @FunctionParameter(name = "value")
 @FunctionParameter(name = "const")
-public class EndWithFunction extends AbstractFunction implements EvalFunction {
+public class ContainsFunction extends AbstractFunction implements EvalFunction {
 
     @Override
-    public EvaluationValue evaluate(Expression expression, Token token, EvaluationValue... parameterValues) throws EvaluationException {
-        return new EvaluationValue(parameterValues[0].getStringValue()
-                .endsWith(parameterValues[1].getStringValue()));
+    public EvaluationValue evaluate(Expression expression, Token functionToken, EvaluationValue... parameterValues) throws EvaluationException {
+        return new EvaluationValue(parameterValues[0].getStringValue().contains(parameterValues[1].getStringValue()));
     }
+
 
     @Override
     public String getName() {
-        return "END_WITH";
+        return "CONTAINS";
     }
 }

@@ -24,6 +24,6 @@ public class CommonUpdateExecutor extends AbstractExecutor {
                     } else {
                         breaker.stop();
                     }
-                }));
+                }), () -> FluentContext.booleanLocal.set(false));
     }
 }

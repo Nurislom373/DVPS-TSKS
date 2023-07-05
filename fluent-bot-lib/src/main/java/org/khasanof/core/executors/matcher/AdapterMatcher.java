@@ -1,6 +1,7 @@
 package org.khasanof.core.executors.matcher;
 
 import org.checkerframework.checker.units.qual.A;
+import org.khasanof.core.utils.ReflectionUtils;
 import org.reflections.Reflections;
 
 import java.lang.annotation.Annotation;
@@ -18,7 +19,7 @@ import java.util.function.Supplier;
 public class AdapterMatcher {
 
     final Set<GenericMatcher> matchers = new HashSet<>();
-    final Reflections reflections = new Reflections("org.khasanof");
+    final Reflections reflections = ReflectionUtils.getReflections();
 
     public AdapterMatcher() {
         setMatchers();

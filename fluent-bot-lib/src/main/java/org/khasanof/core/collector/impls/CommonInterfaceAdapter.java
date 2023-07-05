@@ -1,6 +1,6 @@
 package org.khasanof.core.collector.impls;
 
-import org.reflections.ReflectionUtils;
+import org.khasanof.core.utils.ReflectionUtils;
 import org.reflections.Reflections;
 
 import java.lang.reflect.Constructor;
@@ -17,7 +17,7 @@ import static org.reflections.scanners.Scanners.SubTypes;
  */
 public class CommonInterfaceAdapter {
 
-    private final Reflections reflections = new Reflections("org.khasanof");
+    private final Reflections reflections = ReflectionUtils.getReflections();
 
     public Class getInterfaceSubclass(Class interfaze) {
         System.out.println("interfaze = " + interfaze);
