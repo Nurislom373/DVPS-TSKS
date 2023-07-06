@@ -2,11 +2,9 @@ package org.khasanof;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.khasanof.core.enums.DocumentScope;
-import org.khasanof.core.enums.HandleType;
-import org.khasanof.core.enums.MatchScope;
-import org.khasanof.core.enums.Proceed;
-import org.khasanof.core.exceptions.NotFoundException;
+import org.khasanof.core.enums.*;
+import org.khasanof.core.enums.scopes.DocumentScope;
+import org.khasanof.core.enums.scopes.PhotoScope;
 import org.khasanof.main.annotation.UpdateController;
 import org.khasanof.main.annotation.methods.*;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
@@ -22,7 +20,6 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.lang.annotation.AnnotationFormatError;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -65,13 +62,33 @@ public class TestHandler {
         String text = "I'm handle this message : " + update.getMessage().getText();
         SendMessage message = new SendMessage(update.getMessage().getChatId().toString(), text);
         sender.execute(message);
-        throw new RuntimeException("Jeck pot! Exception \uD83D\uDE0E");
     }
 
     @HandleAny(type = HandleType.AUDIO, proceed = Proceed.NOT_PROCEED)
     private void handleAnyCallbacks(Update update, AbsSender sender) throws TelegramApiException, JsonProcessingException {
         String value = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(update.getMessage().getAudio());
         String text = "I'm handle this audio : \n" + value;
+        SendMessage message = new SendMessage(update.getMessage().getChatId().toString(), text);
+        sender.execute(message);
+    }
+
+    @HandleAny(type = HandleType.VIDEO, proceed = Proceed.PROCEED)
+    private void handleAnyPhotos(Update update, AbsSender sender) throws TelegramApiException, JsonProcessingException {
+        String value = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(update.getMessage().getVideo());
+        String text = "I'm handle this video : \n" + value;
+        SendMessage message = new SendMessage(update.getMessage().getChatId().toString(), text);
+        sender.execute(message);
+    }
+
+    @HandlePhotos(values = {
+            @HandlePhoto(
+                    value = "value >= 190000 && value <= 207000",
+                    match = MatchScope.EXPRESSION,
+                    scope = PhotoScope.FILE_SIZE
+            )
+    })
+    private void handlePhotos(Update update, AbsSender sender) throws TelegramApiException, JsonProcessingException {
+        String text = "I'm handle this expression {value >= 200000 && value <= 206000}";
         SendMessage message = new SendMessage(update.getMessage().getChatId().toString(), text);
         sender.execute(message);
     }
@@ -103,7 +120,7 @@ public class TestHandler {
         sender.execute(message);
     }
 
-    @HandleCallback(values = {"RU", "UZ"})
+//    @HandleCallback(values = {"RU", "UZ"})
     private void callBack(Update update, AbsSender sender) throws TelegramApiException {
         System.out.println("Enter Sender !");
 
@@ -129,7 +146,7 @@ public class TestHandler {
         sender.execute(sendMessage);
     }
 
-    @HandleCallback(values = {"EN"})
+//    @HandleCallback(values = {"EN"})
     private void callBackTwoParam(Update update, AbsSender sender) throws TelegramApiException {
         System.out.println("sender = " + sender);
         System.out.println("Enter Method");

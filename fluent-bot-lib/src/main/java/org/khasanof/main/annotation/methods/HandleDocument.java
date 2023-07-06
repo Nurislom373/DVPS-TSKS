@@ -1,6 +1,6 @@
 package org.khasanof.main.annotation.methods;
 
-import org.khasanof.core.enums.DocumentScope;
+import org.khasanof.core.enums.scopes.DocumentScope;
 import org.khasanof.core.enums.MatchScope;
 
 import java.lang.annotation.*;

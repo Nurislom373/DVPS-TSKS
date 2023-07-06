@@ -28,10 +28,14 @@ public enum HandleClasses {
     HANDLE_ANY(HandleAny.class, false),
     HANDLE_EXCEPTION(HandleException.class, false),
 
+    HANDLE_VIDEOS(HandleVideos.class, false),
+    HANDLE_PHOTOS(HandlePhotos.class, false),
     HANDLE_CALLBACKS(HandleCallbacks.class, false),
     HANDLE_MESSAGES(HandleMessages.class, false),
     HANDLE_DOCUMENTS(HandleDocuments.class, false),
 
+    HANDLE_VIDEO(HandleVideo.class, true, HandleClasses.HANDLE_VIDEOS),
+    HANDLE_PHOTO(HandlePhoto.class, true, HandleClasses.HANDLE_PHOTOS),
     HANDLE_CALLBACK(HandleCallback.class, true, HandleClasses.HANDLE_CALLBACKS),
     HANDLE_MESSAGE(HandleMessage.class, true, HandleClasses.HANDLE_MESSAGES),
     HANDLE_DOCUMENT(HandleDocument.class, true, HandleClasses.HANDLE_DOCUMENTS);

@@ -17,7 +17,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 public class ExceptionHandlerClassTest {
 
     @HandleException({RuntimeException.class})
-    void test(Throwable throwable, Update update, AbsSender sender) throws TelegramApiException {
+    void test(Update update, Throwable throwable, AbsSender sender) throws TelegramApiException {
         System.out.println("throwable = " + throwable);
         System.out.println("I'm enter this method!");
         String text = "I'm handle Exception : " + throwable.getMessage();

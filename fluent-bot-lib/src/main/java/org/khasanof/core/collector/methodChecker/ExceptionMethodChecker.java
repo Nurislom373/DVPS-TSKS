@@ -1,6 +1,13 @@
 package org.khasanof.core.collector.methodChecker;
 
+import org.khasanof.core.exceptions.InvalidParamsException;
+import org.khasanof.main.annotation.exception.HandleException;
+import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.bots.AbsSender;
+
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Nurislom
@@ -9,13 +16,36 @@ import java.lang.reflect.Method;
  */
 public class ExceptionMethodChecker extends AbstractMethodChecker {
 
+    private final List<Class<?>> validTypes = List.of(Throwable.class, Update.class, AbsSender.class);
+
     // TODO will finish!
     @Override
     public boolean valid(Method method) {
+        boolean validParams, validAnnotation;
         Class<?>[] parameterTypes = method.getParameterTypes();
 
-        return false;
+        if (method.getAnnotations().length == 0) {
+            return false;
+        }
+
+        validAnnotation = hasAnnotation(method, HandleException.class);
+
+        if (parameterTypes.length < 1 || parameterTypes.length > 3) {
+            throw new InvalidParamsException("Exception handler method invalid parameters!");
+        }
+
+        validParams = allMatchParameter(parameterTypes);
+
+        if (!validParams && validAnnotation) {
+            throw new InvalidParamsException("Exception handler method invalid parameters!");
+        }
+
+        return validParams && validAnnotation;
     }
 
+    private boolean allMatchParameter(Class<?>[] classes) {
+        return Arrays.stream(classes).allMatch(clazz -> validTypes.stream()
+                .anyMatch(valid -> valid.equals(clazz) || valid.isAssignableFrom(clazz)));
+    }
 
 }

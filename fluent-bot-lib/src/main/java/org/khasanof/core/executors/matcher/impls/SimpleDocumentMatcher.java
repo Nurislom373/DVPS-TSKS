@@ -1,6 +1,6 @@
 package org.khasanof.core.executors.matcher.impls;
 
-import org.khasanof.core.enums.DocumentScope;
+import org.khasanof.core.enums.scopes.DocumentScope;
 import org.khasanof.core.executors.matcher.GenericMatcher;
 import org.khasanof.main.annotation.methods.HandleDocument;
 import org.telegram.telegrambots.meta.api.objects.Document;

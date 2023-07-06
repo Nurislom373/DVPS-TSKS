@@ -1,4 +1,4 @@
-package org.khasanof.core.enums;
+package org.khasanof.core.enums.scopes;
 
 /**
  * @author Nurislom

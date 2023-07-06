@@ -22,6 +22,8 @@ import java.util.Arrays;
  */
 public class SimpleMethodChecker extends AbstractMethodChecker {
 
+    private final ExceptionMethodChecker exceptionMethodChecker = new ExceptionMethodChecker();
+
     @Override
     public boolean valid(Method method) {
         boolean annotationValid, parameterValid;
@@ -35,11 +37,7 @@ public class SimpleMethodChecker extends AbstractMethodChecker {
         }
         int parameterCount = method.getParameterCount();
         if (isExceptionHandle(method)) {
-            if (parameterCount != 3) {
-                throw new RuntimeException("Method parameter is invalid!");
-            } else {
-                return method.getParameterTypes()[0].equals(Throwable.class);
-            }
+            return exceptionMethodChecker.valid(method);
         } else {
             if (parameterCount == 0 || parameterCount > 2) {
                 if (!annotationValid) {

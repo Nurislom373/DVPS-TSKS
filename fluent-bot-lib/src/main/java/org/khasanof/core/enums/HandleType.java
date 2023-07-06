@@ -19,7 +19,9 @@ import lombok.RequiredArgsConstructor;
 public enum HandleType {
     MESSAGE(HandleClasses.HANDLE_MESSAGE),
     CALLBACK(HandleClasses.HANDLE_CALLBACK), STICKER,
-    PHOTO, DOCUMENT(HandleClasses.HANDLE_DOCUMENT), VIDEO,
+    PHOTO(HandleClasses.HANDLE_PHOTO),
+    DOCUMENT(HandleClasses.HANDLE_DOCUMENT),
+    VIDEO(HandleClasses.HANDLE_VIDEO),
     VOICE, CONTACT, VIDEO_NOTE,
     LOCATION, MEDIA_GROUP, AUDIO,
     ANIMATION, CHAT_ACTION, VENUE,

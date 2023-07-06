@@ -4,6 +4,7 @@ import org.khasanof.main.inferaces.sender.Sender;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
 /**
@@ -40,6 +41,10 @@ public abstract class AbstractMethodChecker {
             return false;
         }
         return false;
+    }
+
+    protected boolean hasAnnotation(Method method, Class<? extends Annotation> annotation) {
+        return method.isAnnotationPresent(annotation);
     }
 
 }
