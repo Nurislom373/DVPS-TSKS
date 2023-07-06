@@ -10,7 +10,7 @@
         <module name="UiCachingStrategy" />
         <module name="fluent-telegrambot" />
         <module name="ReactiveUiCaching" />
-        <module name="DVPS-TSKS" />
+        <module name="khasanof-common-util" />
       </profile>
       <profile name="Annotation profile for Jhipster Ui Caching" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
