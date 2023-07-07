@@ -1,5 +1,7 @@
 package org.khasanof.main.annotation.methods;
 
+import org.khasanof.core.enums.MultiMatchScope;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -15,5 +17,7 @@ import java.lang.annotation.Target;
 public @interface HandleVideos {
 
     HandleVideo[] values();
+
+    MultiMatchScope match() default MultiMatchScope.ANY_MATCH;
 
 }

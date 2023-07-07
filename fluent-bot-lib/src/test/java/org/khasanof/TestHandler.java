@@ -120,7 +120,7 @@ public class TestHandler {
         sender.execute(message);
     }
 
-//    @HandleCallback(values = {"RU", "UZ"})
+    @HandleCallback(values = {"RU", "UZ"})
     private void callBack(Update update, AbsSender sender) throws TelegramApiException {
         System.out.println("Enter Sender !");
 
@@ -146,7 +146,7 @@ public class TestHandler {
         sender.execute(sendMessage);
     }
 
-//    @HandleCallback(values = {"EN"})
+    @HandleCallback(values = {"EN"})
     private void callBackTwoParam(Update update, AbsSender sender) throws TelegramApiException {
         System.out.println("sender = " + sender);
         System.out.println("Enter Method");

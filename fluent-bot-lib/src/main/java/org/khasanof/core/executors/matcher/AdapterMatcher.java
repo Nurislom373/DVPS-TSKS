@@ -5,6 +5,7 @@ import org.khasanof.core.utils.ReflectionUtils;
 import org.reflections.Reflections;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Modifier;
 import java.util.AbstractMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -39,7 +40,9 @@ public class AdapterMatcher {
     void setMatchers() {
         for (Class<? extends GenericMatcher> aClass : reflections.getSubTypesOf(GenericMatcher.class)) {
             try {
-                matchers.add(aClass.newInstance());
+                if (!Modifier.isAbstract(aClass.getModifiers())) {
+                    matchers.add(aClass.newInstance());
+                }
             } catch (InstantiationException | IllegalAccessException e) {
                 throw new RuntimeException(e);
             }

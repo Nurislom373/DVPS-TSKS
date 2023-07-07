@@ -4,10 +4,7 @@ import com.ezylang.evalex.EvaluationException;
 import com.ezylang.evalex.Expression;
 import com.ezylang.evalex.config.ExpressionConfiguration;
 import com.ezylang.evalex.parser.ParseException;
-import org.khasanof.core.executors.expression.functions.ContainsFunction;
-import org.khasanof.core.executors.expression.functions.EndWithFunction;
-import org.khasanof.core.executors.expression.functions.EqualsFunction;
-import org.khasanof.core.executors.expression.functions.StartWithFunction;
+import org.khasanof.core.executors.expression.functions.*;
 
 import java.util.Map;
 
@@ -23,7 +20,8 @@ public class CommonExpression {
                     Map.entry("END_WITH", new EndWithFunction()),
                     Map.entry("START_WITH", new StartWithFunction()),
                     Map.entry("EQUALS", new EqualsFunction()),
-                    Map.entry("CONTAINS", new ContainsFunction())
+                    Map.entry("CONTAINS", new ContainsFunction()),
+                    Map.entry("BETWEEN", new BetweenFunction())
             );
 
     public boolean isMatch(String expression, Object updVal) {
