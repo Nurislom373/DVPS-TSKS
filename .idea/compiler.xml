@@ -9,6 +9,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="UiCachingStrategy" />
         <module name="fluent-telegrambot" />
+        <module name="fluent-bot-states" />
         <module name="ReactiveUiCaching" />
         <module name="khasanof-common-util" />
       </profile>
