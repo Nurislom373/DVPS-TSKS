@@ -14,4 +14,12 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.khasanof</groupId>
+            <artifactId>fluent-telegrambot</artifactId>
+            <version>1.0.8</version>
+        </dependency>
+    </dependencies>
+
 </project>

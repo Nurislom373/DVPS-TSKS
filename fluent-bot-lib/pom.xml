@@ -41,13 +41,6 @@
             <version>6.3.0</version>
         </dependency>
         <dependency>
-            <groupId>com.github.Redempt</groupId>
-            <artifactId>crunch-JEL</artifactId>
-            <version>1.0</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/libs/crunch.jar</systemPath>
-        </dependency>
-        <dependency>
             <groupId>com.ezylang</groupId>
             <artifactId>EvalEx</artifactId>
             <version>3.0.5</version>
