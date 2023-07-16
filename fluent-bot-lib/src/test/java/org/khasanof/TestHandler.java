@@ -8,9 +8,13 @@ import org.khasanof.core.enums.scopes.PhotoScope;
 import org.khasanof.main.annotation.UpdateController;
 import org.khasanof.main.annotation.methods.*;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
+import org.telegram.telegrambots.meta.api.methods.AnswerInlineQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendDice;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.Audio;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.inlinequery.result.InlineQueryResult;
+import org.telegram.telegrambots.meta.api.objects.inlinequery.result.InlineQueryResultContact;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
@@ -41,10 +45,12 @@ public class TestHandler {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @HandleMessage(value = "/start", scope = MatchScope.EQUALS)
-    private void start(Update update, AbsSender sender) throws TelegramApiException {
-        String text = "Hello World!";
+    private void start(Update update, AbsSender sender) throws TelegramApiException, JsonProcessingException {
+        String text = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(update.getMessage().getChat());
         SendMessage message = new SendMessage(update.getMessage().getChatId().toString(), text);
         message.setReplyMarkup(language());
+
+
 
         SendDice dice = new SendDice(update.getMessage().getChatId().toString());
 //        dice.setEmoji("\uD83C\uDFB2"); // 1
@@ -64,10 +70,18 @@ public class TestHandler {
         sender.execute(message);
     }
 
-    @HandleAny(type = HandleType.AUDIO, proceed = Proceed.NOT_PROCEED)
+    @HandleAny(type = HandleType.AUDIO, proceed = Proceed.PROCEED)
     private void handleAnyCallbacks(Update update, AbsSender sender) throws TelegramApiException, JsonProcessingException {
         String value = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(update.getMessage().getAudio());
         String text = "I'm handle this audio : \n" + value;
+        SendMessage message = new SendMessage(update.getMessage().getChatId().toString(), text);
+        sender.execute(message);
+    }
+
+    @HandleAny(type = HandleType.VIDEO_NOTE, proceed = Proceed.PROCEED)
+    private void handleAnyVideoNote(Update update, AbsSender sender) throws TelegramApiException, JsonProcessingException {
+        String value = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(update.getMessage().getVideoNote());
+        String text = "I'm handle this video note : \n" + value;
         SendMessage message = new SendMessage(update.getMessage().getChatId().toString(), text);
         sender.execute(message);
     }
@@ -142,8 +156,19 @@ public class TestHandler {
     })
     private void multiCallback(Update update, AbsSender sender) throws TelegramApiException {
         String text = "NPTB one handle \uD83D\uDE0E";
+
+        AnswerCallbackQuery answerCallbackQuery = new AnswerCallbackQuery();
+        answerCallbackQuery.setCallbackQueryId(update.getCallbackQuery().getId());
+        answerCallbackQuery.setText("Nurislom");
+        answerCallbackQuery.setShowAlert(true);
+        sender.execute(answerCallbackQuery);
+
         SendMessage sendMessage = new SendMessage(update.getCallbackQuery().getMessage().getChatId().toString(), text);
+        InlineQueryResult result = new InlineQueryResultContact("1", "993733273", "Nurislom");
+        AnswerInlineQuery answerInlineQuery = new AnswerInlineQuery(answerCallbackQuery.getCallbackQueryId(),
+                List.of(result));
         sender.execute(sendMessage);
+        sender.execute(answerInlineQuery);
     }
 
     @HandleCallback(values = {"EN"})

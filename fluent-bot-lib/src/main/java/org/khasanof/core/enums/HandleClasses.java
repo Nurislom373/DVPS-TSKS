@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.khasanof.main.annotation.exception.HandleException;
+import org.khasanof.main.annotation.extra.HandleState;
 import org.khasanof.main.annotation.methods.*;
 
 import java.lang.annotation.Annotation;
@@ -25,20 +26,25 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public enum HandleClasses {
 
+    HANDLE_STATE(HandleState.class, false),
     HANDLE_ANY(HandleAny.class, false),
     HANDLE_EXCEPTION(HandleException.class, false),
 
+    HANDLE_VIDEO_NOTES(HandleVideoNotes.class, false),
+    HANDLE_AUDIOS(HandleAudios.class, false),
     HANDLE_VIDEOS(HandleVideos.class, false),
     HANDLE_PHOTOS(HandlePhotos.class, false),
     HANDLE_CALLBACKS(HandleCallbacks.class, false),
     HANDLE_MESSAGES(HandleMessages.class, false),
     HANDLE_DOCUMENTS(HandleDocuments.class, false),
 
-    HANDLE_VIDEO(HandleVideo.class, true, HandleClasses.HANDLE_VIDEOS),
-    HANDLE_PHOTO(HandlePhoto.class, true, HandleClasses.HANDLE_PHOTOS),
-    HANDLE_CALLBACK(HandleCallback.class, true, HandleClasses.HANDLE_CALLBACKS),
-    HANDLE_MESSAGE(HandleMessage.class, true, HandleClasses.HANDLE_MESSAGES),
-    HANDLE_DOCUMENT(HandleDocument.class, true, HandleClasses.HANDLE_DOCUMENTS);
+    HANDLE_VIDEO_NOTE(HandleVideoNote.class, true, HANDLE_VIDEO_NOTES),
+    HANDLE_AUDIO(HandleAudio.class, true, HANDLE_AUDIOS),
+    HANDLE_VIDEO(HandleVideo.class, true, HANDLE_VIDEOS),
+    HANDLE_PHOTO(HandlePhoto.class, true, HANDLE_PHOTOS),
+    HANDLE_CALLBACK(HandleCallback.class, true, HANDLE_CALLBACKS),
+    HANDLE_MESSAGE(HandleMessage.class, true, HANDLE_MESSAGES),
+    HANDLE_DOCUMENT(HandleDocument.class, true, HANDLE_DOCUMENTS);
 
     private final Class<? extends Annotation> type;
     private final boolean hasSubType;

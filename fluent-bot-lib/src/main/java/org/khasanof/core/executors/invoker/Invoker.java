@@ -1,7 +1,8 @@
-package org.khasanof.core.executors;
+package org.khasanof.core.executors.invoker;
 
+import org.khasanof.core.model.InvokerModel;
 import org.khasanof.core.model.MethodArgs;
-import org.khasanof.core.utils.MethodParamsUtils;
+import org.khasanof.core.utils.MethodUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -14,6 +15,8 @@ import java.util.Objects;
  * @since 04.07.2023 22:22
  */
 public interface Invoker {
+
+    void invoke(InvokerModel invokerModel);
 
     static void invoke(Map.Entry<Method, Class> entry, MethodArgs args) {
         try {
@@ -30,7 +33,7 @@ public interface Invoker {
     private static void absInvoke(Map.Entry<Method, Class> entry, MethodArgs args) throws IllegalAccessException, InvocationTargetException, InstantiationException {
         Method method = entry.getKey();
         method.setAccessible(true);
-        Object[] objects = MethodParamsUtils.sorter(MethodParamsUtils.classConvertToObjects(args),
+        Object[] objects = MethodUtils.sorter(MethodUtils.classConvertToObjects(args),
                 method.getParameterTypes());
         method.invoke(entry.getValue().newInstance(), objects);
     }

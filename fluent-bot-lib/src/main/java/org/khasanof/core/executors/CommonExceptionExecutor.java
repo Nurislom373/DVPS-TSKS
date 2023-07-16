@@ -1,6 +1,7 @@
 package org.khasanof.core.executors;
 
 import org.khasanof.core.collector.Collector;
+import org.khasanof.core.executors.invoker.Invoker;
 import org.khasanof.core.model.MethodArgs;
 import org.khasanof.main.annotation.exception.HandleException;
 

@@ -2,12 +2,9 @@ package org.khasanof.core.collector.methodChecker;
 
 import org.khasanof.core.enums.HandleClasses;
 import org.khasanof.main.annotation.exception.HandleException;
-import org.khasanof.main.inferaces.sender.Sender;
-import org.reflections.ReflectionUtils;
-import org.reflections.Reflections;
-import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.bots.AbsSender;
+import org.khasanof.main.annotation.extra.HandleState;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
@@ -23,6 +20,7 @@ import java.util.Arrays;
 public class SimpleMethodChecker extends AbstractMethodChecker {
 
     private final ExceptionMethodChecker exceptionMethodChecker = new ExceptionMethodChecker();
+    private final StateMethodChecker stateMethodChecker = new StateMethodChecker();
 
     @Override
     public boolean valid(Method method) {
@@ -36,8 +34,10 @@ public class SimpleMethodChecker extends AbstractMethodChecker {
                             .contains(annotation.annotationType()));
         }
         int parameterCount = method.getParameterCount();
-        if (isExceptionHandle(method)) {
+        if (isHandle(method, HandleException.class)) {
             return exceptionMethodChecker.valid(method);
+        } else if (isHandle(method, HandleState.class)) {
+            return stateMethodChecker.valid(method);
         } else {
             if (parameterCount == 0 || parameterCount > 2) {
                 if (!annotationValid) {
@@ -55,8 +55,8 @@ public class SimpleMethodChecker extends AbstractMethodChecker {
         }
     }
 
-    private boolean isExceptionHandle(Method method) {
-        return method.isAnnotationPresent(HandleException.class);
+    private boolean isHandle(Method method, Class<? extends Annotation> clazz) {
+        return method.isAnnotationPresent(clazz);
     }
 
 

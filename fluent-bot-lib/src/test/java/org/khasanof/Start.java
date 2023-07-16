@@ -1,7 +1,10 @@
 package org.khasanof;
 
+import org.khasanof.main.inferaces.state.StateConfiguration;
 import org.khasanof.main.FluentStarter;
 import org.khasanof.main.annotation.HandlerScanner;
+
+import java.util.List;
 
 /**
  * Author: Nurislom
@@ -13,10 +16,14 @@ import org.khasanof.main.annotation.HandlerScanner;
  * Package: org.khasanof
  */
 @HandlerScanner(value = "org.khasanof")
-public class Start {
+public class Start implements StateConfiguration {
 
     public static void main(String[] args) {
         FluentStarter.start();
     }
 
+    @Override
+    public List<String> states() {
+        return List.of("START", "LOG");
+    }
 }

@@ -11,10 +11,9 @@ public abstract class MemoryUtils {
 
     public static String getFormula(MemoryUnits units) {
         return switch (units) {
-            case BYTE -> "value";
-            case KB -> "value * (10 ^ 3)";
-            case MB -> "value * 1024 * 1024";
-            case GB -> "value * (10 ^ 9)";
+            case KB -> "value / (10 ^ 3)";
+            case MB -> "value / (10 ^ 6)";
+            case GB -> "value / (10 ^ 9)";
         };
     }
 

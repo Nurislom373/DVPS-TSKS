@@ -4,6 +4,7 @@ import org.khasanof.core.collector.Collector;
 import org.khasanof.core.collector.SimpleCollector;
 import org.khasanof.core.custom.FluentContext;
 import org.khasanof.core.model.MethodArgs;
+import org.khasanof.core.utils.MethodUtils;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.lang.reflect.InvocationTargetException;
@@ -40,6 +41,31 @@ public abstract class AbstractExecutor {
         } catch (InvocationTargetException e) {
             try {
                 exceptionExecutor.director(new MethodArgs(args.update(), args.sender(), e.getCause()));
+                FluentContext.booleanLocal.set(true);
+            } catch (Throwable ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+    }
+
+    protected void invoke(Map.Entry<Method, Class> entry, Object... args) {
+        try {
+            if (Objects.nonNull(entry)) {
+                Method method = entry.getKey();
+                method.setAccessible(true);
+                Object[] objects = MethodUtils.sorter(args, entry.getKey().getParameterTypes());
+                method.invoke(entry.getValue().newInstance(), objects);
+            } else {
+                System.out.println("Method not found!");
+            }
+        } catch (IllegalAccessException | InstantiationException e) {
+            throw new RuntimeException(e);
+        } catch (InvocationTargetException e) {
+            try {
+                Object[] newArray = new Object[args.length + 1];
+                System.arraycopy(args, 0, newArray, 0, args.length);
+                newArray[newArray.length - 1] = e.getCause();
+                exceptionExecutor.director(MethodUtils.argsToClass(newArray, MethodArgs.class));
                 FluentContext.booleanLocal.set(true);
             } catch (Throwable ex) {
                 throw new RuntimeException(ex);

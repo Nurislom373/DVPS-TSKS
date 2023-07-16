@@ -3,6 +3,7 @@ package org.khasanof.core.enums;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.khasanof.main.annotation.ExceptionController;
+import org.khasanof.main.annotation.StateController;
 import org.khasanof.main.annotation.UpdateController;
 
 import java.lang.annotation.Annotation;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 public enum ClassLevelTypes {
 
     EXCEPTION_CONTROLLER(ExceptionController.class),
+    STATE_CONTROLLER(StateController.class),
     UPDATE_CONTROLLER(UpdateController.class);
 
     private final Class<? extends Annotation> type;

@@ -20,6 +20,12 @@
             <artifactId>fluent-telegrambot</artifactId>
             <version>1.0.8</version>
         </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.26</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
 </project>

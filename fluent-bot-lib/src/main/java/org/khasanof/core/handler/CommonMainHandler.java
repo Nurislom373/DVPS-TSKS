@@ -1,6 +1,7 @@
 package org.khasanof.core.handler;
 
 import org.khasanof.core.executors.CommonUpdateExecutor;
+import org.khasanof.core.state.SimpleStateService;
 import org.khasanof.main.inferaces.MainHandler;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
@@ -28,6 +29,8 @@ public class CommonMainHandler implements MainHandler {
     }
 
     public static MainHandler getInstance() {
+        final SimpleStateService stateService = new SimpleStateService();
+        stateService.registerState();
         if (mainHandler == null) {
             mainHandler = new CommonMainHandler();
         }

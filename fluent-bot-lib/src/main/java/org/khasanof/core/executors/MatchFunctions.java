@@ -27,6 +27,9 @@ public enum MatchFunctions {
     M_HS_TEXT((update -> setFunction(update.getMessage(),
             Message::hasText, Message::getText, HandleType.MESSAGE)), MatchType.MESSAGE),
 
+    M_HS_ANIMATION((update -> setFunction(update.getMessage(),
+            Message::hasAnimation, Message::getAnimation, HandleType.MESSAGE)), MatchType.MESSAGE),
+
     M_HS_STICKER((update -> setFunction(update.getMessage(),
             Message::hasSticker, Message::getSticker, HandleType.STICKER)), MatchType.MESSAGE),
 

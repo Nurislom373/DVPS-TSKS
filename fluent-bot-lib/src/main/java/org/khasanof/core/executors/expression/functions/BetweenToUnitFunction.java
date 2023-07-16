@@ -6,7 +6,11 @@ import com.ezylang.evalex.data.EvaluationValue;
 import com.ezylang.evalex.functions.AbstractFunction;
 import com.ezylang.evalex.functions.FunctionParameter;
 import com.ezylang.evalex.parser.Token;
+import lombok.SneakyThrows;
 import org.khasanof.core.enums.MemoryUnits;
+import org.khasanof.core.utils.MemoryUtils;
+
+import java.math.BigDecimal;
 
 /**
  * @author Nurislom
@@ -19,10 +23,19 @@ import org.khasanof.core.enums.MemoryUnits;
 @FunctionParameter(name = "unit")
 public class BetweenToUnitFunction extends AbstractFunction {
 
+    @SneakyThrows
     @Override
     public EvaluationValue evaluate(Expression expression, Token functionToken, EvaluationValue... parameterValues) throws EvaluationException {
         MemoryUnits memoryUnits = MemoryUnits.valueOf(parameterValues[3].getStringValue());
-        return null;
+        BigDecimal value = parameterValues[0].getNumberValue();
+        BigDecimal begin = parameterValues[1].getNumberValue();
+        BigDecimal end = parameterValues[2].getNumberValue();
+        EvaluationValue evaluationValue = new Expression(MemoryUtils.getFormula(memoryUnits))
+                .and("value", value)
+                .evaluate();
+        BigDecimal valueNumberValue = evaluationValue.getNumberValue();
+        return new EvaluationValue(valueNumberValue.longValue() > begin.longValue() &&
+                valueNumberValue.longValue() < end.longValue());
     }
 
 }

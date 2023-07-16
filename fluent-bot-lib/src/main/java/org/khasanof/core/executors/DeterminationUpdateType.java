@@ -3,6 +3,10 @@ package org.khasanof.core.executors;
 import org.khasanof.core.collector.Collector;
 import org.khasanof.core.enums.HandleType;
 import org.khasanof.core.enums.Proceed;
+import org.khasanof.core.state.StateCore;
+import org.khasanof.core.state.StateRepository;
+import org.khasanof.core.utils.UpdateUtils;
+import org.khasanof.main.annotation.extra.HandleState;
 import org.khasanof.main.annotation.methods.HandleAny;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
@@ -21,6 +25,7 @@ public class DeterminationUpdateType {
 
     private final Collector collector;
     private final HandleAnyFunctionMatcher anyFunctionMatcher = new HandleAnyFunctionMatcher();
+    private final StateRepository usersRepository = StateRepository.getInstance();
 
     public DeterminationUpdateType(Collector collector) {
         this.collector = collector;
@@ -36,15 +41,42 @@ public class DeterminationUpdateType {
                 Proceed proceed = handleAnyMethod.getKey().getAnnotation(HandleAny.class)
                         .proceed();
                 if (proceed.equals(Proceed.PROCEED)) {
+                    setStateMethod(update, methods);
                     pushMatchMethod(update, methods);
                 }
             } else {
+                setStateMethod(update, methods);
                 pushMatchMethod(update, methods);
             }
         } else {
+            setStateMethod(update, methods);
             pushMatchMethod(update, methods);
         }
         return methods;
+    }
+
+    private void setStateMethod(Update update, Map<Method, Class> methods) {
+        Long id = UpdateUtils.getUserId(update);
+        boolean hassed = usersRepository.hasUserId(id);
+        if (hassed) {
+            addStateMethod(methods, id);
+        } else {
+            usersRepository.addUser(UpdateUtils.getFrom(update));
+            addStateMethod(methods, id);
+        }
+    }
+
+    private void addStateMethod(Map<Method, Class> methods, Long id) {
+        int count = usersRepository.count();
+        System.out.println("count = " + count);
+        StateCore state = usersRepository.userGetState(id);
+        System.out.println("state = " + state);
+        if (Objects.nonNull(state)) {
+            Map.Entry<Method, Class> classEntry = collector.getMethodValueAnn(state, HandleState.class);
+            if (Objects.nonNull(classEntry)) {
+                methods.put(classEntry.getKey(), classEntry.getValue());
+            }
+        }
     }
 
     private void pushMatchMethod(Update update, Map<Method, Class> methods) {

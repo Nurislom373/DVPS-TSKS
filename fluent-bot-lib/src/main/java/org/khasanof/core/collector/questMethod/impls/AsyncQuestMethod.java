@@ -19,24 +19,24 @@ import java.util.concurrent.CompletableFuture;
  */
 public class AsyncQuestMethod implements QuestMethod {
 
-    final CommonMethodAdapter annotationCollector = new CommonMethodAdapter();
-    final CompositeMatcher matcher = new CompositeMatcher();
+    private final CommonMethodAdapter commonMethodAdapter = new CommonMethodAdapter();
+    private final CompositeMatcher matcher = new CompositeMatcher();
 
     @Override
     public Map.Entry<Method, Class> getMethodValueAnn(Object value, HandleClasses type) {
         System.out.printf("Enter type - %s, value - %s \n", type, value);
         CompletableFuture<Map.Entry<Method, Class>> supplyAsync;
         if (type.isHasSubType()) {
-            supplyAsync = CompletableFuture.supplyAsync(() -> annotationCollector.getCollectMap().containsKey(type) ?
-                            annotationCollector.getCollectMap()
+            supplyAsync = CompletableFuture.supplyAsync(() -> commonMethodAdapter.getCollectMap().containsKey(type) ?
+                            commonMethodAdapter.getCollectMap()
                                     .get(type).entrySet()
                                     .stream().filter(aClass -> matcher.chooseMatcher(aClass.getKey(),
                                             value, type.getType()))
                                     .findFirst().orElse(null) : null)
                     .thenComposeAsync(s -> CompletableFuture.supplyAsync(() -> {
                         if (Objects.isNull(s)) {
-                            return annotationCollector.getCollectMap().containsKey(type.getSubHandleClasses()) ?
-                                    annotationCollector.getCollectMap().get(type.getSubHandleClasses()).entrySet()
+                            return commonMethodAdapter.getCollectMap().containsKey(type.getSubHandleClasses()) ?
+                                    commonMethodAdapter.getCollectMap().get(type.getSubHandleClasses()).entrySet()
                                             .stream().filter(aClass -> matcher.chooseMatcher(aClass.getKey(),
                                                     value, type.getSubHandleClasses().getType()))
                                             .findFirst().orElse(null) : null;
@@ -45,8 +45,8 @@ public class AsyncQuestMethod implements QuestMethod {
                     }));
         } else {
             supplyAsync = CompletableFuture.supplyAsync(
-                    () -> annotationCollector.getCollectMap().containsKey(type) ?
-                            annotationCollector.getCollectMap()
+                    () -> commonMethodAdapter.getCollectMap().containsKey(type) ?
+                            commonMethodAdapter.getCollectMap()
                                     .get(type).entrySet()
                                     .stream().filter(aClass -> matcher.chooseMatcher(aClass.getKey(),
                                             value, type.getType()))
@@ -58,8 +58,8 @@ public class AsyncQuestMethod implements QuestMethod {
     @Override
     @SneakyThrows
     public Map.Entry<Method, Class> getHandleAnyMethod(HandleType handleType) {
-        return CompletableFuture.supplyAsync(() -> annotationCollector.getCollectMap().containsKey(HandleClasses.HANDLE_ANY) ?
-                annotationCollector.getCollectMap()
+        return CompletableFuture.supplyAsync(() -> commonMethodAdapter.getCollectMap().containsKey(HandleClasses.HANDLE_ANY) ?
+                commonMethodAdapter.getCollectMap()
                         .get(HandleClasses.HANDLE_ANY).entrySet().stream().filter(
                                 clazz -> matcher.chooseMatcher(clazz.getKey(), handleType))
                         .findFirst().orElse(null) : null).get();

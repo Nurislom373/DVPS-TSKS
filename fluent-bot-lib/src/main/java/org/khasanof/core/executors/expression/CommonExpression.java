@@ -3,6 +3,7 @@ package org.khasanof.core.executors.expression;
 import com.ezylang.evalex.EvaluationException;
 import com.ezylang.evalex.Expression;
 import com.ezylang.evalex.config.ExpressionConfiguration;
+import com.ezylang.evalex.operators.OperatorIfc;
 import com.ezylang.evalex.parser.ParseException;
 import org.khasanof.core.executors.expression.functions.*;
 
@@ -15,14 +16,22 @@ import java.util.Map;
  */
 public class CommonExpression {
 
-    private final ExpressionConfiguration configuration = ExpressionConfiguration.defaultConfiguration()
-            .withAdditionalFunctions(
-                    Map.entry("END_WITH", new EndWithFunction()),
-                    Map.entry("START_WITH", new StartWithFunction()),
-                    Map.entry("EQUALS", new EqualsFunction()),
-                    Map.entry("CONTAINS", new ContainsFunction()),
-                    Map.entry("BETWEEN", new BetweenFunction())
-            );
+    private final ExpressionConfiguration configuration = ExpressionConfiguration.builder()
+            .mathContext(ExpressionConfiguration.DEFAULT_MATH_CONTEXT)
+            .powerOfPrecedence(OperatorIfc.OPERATOR_PRECEDENCE_POWER)
+            .decimalPlacesRounding(ExpressionConfiguration.DECIMAL_PLACES_ROUNDING_UNLIMITED)
+            .build();
+
+    {
+        configuration.withAdditionalFunctions(
+                Map.entry("END_WITH", new EndWithFunction()),
+                Map.entry("START_WITH", new StartWithFunction()),
+                Map.entry("EQUALS", new EqualsFunction()),
+                Map.entry("CONTAINS", new ContainsFunction()),
+                Map.entry("BETWEEN", new BetweenFunction()),
+                Map.entry("BETWEEN_UNIT", new BetweenToUnitFunction())
+        );
+    }
 
     public boolean isMatch(String expression, Object updVal) {
         try {

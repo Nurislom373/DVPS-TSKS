@@ -1,4 +1,4 @@
-package org.khasanof.main.annotation;
+package org.khasanof.main.annotation.extra;
 
 /**
  * Author: Nurislom
@@ -9,5 +9,5 @@ package org.khasanof.main.annotation;
  * <br/>
  * Package: org.khasanof.main.annotation
  */
-public @interface MethodAfterExecution {
+public @interface MethodBeforeExecution {
 }
