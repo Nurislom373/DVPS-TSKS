@@ -64,7 +64,7 @@ public class InvokerModel {
 
     public InvokerModel methodSClass(Map.Entry<Method, Class> entry) {
         this.classEntry = entry;
-        this.hasClassEntry = !Objects.isNull(entry);
+        this.hasClassEntry = Objects.nonNull(entry);
         return this;
     }
 

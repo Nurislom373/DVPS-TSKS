@@ -3,6 +3,8 @@ package org.khasanof.core.utils;
 import org.khasanof.core.collector.loader.HandleScannerLoader;
 import org.reflections.Reflections;
 
+import java.util.List;
+
 /**
  * @author Nurislom
  * @see org.khasanof.core.utils
@@ -15,5 +17,15 @@ public abstract class ReflectionUtils {
 
     public static Reflections getReflections() {
         return reflections;
+    }
+
+    public static <T> List<T> getSubTypesObject(Class<T> clazz) {
+        return (List<T>) reflections.getSubTypesOf(clazz).stream().map(clz -> {
+            try {
+                return clz.newInstance();
+            } catch (InstantiationException | IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }).toList();
     }
 }

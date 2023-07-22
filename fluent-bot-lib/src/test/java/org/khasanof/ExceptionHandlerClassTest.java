@@ -1,6 +1,8 @@
 package org.khasanof;
 
+import org.khasanof.core.exceptions.InvalidParamsException;
 import org.khasanof.core.exceptions.NotFoundException;
+import org.khasanof.core.utils.UpdateUtils;
 import org.khasanof.main.annotation.ExceptionController;
 import org.khasanof.main.annotation.exception.HandleException;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -21,7 +23,7 @@ public class ExceptionHandlerClassTest {
         System.out.println("throwable = " + throwable);
         System.out.println("I'm enter this method!");
         String text = "I'm handle Exception : " + throwable.getMessage();
-        SendMessage message = new SendMessage(update.getMessage().getChatId().toString(), text);
+        SendMessage message = new SendMessage(UpdateUtils.getUserId(update).toString(), text);
         sender.execute(message);
     }
 

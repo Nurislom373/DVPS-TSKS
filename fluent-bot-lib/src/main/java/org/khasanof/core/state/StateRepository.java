@@ -1,9 +1,11 @@
 package org.khasanof.core.state;
 
+import org.khasanof.core.exceptions.NotFoundException;
 import org.telegram.telegrambots.meta.api.objects.User;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author Nurislom
@@ -16,11 +18,16 @@ public class StateRepository {
     private final Map<Long, StateCore> userConcurrentMap = new HashMap<>();
 
     public StateCore userGetState(Long id) {
-        return userConcurrentMap.get(id);
+        System.out.println("id = " + id);
+        StateCore stateCore = userConcurrentMap.get(id);
+        if (Objects.isNull(stateCore)) {
+            throw new NotFoundException("State not found!");
+        }
+        return stateCore;
     }
 
     public SimpleState getSimpleState(Long id) {
-        return new SimpleState(userConcurrentMap.get(id));
+        return new SimpleState(userGetState(id));
     }
 
     public int count() {

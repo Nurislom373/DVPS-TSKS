@@ -7,6 +7,8 @@ package org.khasanof.core.custom;
  */
 public class FluentContext {
 
-    public static ThreadLocal<Boolean> booleanLocal = ThreadLocal.withInitial(() -> false);
+    public static ThreadLocal<Boolean> updateExecutorBoolean = ThreadLocal.withInitial(() -> false);
+
+    public static ThreadLocal<Boolean> determinationServiceBoolean = ThreadLocal.withInitial(() -> false);
 
 }

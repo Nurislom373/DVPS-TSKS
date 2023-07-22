@@ -15,6 +15,8 @@ import org.telegram.telegrambots.meta.bots.AbsSender;
 import java.lang.reflect.Method;
 import java.util.*;
 
+import static org.khasanof.core.enums.HandleClasses.HANDLE_STATE;
+
 /**
  * @author Nurislom
  * @see org.khasanof.core.executors.invoker
@@ -23,10 +25,11 @@ import java.util.*;
 public class InvokerFunctions {
 
     private final Set<InvokerModel> invokerModels = new HashSet<>();
-    private final StateRepository stateRepository = new StateRepository();
     public static final String EXCEPTION_NAME = "handleException";
     public static final String HANDLE_UPDATE = "handleUpdate";
     public static final String HANDLE_STATE = "handleState";
+    private final StateRepository stateRepository = StateRepository.getInstance();
+
 
     public InvokerFunctions() {
         addDefaultInvokers();
@@ -47,6 +50,7 @@ public class InvokerFunctions {
                     .apply(MethodUtils.getArg(args, Update.class));
             objects.add(apply);
         }
+
         objects.addAll(Arrays.stream(args).toList());
         model.setArgs(objects.toArray());
 
@@ -66,10 +70,10 @@ public class InvokerFunctions {
         addInvokerModel(invokerModel);
 
         List<Class<?>> classList1 = List.of(Update.class, AbsSender.class, State.class);
-        InvokerModel invokerModel1 = new InvokerModel(HANDLE_STATE, false, HandleState.class,
+        InvokerModel invokerModel3 = new InvokerModel(HANDLE_STATE, false, HandleState.class,
                 classList1, true, new InvokerModel.MainParam(
                 (update -> stateRepository.getSimpleState(UpdateUtils.getUserId(update)))));
-        addInvokerModel(invokerModel1);
+        addInvokerModel(invokerModel3);
 
         List<Class<?>> classList2 = List.of(Update.class, AbsSender.class, Throwable.class);
         InvokerModel invokerModel2 = new InvokerModel(EXCEPTION_NAME, false, HandleException.class,

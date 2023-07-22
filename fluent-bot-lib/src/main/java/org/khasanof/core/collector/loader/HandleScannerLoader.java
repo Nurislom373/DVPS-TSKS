@@ -1,7 +1,7 @@
 package org.khasanof.core.collector.loader;
 
 import com.google.common.reflect.ClassPath;
-import org.khasanof.main.annotation.HandlerScanner;
+import org.khasanof.main.annotation.HandlerScan;
 
 import java.io.IOException;
 
@@ -16,28 +16,28 @@ import java.io.IOException;
  */
 public class HandleScannerLoader {
 
-    private HandlerScanner scanner;
+    private HandlerScan scanner;
 
     {
         setScanner();
     }
 
     // TODO write get annotation value method!
-    private HandlerScanner findAllClassesWithHandlerScannerClass() {
+    private HandlerScan findAllClassesWithHandlerScannerClass() {
         try {
             return ClassPath.from(ClassLoader.getSystemClassLoader())
                     .getAllClasses()
                     .stream().map(clazz -> clazz.load())
                     .filter(this::hasAnnotationClassLevel)
                     .findFirst().orElseThrow(() -> new RuntimeException("HandlerScanner annotated class not found!"))
-                    .getAnnotation(HandlerScanner.class);
+                    .getAnnotation(HandlerScan.class);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     private boolean hasAnnotationClassLevel(Class clazz) {
-        return clazz.isAnnotationPresent(HandlerScanner.class);
+        return clazz.isAnnotationPresent(HandlerScan.class);
     }
 
     public void setScanner() {

@@ -6,11 +6,7 @@ import org.khasanof.core.executors.invoker.Invoker;
 import org.khasanof.core.executors.invoker.InvokerExecutor;
 import org.khasanof.core.executors.invoker.InvokerFunctions;
 import org.khasanof.core.model.MethodArgs;
-import org.khasanof.core.state.StateRepository;
-import org.khasanof.core.utils.AnnotationUtils;
-import org.khasanof.core.utils.UpdateUtils;
 import org.khasanof.main.FluentBot;
-import org.khasanof.main.annotation.extra.HandleState;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 /**
@@ -28,11 +24,22 @@ public class CommonUpdateExecutor extends AbstractExecutor {
     public void execute(Update update) {
         BreakerForEach.forEach(determinationUpdateType.determination(update).entrySet().stream(),
                 ((entry, breaker) -> {
-                    if (!FluentContext.booleanLocal.get()) {
+                    if (!FluentContext.updateExecutorBoolean.get()) {
+                        invoke(entry, new MethodArgs(update, FluentBot.getInstance()));
+                    } else {
+                        breaker.stop();
+                    }
+                }), () -> FluentContext.updateExecutorBoolean.set(false));
+    }
+
+    public void executeV2(Update update) {
+        BreakerForEach.forEach(determinationUpdateType.determinationV2(update).entrySet().stream(),
+                ((entry, breaker) -> {
+                    if (!FluentContext.updateExecutorBoolean.get()) {
                         invoker.invoke(invokerFunctions.fillAndGet(entry, update, FluentBot.getInstance()));
                     } else {
                         breaker.stop();
                     }
-                }), () -> FluentContext.booleanLocal.set(false));
+                }), () -> FluentContext.updateExecutorBoolean.set(false));
     }
 }

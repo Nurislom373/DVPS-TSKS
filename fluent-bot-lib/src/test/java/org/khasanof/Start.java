@@ -2,7 +2,7 @@ package org.khasanof;
 
 import org.khasanof.main.inferaces.state.StateConfiguration;
 import org.khasanof.main.FluentStarter;
-import org.khasanof.main.annotation.HandlerScanner;
+import org.khasanof.main.annotation.HandlerScan;
 
 import java.util.List;
 
@@ -15,7 +15,7 @@ import java.util.List;
  * <br/>
  * Package: org.khasanof
  */
-@HandlerScanner(value = "org.khasanof")
+@HandlerScan(value = "org.khasanof")
 public class Start implements StateConfiguration {
 
     public static void main(String[] args) {

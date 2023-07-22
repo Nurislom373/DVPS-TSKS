@@ -10,10 +10,8 @@ import org.khasanof.main.annotation.extra.HandleState;
  * @since 09.07.2023 19:02
  */
 public class SimpleStateMatcher extends GenericMatcher<HandleState, StateCore> {
-
     @Override
     public boolean matcher(HandleState annotation, StateCore value) {
-        System.out.println("value = " + value);
         return annotation.value().equals(value.getCurrentState());
     }
 

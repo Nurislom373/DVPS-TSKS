@@ -2,6 +2,7 @@ package org.khasanof.core.custom;
 
 import java.util.Spliterator;
 import java.util.function.BiConsumer;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 /**
@@ -25,6 +26,12 @@ public class BreakerForEach {
 
     public static <T> void forEach(Stream<T> stream, BiConsumer<T, Breaker> consumer, Runnable runnable) {
         forEach(stream, consumer);
+        runnable.run();
+    }
+
+    public static <T> void forEach(Stream<T> stream, BiConsumer<T, Breaker> consumer, Predicate<T> predicate,
+                                   Runnable runnable) {
+        forEach(stream.filter(predicate), consumer);
         runnable.run();
     }
 

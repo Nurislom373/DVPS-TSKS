@@ -7,7 +7,7 @@ import org.khasanof.main.inferaces.state.State;
  * @see org.khasanof.core.state
  * @since 12.07.2023 22:11
  */
-public class SimpleState implements State {
+public class SimpleState implements State, GetStateCore {
 
     private final StateCore stateCore;
 
@@ -27,6 +27,11 @@ public class SimpleState implements State {
 
     @Override
     public void nextState(String nextState) {
-        stateCore.setCurrentState(nextState);
+        this.stateCore.setCurrentState(nextState);
+    }
+
+    @Override
+    public StateCore getCore() {
+        return this.stateCore;
     }
 }

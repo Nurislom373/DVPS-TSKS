@@ -1,11 +1,14 @@
 package org.khasanof.core.collector.methodChecker;
 
 import org.khasanof.core.exceptions.InvalidParamsException;
-import org.khasanof.main.inferaces.state.State;
+import org.khasanof.core.exceptions.InvalidStateDeclerationException;
 import org.khasanof.main.annotation.extra.HandleState;
+import org.khasanof.main.inferaces.state.State;
+import org.khasanof.main.inferaces.state.StateService;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
@@ -17,6 +20,7 @@ import java.util.List;
  */
 public class StateMethodChecker extends AbstractMethodChecker {
 
+    private final StateService stateService = StateService.getInstance();
     private final List<Class<?>> validTypes = List.of(State.class, Update.class, AbsSender.class);
 
     @Override
@@ -30,6 +34,13 @@ public class StateMethodChecker extends AbstractMethodChecker {
         Class<?>[] parameterTypes = method.getParameterTypes();
 
         validAnnotation = hasAnnotation(method, HandleState.class);
+
+        HandleState annotation = getAnnotation(method, HandleState.class);
+        boolean checkState = stateService.checkState(annotation.value());
+
+        if (checkState) {
+            throw new InvalidStateDeclerationException("This state isn't registered! : " + annotation.value());
+        }
 
         if (parameterTypes.length != 3) {
             throw new InvalidParamsException("State handler method invalid parameters!");
@@ -47,5 +58,15 @@ public class StateMethodChecker extends AbstractMethodChecker {
     private boolean allMatchParameter(Class<?>[] classes) {
         return Arrays.stream(classes).allMatch(clazz -> validTypes.stream()
                 .anyMatch(valid -> valid.equals(clazz) || valid.isAssignableFrom(clazz)));
+    }
+
+    @Override
+    public Class<? extends Annotation> getType() {
+        return HandleState.class;
+    }
+
+    @Override
+    public boolean hasSuperAnnotation() {
+        return false;
     }
 }

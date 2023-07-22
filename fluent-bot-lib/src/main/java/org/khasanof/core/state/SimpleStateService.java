@@ -1,6 +1,8 @@
 package org.khasanof.core.state;
 
 import lombok.SneakyThrows;
+import org.khasanof.core.config.Config;
+import org.khasanof.core.enums.ProcessType;
 import org.khasanof.core.utils.ReflectionUtils;
 import org.khasanof.main.inferaces.state.StateConfiguration;
 import org.khasanof.main.inferaces.state.StateService;
@@ -18,8 +20,9 @@ import java.util.Set;
  * @see org.khasanof.core.state
  * @since 09.07.2023 18:13
  */
-public class SimpleStateService implements StateService {
+public class SimpleStateService implements StateService, Config {
 
+    private final static SimpleStateService instance = new SimpleStateService();
     private final List<String> states = new ArrayList<>();
     private final Reflections reflections = ReflectionUtils.getReflections();
 
@@ -65,4 +68,17 @@ public class SimpleStateService implements StateService {
         return !isInterface && !isAbstract;
     }
 
+    public static SimpleStateService getInstance() {
+        return instance;
+    }
+
+    @Override
+    public void runnable() {
+        registerState();
+    }
+
+    @Override
+    public ProcessType processType() {
+        return ProcessType.STATE;
+    }
 }

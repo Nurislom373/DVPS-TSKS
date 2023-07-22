@@ -5,6 +5,7 @@ import org.khasanof.main.annotation.exception.HandleException;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
@@ -48,4 +49,13 @@ public class ExceptionMethodChecker extends AbstractMethodChecker {
                 .anyMatch(valid -> valid.equals(clazz) || valid.isAssignableFrom(clazz)));
     }
 
+    @Override
+    public Class<? extends Annotation> getType() {
+        return HandleException.class;
+    }
+
+    @Override
+    public boolean hasSuperAnnotation() {
+        return false;
+    }
 }

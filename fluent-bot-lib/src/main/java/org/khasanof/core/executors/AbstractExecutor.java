@@ -41,7 +41,7 @@ public abstract class AbstractExecutor {
         } catch (InvocationTargetException e) {
             try {
                 exceptionExecutor.director(new MethodArgs(args.update(), args.sender(), e.getCause()));
-                FluentContext.booleanLocal.set(true);
+                FluentContext.updateExecutorBoolean.set(true);
             } catch (Throwable ex) {
                 throw new RuntimeException(ex);
             }
@@ -66,7 +66,7 @@ public abstract class AbstractExecutor {
                 System.arraycopy(args, 0, newArray, 0, args.length);
                 newArray[newArray.length - 1] = e.getCause();
                 exceptionExecutor.director(MethodUtils.argsToClass(newArray, MethodArgs.class));
-                FluentContext.booleanLocal.set(true);
+                FluentContext.updateExecutorBoolean.set(true);
             } catch (Throwable ex) {
                 throw new RuntimeException(ex);
             }

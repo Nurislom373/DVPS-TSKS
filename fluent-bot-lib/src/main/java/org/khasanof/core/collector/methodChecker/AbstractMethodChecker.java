@@ -16,7 +16,7 @@ import java.lang.reflect.Method;
  * <br/>
  * Package: org.khasanof.core.collector.methodChecker
  */
-public abstract class AbstractMethodChecker {
+public abstract class AbstractMethodChecker implements AbstractMethodType {
 
     public abstract boolean valid(Method method);
 
@@ -45,6 +45,10 @@ public abstract class AbstractMethodChecker {
 
     protected boolean hasAnnotation(Method method, Class<? extends Annotation> annotation) {
         return method.isAnnotationPresent(annotation);
+    }
+
+    protected <T extends Annotation> T getAnnotation(Method method, Class<T> annotation) {
+        return method.getAnnotation(annotation);
     }
 
 }

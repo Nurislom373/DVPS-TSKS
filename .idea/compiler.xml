@@ -9,7 +9,6 @@
         <outputRelativeToContentRoot value="true" />
         <module name="UiCachingStrategy" />
         <module name="fluent-telegrambot" />
-        <module name="fluent-bot-states" />
         <module name="ReactiveUiCaching" />
         <module name="khasanof-common-util" />
       </profile>
@@ -38,6 +37,9 @@
         <module name="jhipster-ui-caching" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="fluent-bot-states" target="17" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">

@@ -40,7 +40,7 @@ public class InvokerExecutor implements Invoker {
             } catch (InvocationTargetException e) {
                 try {
                     exceptionDirector(e.getCause(), invokerModel);
-                    FluentContext.booleanLocal.set(true);
+                    FluentContext.updateExecutorBoolean.set(true);
                 } catch (Throwable ex) {
                     throw new RuntimeException(ex);
                 }
@@ -80,7 +80,11 @@ public class InvokerExecutor implements Invoker {
     }
 
     private void exceptionDirector(Throwable throwable, InvokerModel prevInvoker) throws Throwable {
-        InvokerModel invokerModel = invokerFunctions.fillAndGet(getExceptionHandleMethod(throwable), throwable,
+        Map.Entry<Method, Class> exceptionHandleMethod = getExceptionHandleMethod(throwable);
+        if (Objects.isNull(exceptionHandleMethod)) {
+            throw throwable;
+        }
+        InvokerModel invokerModel = invokerFunctions.fillAndGet(exceptionHandleMethod, throwable,
                 MethodUtils.getArg(prevInvoker.getArgs(), Update.class), MethodUtils.getArg(
                         prevInvoker.getArgs(), AbsSender.class));
         invoke(invokerModel);
