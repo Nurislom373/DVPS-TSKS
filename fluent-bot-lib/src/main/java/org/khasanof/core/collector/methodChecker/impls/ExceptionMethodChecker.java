@@ -1,5 +1,6 @@
-package org.khasanof.core.collector.methodChecker;
+package org.khasanof.core.collector.methodChecker.impls;
 
+import org.khasanof.core.collector.methodChecker.AbstractMethodChecker;
 import org.khasanof.core.exceptions.InvalidParamsException;
 import org.khasanof.main.annotation.exception.HandleException;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -19,7 +20,6 @@ public class ExceptionMethodChecker extends AbstractMethodChecker {
 
     private final List<Class<?>> validTypes = List.of(Throwable.class, Update.class, AbsSender.class);
 
-    // TODO will finish!
     @Override
     public boolean valid(Method method) {
         boolean validParams, validAnnotation;

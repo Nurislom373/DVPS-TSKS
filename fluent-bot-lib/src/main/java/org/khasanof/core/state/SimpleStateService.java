@@ -24,7 +24,7 @@ public class SimpleStateService implements StateService, Config {
 
     private final static SimpleStateService instance = new SimpleStateService();
     private final List<String> states = new ArrayList<>();
-    private final Reflections reflections = ReflectionUtils.getReflections();
+    private final Reflections reflections = ReflectionUtils.getReflections(false);
 
     @Override
     @SneakyThrows

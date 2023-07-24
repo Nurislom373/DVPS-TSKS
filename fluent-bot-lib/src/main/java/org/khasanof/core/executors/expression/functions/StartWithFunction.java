@@ -19,8 +19,8 @@ public class StartWithFunction extends AbstractFunction implements EvalFunction 
 
     @Override
     public EvaluationValue evaluate(Expression expression, Token functionToken, EvaluationValue... parameterValues) throws EvaluationException {
-        return new EvaluationValue(parameterValues[0].getStringValue()
-                .startsWith(parameterValues[1].getStringValue()));
+        return new EvaluationValue(parameterValues[1].getStringValue()
+                .startsWith(parameterValues[0].getStringValue()));
     }
 
     @Override

@@ -14,13 +14,17 @@ public abstract class ReflectionUtils {
 
     private static final HandleScannerLoader loader = new HandleScannerLoader();
     private static final Reflections reflections = new Reflections(loader.getBasePackage());
+    private static final Reflections systemReflections = new Reflections("org.khasanof");
 
-    public static Reflections getReflections() {
+    public static Reflections getReflections(boolean isSystem) {
+        if (isSystem) {
+            return systemReflections;
+        }
         return reflections;
     }
 
     public static <T> List<T> getSubTypesObject(Class<T> clazz) {
-        return (List<T>) reflections.getSubTypesOf(clazz).stream().map(clz -> {
+        return (List<T>) systemReflections.getSubTypesOf(clazz).stream().map(clz -> {
             try {
                 return clz.newInstance();
             } catch (InstantiationException | IllegalAccessException e) {

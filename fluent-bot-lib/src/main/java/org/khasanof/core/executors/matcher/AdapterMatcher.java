@@ -19,7 +19,7 @@ import java.util.function.Supplier;
 public class AdapterMatcher {
 
     final Set<GenericMatcher> matchers = new HashSet<>();
-    final Reflections reflections = ReflectionUtils.getReflections();
+    final Reflections reflections = ReflectionUtils.getReflections(true);
 
     public AdapterMatcher() {
         setMatchers();

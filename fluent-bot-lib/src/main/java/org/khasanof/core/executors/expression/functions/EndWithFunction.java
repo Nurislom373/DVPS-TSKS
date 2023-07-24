@@ -19,8 +19,9 @@ public class EndWithFunction extends AbstractFunction implements EvalFunction {
 
     @Override
     public EvaluationValue evaluate(Expression expression, Token token, EvaluationValue... parameterValues) throws EvaluationException {
-        return new EvaluationValue(parameterValues[0].getStringValue()
-                .endsWith(parameterValues[1].getStringValue()));
+        boolean endsed = "ghfud".endsWith("s");
+        return new EvaluationValue(parameterValues[1].getStringValue()
+                .endsWith(parameterValues[0].getStringValue()));
     }
 
     @Override

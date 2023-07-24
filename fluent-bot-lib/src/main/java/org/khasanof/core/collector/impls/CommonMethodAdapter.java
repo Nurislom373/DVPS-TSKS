@@ -5,7 +5,7 @@ import org.khasanof.core.collector.ClassloaderPackageCollector;
 import org.khasanof.core.collector.loader.HandleScannerLoader;
 import org.khasanof.core.collector.methodChecker.AbstractMethodChecker;
 import org.khasanof.core.collector.methodChecker.MethodCheckerAdapter;
-import org.khasanof.core.collector.methodChecker.SimpleMethodChecker;
+import org.khasanof.core.collector.methodChecker.impls.SimpleMethodChecker;
 import org.khasanof.core.enums.HandleClasses;
 
 import java.lang.annotation.Annotation;

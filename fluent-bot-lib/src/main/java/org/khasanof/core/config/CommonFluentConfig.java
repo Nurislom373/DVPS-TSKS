@@ -16,7 +16,7 @@ import java.util.function.Predicate;
  */
 public class CommonFluentConfig implements FluentConfig {
 
-    private final Reflections reflections = ReflectionUtils.getReflections();
+    private final Reflections reflections = ReflectionUtils.getReflections(true);
     public final ResourceBundle settings = ResourceBundle.getBundle("application");
 
     @Override
@@ -34,8 +34,7 @@ public class CommonFluentConfig implements FluentConfig {
             } catch (InstantiationException | IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
-        }).filter(createPredicate(configs))
-                .forEach(Config::runnable);
+        }).forEach(Config::runnable);
     }
 
     private Configs getConfig(ResourceBundle settings) {
@@ -49,8 +48,7 @@ public class CommonFluentConfig implements FluentConfig {
     private Predicate<Config> createPredicate(Configs configs) {
         return (config -> {
             if (config.processType().equals(ProcessType.BOTH)) {
-                return config.processType().equals(ProcessType.STATE) ||
-                        config.processType().equals(ProcessType.UPDATE);
+                return true;
             }
             return config.processType().equals(configs.getProcessType());
         });

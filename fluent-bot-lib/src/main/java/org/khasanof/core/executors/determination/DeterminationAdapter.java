@@ -19,7 +19,7 @@ import java.util.function.BiConsumer;
  */
 public class DeterminationAdapter {
 
-    private final Reflections reflections = ReflectionUtils.getReflections();
+    private final Reflections reflections = ReflectionUtils.getReflections(true);
 
     public void fillMap(Map<DeterminationService.Order, List<BiConsumer<Update, Map<Method, Class>>>> map,
                         List<Object> list) {

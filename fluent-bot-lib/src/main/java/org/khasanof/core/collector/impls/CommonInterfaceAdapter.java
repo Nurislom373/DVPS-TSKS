@@ -17,19 +17,13 @@ import static org.reflections.scanners.Scanners.SubTypes;
  */
 public class CommonInterfaceAdapter {
 
-    private final Reflections reflections = ReflectionUtils.getReflections();
+    private final Reflections reflections = ReflectionUtils.getReflections(false);
 
     public Class getInterfaceSubclass(Class interfaze) {
-        System.out.println("interfaze = " + interfaze);
         var types = reflections.get(SubTypes.of(interfaze).asClass());
-        System.out.println("types.size() = " + types.size());
         if (types.isEmpty()) return null;
         Class<?> next = types.iterator().next();
-        System.out.println("next = " + next);
-        if (!Modifier.isAbstract(next.getModifiers()))
-            return next;
-        else
-            return null;
+        return !Modifier.isAbstract(next.getModifiers()) ? next : null;
     }
 
 }

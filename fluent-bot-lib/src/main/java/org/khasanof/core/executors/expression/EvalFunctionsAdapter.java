@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
  */
 public class EvalFunctionsAdapter {
 
-    private final Reflections reflections = ReflectionUtils.getReflections();
+    private final Reflections reflections = ReflectionUtils.getReflections(true);
 
     public Map.Entry<String, FunctionIfc> getFunctions() {
         Set<Class<? extends NameFunction>> subTypesOf = reflections.getSubTypesOf(NameFunction.class);

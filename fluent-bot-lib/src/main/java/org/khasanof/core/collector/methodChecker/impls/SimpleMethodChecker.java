@@ -1,5 +1,6 @@
-package org.khasanof.core.collector.methodChecker;
+package org.khasanof.core.collector.methodChecker.impls;
 
+import org.khasanof.core.collector.methodChecker.AbstractMethodChecker;
 import org.khasanof.core.enums.HandleClasses;
 import org.khasanof.main.annotation.extra.TGPermission;
 
@@ -17,8 +18,6 @@ import java.util.Arrays;
  * Package: org.khasanof.core.collector.methodChecker
  */
 public class SimpleMethodChecker extends AbstractMethodChecker {
-
-    private final SimpleInterMethodChecker interMethodChecker = new SimpleInterMethodChecker();
 
     @Override
     public boolean valid(Method method) {

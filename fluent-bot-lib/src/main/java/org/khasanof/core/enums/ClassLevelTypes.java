@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 public enum ClassLevelTypes {
 
     EXCEPTION_CONTROLLER(ExceptionController.class),
-    STATE_CONTROLLER(StateController.class),
+//    STATE_CONTROLLER(StateController.class),
     UPDATE_CONTROLLER(UpdateController.class);
 
     private final Class<? extends Annotation> type;

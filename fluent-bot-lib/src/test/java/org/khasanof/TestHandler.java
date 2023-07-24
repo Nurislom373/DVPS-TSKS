@@ -107,6 +107,14 @@ public class TestHandler {
         sender.execute(message);
     }
 
+    @HandleMessage(value = "START_WITH('javohir', value) && END_WITH('abdulloh', value)",
+            scope = MatchScope.EXPRESSION)
+    private void messageExp(Update update, AbsSender sender) throws TelegramApiException {
+        String text = "I'm handle this expression {value >= 200000 && value <= 206000}";
+        SendMessage message = new SendMessage(update.getMessage().getChatId().toString(), text);
+        sender.execute(message);
+    }
+
     @HandleAny(type = HandleType.STICKER, proceed = Proceed.NOT_PROCEED)
     private void handleAnyStickers(Update update, AbsSender sender) throws TelegramApiException, JsonProcessingException {
         String value = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(update.getMessage().getSticker());
@@ -132,6 +140,7 @@ public class TestHandler {
         SendMessage message = new SendMessage(update.getMessage().getChatId().toString(), "Hello Everyone! MultiHandler");
         message.setReplyMarkup(multiInline());
         sender.execute(message);
+        throw new RuntimeException("Hello World!");
     }
 
     @HandleCallback(values = {"RU", "UZ"})
