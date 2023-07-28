@@ -1,4 +1,4 @@
-package org.khasanof.main.annotation.extra;
+package org.khasanof.main.annotation.process;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,10 +7,10 @@ import java.lang.annotation.Target;
 
 /**
  * @author Nurislom
- * @see org.khasanof.main.annotation.extra
- * @since 16.07.2023 0:03
+ * @see org.khasanof.main.annotation.process
+ * @since 25.07.2023 20:48
  */
 @Target({ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface TGPermission {
+public @interface ProcessState {
 }

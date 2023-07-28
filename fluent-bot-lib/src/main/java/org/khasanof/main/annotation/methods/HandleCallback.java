@@ -1,7 +1,7 @@
 package org.khasanof.main.annotation.methods;
 
 import org.khasanof.core.enums.MatchScope;
-import org.khasanof.main.annotation.extra.TGPermission;
+import org.khasanof.main.annotation.process.ProcessUpdate;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -17,7 +17,7 @@ import java.lang.annotation.Target;
  * <br/>
  * Package: org.khasanof.main.annotation
  */
-@TGPermission
+@ProcessUpdate
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface HandleCallback {

@@ -87,7 +87,7 @@ public class DeterminationUpdateType {
     private void addStateMethod(Map<Method, Class> methods, Long id) {
         int count = usersRepository.count();
         System.out.println("count = " + count);
-        StateCore state = usersRepository.userGetState(id);
+        Enum state = usersRepository.getState(id);
         System.out.println("state = " + state);
         if (Objects.nonNull(state)) {
             Map.Entry<Method, Class> classEntry = collector.getMethodValueAnn(state, HandleState.class);

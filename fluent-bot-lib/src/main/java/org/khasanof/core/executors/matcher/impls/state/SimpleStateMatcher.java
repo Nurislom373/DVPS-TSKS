@@ -9,13 +9,14 @@ import org.khasanof.main.annotation.extra.HandleState;
  * @see org.khasanof.core.executors.matcher.impls.state
  * @since 09.07.2023 19:02
  */
-public class SimpleStateMatcher extends GenericMatcher<HandleState, StateCore> {
-    @Override
+// TODO this class is one of the state classes
+public class SimpleStateMatcher {
+//    @Override
     public boolean matcher(HandleState annotation, StateCore value) {
         return annotation.value().equals(value.getCurrentState());
     }
 
-    @Override
+//    @Override
     public Class<HandleState> getType() {
         return HandleState.class;
     }

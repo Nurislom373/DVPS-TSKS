@@ -13,4 +13,6 @@ public interface AbstractMethodType {
 
     boolean hasSuperAnnotation();
 
+    boolean hasAny();
+
 }

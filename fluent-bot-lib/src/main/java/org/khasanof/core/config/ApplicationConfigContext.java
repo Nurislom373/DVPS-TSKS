@@ -2,6 +2,7 @@ package org.khasanof.core.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.util.Asserts;
+import org.khasanof.core.utils.BaseUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,15 +21,23 @@ public class ApplicationConfigContext {
     // TODO will be written sometime
     private static final ApplicationConfigContext APPLICATION_CONFIG_CONTEXT = new ApplicationConfigContext();
     private final Map<Class<?>, Object> classObjectMap = new HashMap<>();
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public <T> T getInstance(Class<T> clazz) {
-       return objectMapper.convertValue(classObjectMap.get(clazz), clazz);
+       return (T) classObjectMap.get(clazz);
     }
 
     public void addAll(Map<Class<?>, Object> classObjectMap) {
-        Asserts.check(Objects.nonNull(classObjectMap), "classObjectMap param must be not null!");
+        BaseUtils.checkArgsIsNonNull(classObjectMap);
         this.classObjectMap.putAll(classObjectMap);
+    }
+
+    public void add(Class<?> key, Object value) {
+        BaseUtils.checkArgsIsNonNull(key, value);
+        this.classObjectMap.put(key, value);
+    }
+
+    public static ApplicationConfigContext getConfigInstance() {
+        return APPLICATION_CONFIG_CONTEXT;
     }
 
 }

@@ -22,6 +22,7 @@ public enum HandleType {
     PHOTO(HandleClasses.HANDLE_PHOTO),
     DOCUMENT(HandleClasses.HANDLE_DOCUMENT),
     VIDEO(HandleClasses.HANDLE_VIDEO),
+    INLINE_QUERY(HandleClasses.HANDLE_INLINE_QUERY),
     VOICE, CONTACT,
     VIDEO_NOTE(HandleClasses.HANDLE_VIDEO_NOTE),
     LOCATION, MEDIA_GROUP,

@@ -1,6 +1,7 @@
 package org.khasanof.core.state;
 
 import org.khasanof.core.exceptions.NotFoundException;
+import org.khasanof.main.inferaces.state.State;
 import org.telegram.telegrambots.meta.api.objects.User;
 
 import java.util.HashMap;
@@ -14,20 +15,43 @@ import java.util.Objects;
  */
 public class StateRepository {
 
+    private final SimpleStateService service = new SimpleStateService();
     private static final StateRepository instance = new StateRepository();
-    private final Map<Long, StateCore> userConcurrentMap = new HashMap<>();
+    private Map<Long, Enum> userConcurrentMap = new HashMap<>();
 
-    public StateCore userGetState(Long id) {
-        System.out.println("id = " + id);
-        StateCore stateCore = userConcurrentMap.get(id);
-        if (Objects.isNull(stateCore)) {
+    public Enum getState(Long id) {
+        Enum enumType = userConcurrentMap.get(id);
+        if (Objects.isNull(enumType)) {
             throw new NotFoundException("State not found!");
         }
-        return stateCore;
+        return enumType;
     }
 
-    public SimpleState getSimpleState(Long id) {
-        return new SimpleState(userGetState(id));
+    public <T extends Enum> State<T> getState(Long id, Class<T> clazz) {
+        return new State<>() {
+            @Override
+            public T getState() {
+                return (T) userConcurrentMap.get(id);
+            }
+
+            @Override
+            public void nextState() {
+                userConcurrentMap.put(id, enumNextValue(service.getType(), getState()));
+            }
+        };
+    }
+
+    private Enum enumNextValue(Class<? extends Enum> enumType, Enum currentState) {
+        boolean isCurrent = false;
+        for (Enum enumConstant : enumType.getEnumConstants()) {
+            if (isCurrent) {
+                return enumConstant;
+            }
+            if (enumConstant.equals(currentState)) {
+                isCurrent = true;
+            }
+        }
+        throw new RuntimeException("next state not found!");
     }
 
     public int count() {
@@ -39,7 +63,7 @@ public class StateRepository {
     }
 
     public void addUser(User user) {
-        userConcurrentMap.put(user.getId(), new StateCore("START", "START", "START"));
+        userConcurrentMap.put(user.getId(), service.getType().getEnumConstants()[0]);
     }
 
     public static StateRepository getInstance() {

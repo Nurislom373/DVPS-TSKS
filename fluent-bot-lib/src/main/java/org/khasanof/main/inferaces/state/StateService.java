@@ -1,7 +1,5 @@
 package org.khasanof.main.inferaces.state;
 
-import org.khasanof.core.state.SimpleStateService;
-
 /**
  * @author Nurislom
  * @see org.khasanof.core.state
@@ -11,10 +9,6 @@ public interface StateService {
 
     void registerState();
 
-    boolean checkState(String value);
-
-    static StateService getInstance() {
-        return SimpleStateService.getInstance();
-    }
+    Class<? extends Enum> getType();
 
 }

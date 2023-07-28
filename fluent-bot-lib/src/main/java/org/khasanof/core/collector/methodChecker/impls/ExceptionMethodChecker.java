@@ -58,4 +58,9 @@ public class ExceptionMethodChecker extends AbstractMethodChecker {
     public boolean hasSuperAnnotation() {
         return false;
     }
+
+    @Override
+    public boolean hasAny() {
+        return true;
+    }
 }

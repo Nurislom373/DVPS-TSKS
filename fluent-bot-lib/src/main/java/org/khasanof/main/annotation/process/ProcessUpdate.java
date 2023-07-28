@@ -1,4 +1,4 @@
-package org.khasanof.core.state.processor;
+package org.khasanof.main.annotation.process;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,10 +7,10 @@ import java.lang.annotation.Target;
 
 /**
  * @author Nurislom
- * @see org.khasanof.core.state.processor
- * @since 24.07.2023 23:46
+ * @see org.khasanof.main.annotation.extra
+ * @since 16.07.2023 0:03
  */
+@Target({ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.ANNOTATION_TYPE)
-public @interface GenerateAnnotation {
+public @interface ProcessUpdate {
 }

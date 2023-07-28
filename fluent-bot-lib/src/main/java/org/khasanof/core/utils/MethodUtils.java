@@ -3,8 +3,8 @@ package org.khasanof.core.utils;
 import lombok.SneakyThrows;
 import org.khasanof.core.enums.ProcessType;
 import org.khasanof.main.annotation.extra.HandleState;
-import org.khasanof.main.annotation.extra.TGPermission;
-import org.khasanof.main.inferaces.state.StateConfiguration;
+import org.khasanof.main.annotation.process.ProcessState;
+import org.khasanof.main.annotation.process.ProcessUpdate;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -145,9 +145,9 @@ public abstract class MethodUtils {
 
     public static Class<? extends Annotation> processToType(ProcessType type) {
         if (type.equals(ProcessType.STATE)) {
-            return HandleState.class;
+            return ProcessState.class;
         } else if (type.equals(ProcessType.UPDATE)) {
-            return TGPermission.class;
+            return ProcessUpdate.class;
         }
         return null;
     }

@@ -8,9 +8,9 @@
     <artifactId>DVPS-TSKS</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
+
     <modules>
         <module>khasanof-common-util</module>
-        <module>fluent-bot-lib/fluent-bot-test</module>
     </modules>
 
     <properties>

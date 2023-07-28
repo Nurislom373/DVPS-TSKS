@@ -13,7 +13,5 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class StateCore {
-    private String currentState;
-    private String prevState;
-    private String mainState;
+    private Enum currentState;
 }

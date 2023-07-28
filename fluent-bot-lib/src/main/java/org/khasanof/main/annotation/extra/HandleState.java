@@ -1,7 +1,5 @@
 package org.khasanof.main.annotation.extra;
 
-import org.khasanof.core.state.RegEnum;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

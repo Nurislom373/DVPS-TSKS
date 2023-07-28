@@ -1,21 +1,21 @@
 package org.khasanof.core.executors.invoker;
 
+import org.khasanof.core.config.FluentConfig;
 import org.khasanof.core.model.InvokerModel;
+import org.khasanof.core.state.SimpleStateService;
 import org.khasanof.core.state.StateRepository;
 import org.khasanof.core.utils.AnnotationUtils;
 import org.khasanof.core.utils.MethodUtils;
 import org.khasanof.core.utils.UpdateUtils;
 import org.khasanof.main.annotation.exception.HandleException;
 import org.khasanof.main.annotation.extra.HandleState;
-import org.khasanof.main.annotation.extra.TGPermission;
+import org.khasanof.main.annotation.process.ProcessUpdate;
 import org.khasanof.main.inferaces.state.State;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 
 import java.lang.reflect.Method;
 import java.util.*;
-
-import static org.khasanof.core.enums.HandleClasses.HANDLE_STATE;
 
 /**
  * @author Nurislom
@@ -25,10 +25,10 @@ import static org.khasanof.core.enums.HandleClasses.HANDLE_STATE;
 public class InvokerFunctions {
 
     private final Set<InvokerModel> invokerModels = new HashSet<>();
+
     public static final String EXCEPTION_NAME = "handleException";
     public static final String HANDLE_UPDATE = "handleUpdate";
     public static final String HANDLE_STATE = "handleState";
-    private final StateRepository stateRepository = StateRepository.getInstance();
 
 
     public InvokerFunctions() {
@@ -65,15 +65,16 @@ public class InvokerFunctions {
 
     private void addDefaultInvokers() {
         List<Class<?>> classList = List.of(Update.class, AbsSender.class);
-        InvokerModel invokerModel = new InvokerModel(HANDLE_UPDATE, true, TGPermission.class,
+        InvokerModel invokerModel = new InvokerModel(HANDLE_UPDATE, true, ProcessUpdate.class,
                 classList, false, null);
         addInvokerModel(invokerModel);
 
-        List<Class<?>> classList1 = List.of(Update.class, AbsSender.class, State.class);
+        // TODO this class is one of the state classes
+        /*List<Class<?>> classList1 = List.of(Update.class, AbsSender.class, State.class);
         InvokerModel invokerModel3 = new InvokerModel(HANDLE_STATE, false, HandleState.class,
                 classList1, true, new InvokerModel.MainParam(
-                (update -> stateRepository.getSimpleState(UpdateUtils.getUserId(update)))));
-        addInvokerModel(invokerModel3);
+                (update -> stateRepository.getState(UpdateUtils.getUserId(update), stateService.getType()))));
+        addInvokerModel(invokerModel3);*/
 
         List<Class<?>> classList2 = List.of(Update.class, AbsSender.class, Throwable.class);
         InvokerModel invokerModel2 = new InvokerModel(EXCEPTION_NAME, false, HandleException.class,

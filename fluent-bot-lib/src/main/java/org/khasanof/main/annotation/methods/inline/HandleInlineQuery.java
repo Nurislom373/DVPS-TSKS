@@ -1,7 +1,6 @@
-package org.khasanof.main.annotation.methods;
+package org.khasanof.main.annotation.methods.inline;
 
 import org.khasanof.core.enums.MatchScope;
-import org.khasanof.main.annotation.process.ProcessUpdate;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -9,20 +8,15 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Author: Nurislom
- * <br/>
- * Date: 18.06.2023
- * <br/>
- * Time: 10:25
- * <br/>
- * Package: org.khasanof.main.annotation
+ * @author Nurislom
+ * @see org.khasanof.main.annotation.methods.inline
+ * @since 29.07.2023 0:43
  */
-@ProcessUpdate
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface HandleMessage {
+public @interface HandleInlineQuery {
 
-    String value() default "/";
+    String[] value() default {};
 
     MatchScope scope() default MatchScope.EQUALS;
 

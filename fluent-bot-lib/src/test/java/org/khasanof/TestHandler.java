@@ -49,16 +49,12 @@ public class TestHandler {
         String text = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(update.getMessage().getChat());
         SendMessage message = new SendMessage(update.getMessage().getChatId().toString(), text);
         message.setReplyMarkup(language());
-
-
-
         SendDice dice = new SendDice(update.getMessage().getChatId().toString());
 //        dice.setEmoji("\uD83C\uDFB2"); // 1
 //        dice.setEmoji("\uD83C\uDFAF"); // 2
 //        dice.setEmoji("\uD83C\uDFC0"); // 3
         dice.setEmoji("⚽"); // 4
 //        dice.setEmoji("\uD83C\uDFB0"); // 5
-
         sender.execute(message);
         sender.execute(dice);
     }

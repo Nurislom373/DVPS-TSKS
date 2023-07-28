@@ -5,12 +5,10 @@ package org.khasanof.main.inferaces.state;
  * @see org.khasanof.core.state
  * @since 12.07.2023 22:07
  */
-public interface State {
+public interface State<T> {
 
-    String getState();
+    T getState();
 
-    String previousState();
-
-    void nextState(String nextState);
+    void nextState();
 
 }

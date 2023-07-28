@@ -16,4 +16,5 @@ public class Configs {
     private String token;
     private String username;
     private ProcessType processType;
+    private String projectArtifactId;
 }

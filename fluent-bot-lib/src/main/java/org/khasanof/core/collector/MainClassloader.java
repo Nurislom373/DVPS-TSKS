@@ -2,18 +2,21 @@ package org.khasanof.core.collector;
 
 import org.khasanof.core.collector.flattenPackage.PackageCollector;
 import org.khasanof.core.collector.flattenPackage.impls.RecursiveFlattenPackageCollector;
+import org.khasanof.core.config.Config;
+import org.khasanof.core.config.FluentConfig;
 import org.khasanof.core.enums.ClassLevelTypes;
 import org.khasanof.core.enums.HandleClasses;
+import org.khasanof.core.enums.ProcessType;
+import org.khasanof.main.annotation.ExceptionController;
+import org.khasanof.main.annotation.StateController;
+import org.khasanof.main.annotation.UpdateController;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -25,9 +28,11 @@ import java.util.stream.Collectors;
  * <br/>
  * Package: org.khasanof.core.collector
  */
-public class ClassloaderPackageCollector {
+public class MainClassloader implements Config {
 
     private final PackageCollector flattenPackageCollector = new RecursiveFlattenPackageCollector();
+    private final Set<Class<? extends Annotation>> classLevelAnnotations = new HashSet<>();
+    private final FluentConfig config = FluentConfig.getInstance();
 
     public Set<Class> getAllClasses(String packageName) {
         Set<Class> collect = flattenPackageCollector.getFolders(packageName)
@@ -41,7 +46,7 @@ public class ClassloaderPackageCollector {
     private Set<Class> validClassGet(Set<Class> classes) {
         return classes.stream()
                 .peek(System.out::println)
-                .filter(aClass -> hasAnnotationClassLevel(aClass, ClassLevelTypes.getAllAnnotations()))
+                .filter(aClass -> hasAnnotationClassLevel(aClass, classLevelAnnotations))
                 .filter(clazz -> Arrays.stream(clazz.getDeclaredMethods())
                         .anyMatch(method -> hasAnnotationMethodLevel(method, HandleClasses.getAllAnnotations())))
                 .collect(Collectors.toSet());
@@ -60,7 +65,6 @@ public class ClassloaderPackageCollector {
     }
 
     private boolean hasAnnotationClassLevel(Class aClass, Set<Class<? extends Annotation>> annotations) {
-        System.out.println("aClass = " + aClass);
         return annotations.stream().anyMatch(aClass::isAnnotationPresent);
     }
 
@@ -97,4 +101,23 @@ public class ClassloaderPackageCollector {
         }
     }
 
+    @Override
+    public void runnable() {
+        ProcessType processType = config.getConfig().getProcessType();
+        if (processType.equals(ProcessType.BOTH)) {
+            this.classLevelAnnotations.addAll(ClassLevelTypes.getAllAnnotations());
+        } else {
+            if (processType.equals(ProcessType.STATE)) {
+                this.classLevelAnnotations.add(StateController.class);
+            } else if (processType.equals(ProcessType.UPDATE)) {
+                this.classLevelAnnotations.add(UpdateController.class);
+            }
+            this.classLevelAnnotations.add(ExceptionController.class);
+        }
+    }
+
+    @Override
+    public ProcessType processType() {
+        return ProcessType.BOTH;
+    }
 }

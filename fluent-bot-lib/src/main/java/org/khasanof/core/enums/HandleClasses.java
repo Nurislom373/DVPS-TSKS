@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.khasanof.main.annotation.exception.HandleException;
 import org.khasanof.main.annotation.extra.HandleState;
 import org.khasanof.main.annotation.methods.*;
+import org.khasanof.main.annotation.methods.inline.HandleInlineQuery;
+import org.khasanof.main.annotation.process.ProcessState;
 
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
@@ -28,6 +30,7 @@ public enum HandleClasses {
 
     HANDLE_STATE(HandleState.class, false),
     HANDLE_ANY(HandleAny.class, false),
+    HANDLE_INLINE_QUERY(HandleInlineQuery.class, false),
     HANDLE_EXCEPTION(HandleException.class, false),
 
     HANDLE_VIDEO_NOTES(HandleVideoNotes.class, false),
@@ -49,6 +52,19 @@ public enum HandleClasses {
     private final Class<? extends Annotation> type;
     private final boolean hasSubType;
     private HandleClasses subHandleClasses;
+    private boolean isSuperAnnotation;
+
+    HandleClasses(Class<? extends Annotation> type, boolean hasSubType, HandleClasses subHandleClasses) {
+        this.type = type;
+        this.hasSubType = hasSubType;
+        this.subHandleClasses = subHandleClasses;
+    }
+
+    HandleClasses(Class<? extends Annotation> type, boolean hasSubType, boolean isSuperAnnotation) {
+        this.type = type;
+        this.hasSubType = hasSubType;
+        this.isSuperAnnotation = isSuperAnnotation;
+    }
 
     public static Set<Class<? extends Annotation>> getAllAnnotations() {
         return Arrays.stream(values()).map(an -> an.type)
@@ -58,6 +74,11 @@ public enum HandleClasses {
     public static HandleClasses getHandleWithType(Class<? extends Annotation> annotation) {
         return Arrays.stream(values()).filter(handle -> handle.type.equals(annotation))
                 .findFirst().orElseThrow(() -> new RuntimeException("Match type not found!"));
+    }
+
+    private static boolean hasSuperAnnotation(Class<? extends Annotation> superAnn, Class<? extends Annotation> ann) {
+        return Arrays.stream(ann.getDeclaredAnnotations())
+                .anyMatch(annotation -> annotation.annotationType().equals(superAnn));
     }
 
 }

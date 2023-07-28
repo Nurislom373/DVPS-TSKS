@@ -19,20 +19,16 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 @StateController
 public class HandlStateController {
 
-    @HandleState(value = "START", proceedHandleMethods = false)
     void startState(Update update, AbsSender sender, State state) throws TelegramApiException {
         String text = "I'm Start STATE";
         SendMessage message = new SendMessage(UpdateUtils.getUserId(update).toString(), text);
         sender.execute(message);
-        state.nextState("LOG");
     }
 
-    @HandleState(value = "LOG", proceedHandleMethods = true)
     void logState(Update update, AbsSender sender, State state) throws TelegramApiException {
         String text = "I'm LOG state";
         SendMessage message = new SendMessage(UpdateUtils.getUserId(update).toString(), text);
         sender.execute(message);
-        state.nextState("LOG");
     }
 
 

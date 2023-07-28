@@ -1,11 +1,12 @@
 package org.khasanof.core.collector.impls;
 
 import lombok.Getter;
-import org.khasanof.core.collector.ClassloaderPackageCollector;
+import org.khasanof.core.collector.MainClassloader;
 import org.khasanof.core.collector.loader.HandleScannerLoader;
 import org.khasanof.core.collector.methodChecker.AbstractMethodChecker;
 import org.khasanof.core.collector.methodChecker.MethodCheckerAdapter;
 import org.khasanof.core.collector.methodChecker.impls.SimpleMethodChecker;
+import org.khasanof.core.config.ApplicationConfigContext;
 import org.khasanof.core.enums.HandleClasses;
 
 import java.lang.annotation.Annotation;
@@ -25,11 +26,9 @@ import java.util.*;
 @Getter
 public class CommonMethodAdapter {
 
-    private final ClassloaderPackageCollector classloader = new ClassloaderPackageCollector();
     private final HandleScannerLoader handleScannerLoader = new HandleScannerLoader();
     private final Map<HandleClasses, Map<Method, Class>> collectMap = new HashMap<>();
-    private final AbstractMethodChecker methodChecker = new SimpleMethodChecker();
-    private final MethodCheckerAdapter methodCheckerAdapter = new MethodCheckerAdapter();
+    private final ApplicationConfigContext context = ApplicationConfigContext.getConfigInstance();
     private final CommonInterfaceAdapter interfaceAdapter = new CommonInterfaceAdapter();
 
     public CommonMethodAdapter() {
@@ -45,6 +44,7 @@ public class CommonMethodAdapter {
     }
 
     void setMethodClassMap() {
+        MethodCheckerAdapter methodCheckerAdapter = context.getInstance(MethodCheckerAdapter.class);
         for (Iterator<Class> iterator = getScanner().iterator(); iterator.hasNext();) {
             final Class clazz = iterator.next();
             Arrays.stream(clazz.getDeclaredMethods()).forEach(method -> {
@@ -75,6 +75,7 @@ public class CommonMethodAdapter {
     }
 
     private Set<Class> getScanner() {
+        MainClassloader classloader = context.getInstance(MainClassloader.class);
         Set<Class> allValidClasses = classloader.getAllClasses(handleScannerLoader.getBasePackage());
         return allValidClasses;
     }

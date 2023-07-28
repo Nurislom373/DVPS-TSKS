@@ -2,7 +2,6 @@ package org.khasanof.core.handler;
 
 import org.khasanof.core.config.FluentConfig;
 import org.khasanof.core.executors.CommonUpdateExecutor;
-import org.khasanof.core.state.SimpleStateService;
 import org.khasanof.main.inferaces.MainHandler;
 import org.telegram.telegrambots.meta.api.objects.Update;
 

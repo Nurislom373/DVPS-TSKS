@@ -2,10 +2,9 @@ package org.khasanof.core.collector.methodChecker.impls;
 
 import org.khasanof.core.collector.methodChecker.AbstractMethodChecker;
 import org.khasanof.core.exceptions.InvalidParamsException;
-import org.khasanof.core.exceptions.InvalidStateDeclerationException;
-import org.khasanof.main.annotation.extra.HandleState;
+import org.khasanof.core.utils.AnnotationUtils;
+import org.khasanof.main.annotation.process.ProcessState;
 import org.khasanof.main.inferaces.state.State;
-import org.khasanof.main.inferaces.state.StateService;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 
@@ -19,12 +18,12 @@ import java.util.List;
  * @see org.khasanof.core.collector.methodChecker
  * @since 09.07.2023 19:55
  */
-public class StateMethodChecker extends AbstractMethodChecker {
+// TODO this class is one of the state classes
+public class StateMethodChecker {
 
-    private final StateService stateService = StateService.getInstance();
     private final List<Class<?>> validTypes = List.of(State.class, Update.class, AbsSender.class);
 
-    @Override
+//    @Override
     public boolean valid(Method method) {
         boolean validParams, validAnnotation;
 
@@ -34,14 +33,7 @@ public class StateMethodChecker extends AbstractMethodChecker {
 
         Class<?>[] parameterTypes = method.getParameterTypes();
 
-        validAnnotation = hasAnnotation(method, HandleState.class);
-
-        HandleState annotation = getAnnotation(method, HandleState.class);
-        boolean checkState = stateService.checkState(annotation.value());
-
-        if (checkState) {
-            throw new InvalidStateDeclerationException("This state isn't registered! : " + annotation.value());
-        }
+        validAnnotation = AnnotationUtils.hasAnnotation(method, ProcessState.class, true);
 
         if (parameterTypes.length != 3) {
             throw new InvalidParamsException("State handler method invalid parameters!");
@@ -61,13 +53,18 @@ public class StateMethodChecker extends AbstractMethodChecker {
                 .anyMatch(valid -> valid.equals(clazz) || valid.isAssignableFrom(clazz)));
     }
 
-    @Override
+//    @Override
     public Class<? extends Annotation> getType() {
-        return HandleState.class;
+        return ProcessState.class;
     }
 
-    @Override
+//    @Override
     public boolean hasSuperAnnotation() {
+        return true;
+    }
+
+//    @Override
+    public boolean hasAny() {
         return false;
     }
 }

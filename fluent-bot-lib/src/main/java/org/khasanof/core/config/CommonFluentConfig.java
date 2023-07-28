@@ -18,6 +18,7 @@ public class CommonFluentConfig implements FluentConfig {
 
     private final Reflections reflections = ReflectionUtils.getReflections(true);
     public final ResourceBundle settings = ResourceBundle.getBundle("application");
+    private final ApplicationConfigContext context = ApplicationConfigContext.getConfigInstance();
 
     @Override
     public Configs getConfig() {
@@ -26,15 +27,15 @@ public class CommonFluentConfig implements FluentConfig {
 
     @Override
     public void start() {
-        Configs configs = getConfig(settings);
         Set<Class<? extends Config>> classes = reflections.getSubTypesOf(Config.class);
         classes.stream().filter(MethodUtils::checkInstance).map(clazz -> {
-            try {
-                return clazz.newInstance();
-            } catch (InstantiationException | IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
-        }).forEach(Config::runnable);
+                    try {
+                        return clazz.newInstance();
+                    } catch (InstantiationException | IllegalAccessException e) {
+                        throw new RuntimeException(e);
+                    }
+                }).peek(Config::runnable)
+                .forEach(obj -> context.add(obj.getClass(), obj));
     }
 
     private Configs getConfig(ResourceBundle settings) {
@@ -42,12 +43,13 @@ public class CommonFluentConfig implements FluentConfig {
                 .token(settings.getString("bot.token"))
                 .username(settings.getString("bot.username"))
                 .processType(ProcessType.valueOf(settings.getString("bot.process.type")))
+                .projectArtifactId(settings.getString("bot.project.artifactId"))
                 .build();
     }
 
     private Predicate<Config> createPredicate(Configs configs) {
         return (config -> {
-            if (config.processType().equals(ProcessType.BOTH)) {
+            if (configs.getProcessType().equals(ProcessType.BOTH)) {
                 return true;
             }
             return config.processType().equals(configs.getProcessType());

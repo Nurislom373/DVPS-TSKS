@@ -9,6 +9,6 @@ import java.util.List;
  */
 public interface StateConfiguration {
 
-    List<String> states();
+    Enum<?> setEnum();
 
 }

@@ -3,7 +3,10 @@ package org.khasanof.core.utils;
 import org.khasanof.core.collector.loader.HandleScannerLoader;
 import org.reflections.Reflections;
 
+import java.lang.annotation.Annotation;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author Nurislom
@@ -31,5 +34,10 @@ public abstract class ReflectionUtils {
                 throw new RuntimeException(e);
             }
         }).toList();
+    }
+
+    public static Set<Class<?>> getSubTypesSuperAnnotation(Class<? extends Annotation> annotation) {
+        return systemReflections.getTypesAnnotatedWith(annotation).stream().filter(Class::isAnnotation)
+                .collect(Collectors.toSet());
     }
 }

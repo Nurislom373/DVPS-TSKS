@@ -32,6 +32,7 @@ public class InvokerModel {
     private Object[] args;
     private Map.Entry<Method, Class> classEntry;
     private boolean hasClassEntry;
+    private boolean canBeNoParam;
 
     public InvokerModel(String name, boolean isSuperAnnotation, Class<? extends Annotation> annotation,
                         List<Class<?>> methodParams, boolean hasMainParam, MainParam mainParam) {

@@ -26,7 +26,10 @@ public class DeterminationService {
     }
 
     public List<BiConsumer<Update, Map<Method, Class>>> getDeterminationsByOrder() {
-        return Order.getOrders().stream().map(orderListMap::get)
+        return Order.getOrders().stream().map(order -> {
+                    List<BiConsumer<Update, Map<Method, Class>>> consumers = orderListMap.get(order);
+                    return Objects.isNull(consumers) ? null : consumers;
+                }).filter(Objects::nonNull)
                 .flatMap(Collection::stream).collect(Collectors.toList());
     }
 

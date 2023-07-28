@@ -81,6 +81,8 @@ public enum MatchFunctions {
     enum MatchType {
 
         MESSAGE(Update::hasMessage, true),
+        INLINE_QUERY(Update::hasInlineQuery, false,
+                (update -> setSupplyMethod(update.getInlineQuery(), HandleType.INLINE_QUERY))),
         CALLBACK(Update::hasCallbackQuery, false,
                 (update -> setSupplyMethod(update.getCallbackQuery().getData(), HandleType.CALLBACK)));
 

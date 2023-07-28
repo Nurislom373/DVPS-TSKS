@@ -3,11 +3,11 @@ package org.khasanof.core.executors.determination.impls;
 import org.khasanof.core.collector.Collector;
 import org.khasanof.core.executors.determination.DeterminationService;
 import org.khasanof.core.executors.determination.OrderFunction;
-import org.khasanof.core.state.SimpleState;
 import org.khasanof.core.state.StateRepository;
 import org.khasanof.core.utils.MethodUtils;
 import org.khasanof.core.utils.UpdateUtils;
 import org.khasanof.main.annotation.extra.HandleState;
+import org.khasanof.main.annotation.process.ProcessState;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.lang.reflect.Method;
@@ -21,9 +21,10 @@ import java.util.function.BiConsumer;
  * @see org.khasanof.core.executors.determination.impls
  * @since 16.07.2023 19:05
  */
-public class HandleStateFunction implements OrderFunction {
+// TODO this class is one of the state classes
+public class HandleStateFunction {
 
-    @Override
+//    @Override
     public BiConsumer<Update, Map<Method, Class>> accept(List<Object> list) {
         return ((update, methods) -> {
             StateRepository stateRepository = MethodUtils.getArg(list, StateRepository.class);
@@ -32,11 +33,10 @@ public class HandleStateFunction implements OrderFunction {
             if (!has) {
                 stateRepository.addUser(UpdateUtils.getFrom(update));
             }
-            SimpleState state = stateRepository.getSimpleState(id);
+            Enum state = stateRepository.getState(id);
             if (Objects.nonNull(state)) {
                 Collector collector = MethodUtils.getArg(list, Collector.class);
-                Map.Entry<Method, Class> classEntry = collector.getMethodValueAnn(state.getCore(),
-                        HandleState.class);
+                Map.Entry<Method, Class> classEntry = collector.getMethodValueAnn(state, ProcessState.class);
                 if (Objects.nonNull(classEntry)) {
                     methods.put(classEntry.getKey(), classEntry.getValue());
                 }
@@ -44,7 +44,7 @@ public class HandleStateFunction implements OrderFunction {
         });
     }
 
-    @Override
+//    @Override
     public DeterminationService.Order getOrder() {
         return DeterminationService.Order.MID;
     }

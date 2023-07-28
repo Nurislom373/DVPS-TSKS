@@ -2,9 +2,7 @@ package org.khasanof.core.collector.methodChecker;
 
 import org.khasanof.core.config.Config;
 import org.khasanof.core.config.FluentConfig;
-import org.khasanof.core.custom.FactoryComponent;
 import org.khasanof.core.enums.ProcessType;
-import org.khasanof.core.exceptions.NotFoundException;
 import org.khasanof.core.utils.AnnotationUtils;
 import org.khasanof.core.utils.MethodUtils;
 import org.khasanof.core.utils.ReflectionUtils;
@@ -26,11 +24,6 @@ public class MethodCheckerAdapter implements Config {
     private final FluentConfig fluentConfig = FluentConfig.getInstance();
     private final List<AbstractMethodChecker> methodCheckers = new ArrayList<>();
 
-    {
-        List<AbstractMethodChecker> list = ReflectionUtils.getSubTypesObject(AbstractMethodChecker.class);
-        methodCheckers.addAll(list);
-    }
-
     public boolean valid(Method method) {
         AbstractMethodChecker abstractMethodChecker = methodCheckers.stream()
                 .filter(methodChecker -> matchChecker(method, methodChecker))
@@ -48,6 +41,19 @@ public class MethodCheckerAdapter implements Config {
     @Override
     public void runnable() {
         ProcessType processType = fluentConfig.getConfig().getProcessType();
+        List<AbstractMethodChecker> list = ReflectionUtils.getSubTypesObject(AbstractMethodChecker.class);
+        Class<? extends Annotation> processToType = MethodUtils.processToType(processType);
+        list.forEach(abstractMethodChecker -> {
+            if (abstractMethodChecker.hasAny()) {
+                methodCheckers.add(abstractMethodChecker);
+            } else {
+                if (Objects.isNull(processToType)) {
+                    methodCheckers.add(abstractMethodChecker);
+                } else if (abstractMethodChecker.getType().equals(processToType)) {
+                    methodCheckers.add(abstractMethodChecker);
+                }
+            }
+        });
     }
 
     @Override

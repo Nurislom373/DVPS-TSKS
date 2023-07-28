@@ -17,15 +17,10 @@ import java.util.List;
  * Package: org.khasanof
  */
 @HandlerScan(value = "org.khasanof")
-public class Start implements StateConfiguration, InitializingStateEnum {
+public class Start implements InitializingStateEnum {
 
     public static void main(String[] args) {
         FluentStarter.start();
-    }
-
-    @Override
-    public List<String> states() {
-        return List.of("START", "LOG");
     }
 
     @Override

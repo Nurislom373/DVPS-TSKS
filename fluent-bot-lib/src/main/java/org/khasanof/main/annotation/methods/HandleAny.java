@@ -2,7 +2,7 @@ package org.khasanof.main.annotation.methods;
 
 import org.khasanof.core.enums.HandleType;
 import org.khasanof.core.enums.Proceed;
-import org.khasanof.main.annotation.extra.TGPermission;
+import org.khasanof.main.annotation.process.ProcessUpdate;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
  * @author <a href="https://github.com/Nurislom373">Nurislom</a>
  * @since 20.06.2023
  */
-@TGPermission
+@ProcessUpdate
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface HandleAny {

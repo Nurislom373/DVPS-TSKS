@@ -27,7 +27,7 @@ public class HandleScannerLoader {
         try {
             return ClassPath.from(ClassLoader.getSystemClassLoader())
                     .getAllClasses()
-                    .stream().map(clazz -> clazz.load())
+                    .stream().map(ClassPath.ClassInfo::load)
                     .filter(this::hasAnnotationClassLevel)
                     .findFirst().orElseThrow(() -> new RuntimeException("HandlerScanner annotated class not found!"))
                     .getAnnotation(HandlerScan.class);
