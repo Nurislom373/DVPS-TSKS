@@ -11,6 +11,8 @@ import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  * @author <a href="https://github.com/Nurislom373">Nurislom</a>
@@ -65,5 +67,15 @@ public class AsyncQuestMethod implements QuestMethod {
                         .findFirst().orElse(null) : null).get();
     }
 
+    @SneakyThrows
+    @Override
+    public Map<Method, Class> getAllHandleAnyMethod(HandleType handleType) {
+        return CompletableFuture.supplyAsync(() -> commonMethodAdapter.getCollectMap().containsKey(HandleClasses.HANDLE_ANY) ?
+                commonMethodAdapter.getCollectMap()
+                        .get(HandleClasses.HANDLE_ANY).entrySet().stream().filter(
+                                clazz -> matcher.chooseMatcher(clazz.getKey(), handleType))
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)) : null)
+                .get();
+    }
 
 }

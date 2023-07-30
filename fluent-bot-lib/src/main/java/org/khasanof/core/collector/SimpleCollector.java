@@ -29,6 +29,11 @@ public class SimpleCollector extends AbstractCollector implements Collector {
     }
 
     @Override
+    public Map<Method, Class> getAllHandleAnyMethod(HandleType handleType) {
+        return questMethod.getAllHandleAnyMethod(handleType);
+    }
+
+    @Override
     public boolean hasHandle(Class<? extends Annotation> annotation) {
         return methodAdapter.hasHandle(annotation);
     }

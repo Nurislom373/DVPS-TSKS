@@ -21,6 +21,8 @@ public interface Collector {
 
     Map.Entry<Method, Class> getHandleAnyMethod(HandleType handleType);
 
+    Map<Method, Class> getAllHandleAnyMethod(HandleType handleType);
+
     boolean hasHandle(Class<? extends Annotation> annotation);
 
 }

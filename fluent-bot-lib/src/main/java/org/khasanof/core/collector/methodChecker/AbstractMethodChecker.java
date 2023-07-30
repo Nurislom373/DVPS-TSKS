@@ -1,11 +1,13 @@
 package org.khasanof.core.collector.methodChecker;
 
+import org.khasanof.core.model.properties.MainParamProperties;
 import org.khasanof.main.inferaces.sender.Sender;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 
 /**
  * Author: Nurislom
@@ -17,6 +19,8 @@ import java.lang.reflect.Method;
  * Package: org.khasanof.core.collector.methodChecker
  */
 public abstract class AbstractMethodChecker implements AbstractMethodType {
+
+    protected final Class<?>[] MAIN_PARAMS = MainParamProperties.MAIN_PARAMS_ARRAY;
 
     public abstract boolean valid(Method method);
 
@@ -41,6 +45,11 @@ public abstract class AbstractMethodChecker implements AbstractMethodType {
             return false;
         }
         return false;
+    }
+
+    protected boolean paramsTypeCheckV2(Class<?>[] methodParams, Class<?>[] matchParams) {
+        return Arrays.stream(matchParams)
+                .allMatch(param -> Arrays.asList(methodParams).contains(param));
     }
 
     protected boolean hasAnnotation(Method method, Class<? extends Annotation> annotation) {

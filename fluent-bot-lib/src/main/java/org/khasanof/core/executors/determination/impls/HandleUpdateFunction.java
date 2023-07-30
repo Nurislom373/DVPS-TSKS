@@ -44,7 +44,7 @@ public class HandleUpdateFunction implements OrderFunction {
     }
 
     @Override
-    public DeterminationService.Order getOrder() {
-        return DeterminationService.Order.LOW;
+    public Integer getOrder() {
+        return 10;
     }
 }

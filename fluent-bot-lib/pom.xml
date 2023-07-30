@@ -31,13 +31,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>cc</groupId>
-            <artifactId>jcg</artifactId>
-            <version>1.3</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/libs/jcg-1.3.jar</systemPath>
-        </dependency>
-        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.28</version>
@@ -80,6 +73,10 @@
                 <configuration>
                     <source>${maven.compiler.source}</source>
                     <target>${maven.compiler.target}</target>
+<!--                    <generatedSourcesDirectory>${project.build.directory}/generated-sources/</generatedSourcesDirectory>-->
+<!--                    <annotationProcessors>-->
+<!--                        <annotationProcessor>org.khasanof.core.state.processor.HandleStateProcessor</annotationProcessor>-->
+<!--                    </annotationProcessors>-->
                 </configuration>
             </plugin>
             <plugin>

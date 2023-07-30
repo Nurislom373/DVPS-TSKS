@@ -10,6 +10,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * @author <a href="https://github.com/Nurislom373">Nurislom</a>
@@ -46,6 +47,13 @@ public class SimpleQuestMethod implements QuestMethod {
         return commonMethodAdapter.getCollectMap().get(HandleClasses.HANDLE_ANY).entrySet()
                 .stream().filter(clazz -> matcher.chooseMatcher(clazz.getKey(), handleType))
                 .findFirst().orElse(null);
+    }
+
+    @Override
+    public Map<Method, Class> getAllHandleAnyMethod(HandleType handleType) {
+        return commonMethodAdapter.getCollectMap().get(HandleClasses.HANDLE_ANY).entrySet()
+                .stream().filter(clazz -> matcher.chooseMatcher(clazz.getKey(), handleType))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     private Map.Entry<Method, Class> getSubHandleType(Object value, HandleClasses type) {

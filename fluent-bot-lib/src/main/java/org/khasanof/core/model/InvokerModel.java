@@ -45,6 +45,17 @@ public class InvokerModel {
     }
 
     public InvokerModel(String name, boolean isSuperAnnotation, Class<? extends Annotation> annotation,
+                        List<Class<?>> methodParams, boolean hasMainParam, MainParam mainParam, boolean canBeNoParam) {
+        this.name = name;
+        this.isSuperAnnotation = isSuperAnnotation;
+        this.annotation = annotation;
+        this.methodParams = methodParams;
+        this.hasMainParam = hasMainParam;
+        this.mainParam = mainParam;
+        this.canBeNoParam = canBeNoParam;
+    }
+
+    public InvokerModel(String name, boolean isSuperAnnotation, Class<? extends Annotation> annotation,
                         List<Class<?>> methodParams, boolean hasMainParam, boolean isInputSystem) {
         this.name = name;
         this.isSuperAnnotation = isSuperAnnotation;

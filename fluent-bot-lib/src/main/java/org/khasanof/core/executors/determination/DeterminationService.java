@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 public class DeterminationService {
 
     private final List<Object> objects = new ArrayList<>();
-    private final Map<Order, List<BiConsumer<Update, Map<Method, Class>>>> orderListMap = new HashMap<>();
+    private final Map<Integer, List<BiConsumer<Update, Map<Method, Class>>>> orderListMap = new TreeMap<>();
 
     public DeterminationService(List<Object> list) {
         this.objects.addAll(list);
@@ -26,10 +26,7 @@ public class DeterminationService {
     }
 
     public List<BiConsumer<Update, Map<Method, Class>>> getDeterminationsByOrder() {
-        return Order.getOrders().stream().map(order -> {
-                    List<BiConsumer<Update, Map<Method, Class>>> consumers = orderListMap.get(order);
-                    return Objects.isNull(consumers) ? null : consumers;
-                }).filter(Objects::nonNull)
+        return orderListMap.values().stream().filter(Objects::nonNull)
                 .flatMap(Collection::stream).collect(Collectors.toList());
     }
 

@@ -11,10 +11,13 @@ import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.AnswerInlineQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendDice;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updates.GetUpdates;
 import org.telegram.telegrambots.meta.api.objects.Audio;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.inlinequery.InlineQuery;
 import org.telegram.telegrambots.meta.api.objects.inlinequery.result.InlineQueryResult;
 import org.telegram.telegrambots.meta.api.objects.inlinequery.result.InlineQueryResultContact;
+import org.telegram.telegrambots.meta.api.objects.inlinequery.result.InlineQueryResultPhoto;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
@@ -134,9 +137,8 @@ public class TestHandler {
     })
     void multiMessageHandler(Update update, AbsSender sender) throws TelegramApiException {
         SendMessage message = new SendMessage(update.getMessage().getChatId().toString(), "Hello Everyone! MultiHandler");
-        message.setReplyMarkup(multiInline());
+        message.setReplyMarkup(enterMenu());
         sender.execute(message);
-        throw new RuntimeException("Hello World!");
     }
 
     @HandleCallback(values = {"RU", "UZ"})

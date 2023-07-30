@@ -9,6 +9,7 @@ import org.khasanof.core.utils.MethodUtils;
 import org.khasanof.core.utils.UpdateUtils;
 import org.khasanof.main.annotation.exception.HandleException;
 import org.khasanof.main.annotation.extra.HandleState;
+import org.khasanof.main.annotation.methods.HandleAny;
 import org.khasanof.main.annotation.process.ProcessUpdate;
 import org.khasanof.main.inferaces.state.State;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -28,6 +29,7 @@ public class InvokerFunctions {
 
     public static final String EXCEPTION_NAME = "handleException";
     public static final String HANDLE_UPDATE = "handleUpdate";
+    public static final String HANDLE_ANY_UPDATE = "handleAnyUpdate";
     public static final String HANDLE_STATE = "handleState";
 
 
@@ -65,9 +67,14 @@ public class InvokerFunctions {
 
     private void addDefaultInvokers() {
         List<Class<?>> classList = List.of(Update.class, AbsSender.class);
-        InvokerModel invokerModel = new InvokerModel(HANDLE_UPDATE, true, ProcessUpdate.class,
-                classList, false, null);
-        addInvokerModel(invokerModel);
+        InvokerModel handleAnyModel = new InvokerModel(HANDLE_ANY_UPDATE, false, HandleAny.class,
+                classList, false, null, true);
+        addInvokerModel(handleAnyModel);
+
+        List<Class<?>> classList2 = List.of(Update.class, AbsSender.class);
+        InvokerModel invokerModel2 = new InvokerModel(HANDLE_UPDATE, true, ProcessUpdate.class,
+                classList2, false, null);
+        addInvokerModel(invokerModel2);
 
         // TODO this class is one of the state classes
         /*List<Class<?>> classList1 = List.of(Update.class, AbsSender.class, State.class);
@@ -76,10 +83,10 @@ public class InvokerFunctions {
                 (update -> stateRepository.getState(UpdateUtils.getUserId(update), stateService.getType()))));
         addInvokerModel(invokerModel3);*/
 
-        List<Class<?>> classList2 = List.of(Update.class, AbsSender.class, Throwable.class);
-        InvokerModel invokerModel2 = new InvokerModel(EXCEPTION_NAME, false, HandleException.class,
-                classList2, true, true);
-        addInvokerModel(invokerModel2);
+        List<Class<?>> classList3 = List.of(Update.class, AbsSender.class, Throwable.class);
+        InvokerModel invokerModel3 = new InvokerModel(EXCEPTION_NAME, false, HandleException.class,
+                classList3, true, true);
+        addInvokerModel(invokerModel3);
     }
 
 }

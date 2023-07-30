@@ -44,6 +44,7 @@ public class CommonFluentConfig implements FluentConfig {
                 .username(settings.getString("bot.username"))
                 .processType(ProcessType.valueOf(settings.getString("bot.process.type")))
                 .projectArtifactId(settings.getString("bot.project.artifactId"))
+                .projectGroupId(settings.getString("bot.project.groupId"))
                 .build();
     }
 

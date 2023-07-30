@@ -14,7 +14,6 @@ import java.lang.annotation.Target;
  * @author <a href="https://github.com/Nurislom373">Nurislom</a>
  * @since 20.06.2023
  */
-@ProcessUpdate
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface HandleAny {

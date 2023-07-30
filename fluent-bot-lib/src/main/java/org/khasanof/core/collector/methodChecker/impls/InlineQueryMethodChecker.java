@@ -1,27 +1,21 @@
 package org.khasanof.core.collector.methodChecker.impls;
 
 import org.khasanof.core.collector.methodChecker.AbstractMethodChecker;
-import org.khasanof.core.utils.ReflectionUtils;
-import org.khasanof.main.annotation.process.ProcessUpdate;
+import org.khasanof.core.exceptions.InvalidParamsException;
+import org.khasanof.main.annotation.methods.HandleAny;
+import org.khasanof.main.annotation.methods.inline.HandleInlineQuery;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Author: Nurislom
- * <br/>
- * Date: 22.06.2023
- * <br/>
- * Time: 23:24
- * <br/>
- * Package: org.khasanof.core.collector.methodChecker
+ * @author Nurislom
+ * @see org.khasanof.core.collector.methodChecker.impls
+ * @since 29.07.2023 21:23
  */
-public class SimpleMethodChecker extends AbstractMethodChecker {
-
-    private final Set<Class<?>> classes = ReflectionUtils.getSubTypesSuperAnnotation(ProcessUpdate.class);
+public class InlineQueryMethodChecker extends AbstractMethodChecker {
 
     @Override
     public boolean valid(Method method) {
@@ -34,7 +28,7 @@ public class SimpleMethodChecker extends AbstractMethodChecker {
             AtomicInteger matchCount = new AtomicInteger();
             Arrays.stream(method.getAnnotations())
                     .forEach(annotation -> {
-                        if (classes.contains(annotation.annotationType())) {
+                        if (HandleInlineQuery.class.equals(annotation.annotationType())) {
                             matchCount.getAndIncrement();
                         }
                     });
@@ -44,14 +38,12 @@ public class SimpleMethodChecker extends AbstractMethodChecker {
         int parameterCount = method.getParameterCount();
 
         if (parameterCount != 2) {
-            if (!annotationValid) {
-                return false;
-            }
-        } else {
-            parameterValid = paramsTypeCheckV2(method.getParameterTypes(), MAIN_PARAMS);
-            if (!parameterValid) {
-                throw new RuntimeException("There is an error in the method parameters with handle annotations!");
-            }
+            throw new InvalidParamsException("Invalid parameter handleAny!");
+        }
+
+        parameterValid = paramsTypeCheckV2(method.getParameterTypes(), MAIN_PARAMS);
+        if (!parameterValid) {
+            throw new RuntimeException("There is an error in the method parameters with handle annotations!");
         }
 
         return annotationValid;
@@ -59,12 +51,12 @@ public class SimpleMethodChecker extends AbstractMethodChecker {
 
     @Override
     public Class<? extends Annotation> getType() {
-        return ProcessUpdate.class;
+        return HandleInlineQuery.class;
     }
 
     @Override
     public boolean hasSuperAnnotation() {
-        return true;
+        return false;
     }
 
     @Override

@@ -11,6 +11,8 @@ import java.security.ProtectionDomain;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.function.BiPredicate;
+import java.util.function.Predicate;
 
 /**
  * @author Nurislom
@@ -24,12 +26,6 @@ public class BaseUtils {
         if (anyMatch) {
             throw new NullPointerException("one or more param is null!");
         }
-    }
-
-    public static void main(String[] args) {
-        BaseUtils baseUtils = new BaseUtils();
-        String version = baseUtils.getVersion();
-        System.out.println("version = " + version);
     }
 
     public synchronized String getVersion() {

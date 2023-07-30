@@ -18,6 +18,6 @@ public @interface HandleInlineQuery {
 
     String[] value() default {};
 
-    MatchScope scope() default MatchScope.EQUALS;
+    MatchScope match() default MatchScope.EQUALS;
 
 }

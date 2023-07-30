@@ -16,6 +16,6 @@ public interface OrderFunction {
 
     BiConsumer<Update, Map<Method, Class>> accept(List<Object> list);
 
-    DeterminationService.Order getOrder();
+    Integer getOrder();
 
 }

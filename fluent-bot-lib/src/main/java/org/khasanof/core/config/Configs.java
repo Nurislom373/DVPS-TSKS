@@ -17,4 +17,5 @@ public class Configs {
     private String username;
     private ProcessType processType;
     private String projectArtifactId;
+    private String projectGroupId;
 }

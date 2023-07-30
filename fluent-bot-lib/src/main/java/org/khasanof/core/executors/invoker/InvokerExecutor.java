@@ -56,6 +56,18 @@ public class InvokerExecutor implements Invoker {
         }
         Method method = classEntry.getKey();
         method.setAccessible(true);
+        if (invokerModel.isCanBeNoParam()) {
+            if (method.getParameterCount() == 0) {
+                method.invoke(classEntry.getValue().newInstance());
+            } else {
+                execute(invokerModel, classEntry, method);
+            }
+        } else {
+            execute(invokerModel, classEntry, method);
+        }
+    }
+
+    private static void execute(InvokerModel invokerModel, Map.Entry<Method, Class> classEntry, Method method) throws IllegalAccessException, InvocationTargetException, InstantiationException {
         Object[] objects = MethodUtils.sorterV2(invokerModel.getArgs(), method.getParameterTypes());
         method.invoke(classEntry.getValue().newInstance(), objects);
     }

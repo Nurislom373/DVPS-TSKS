@@ -5,7 +5,6 @@ import org.khasanof.core.custom.FluentContext;
 import org.khasanof.core.enums.HandleType;
 import org.khasanof.core.enums.Proceed;
 import org.khasanof.core.executors.HandleAnyFunctionMatcher;
-import org.khasanof.core.executors.determination.DeterminationService;
 import org.khasanof.core.executors.determination.OrderFunction;
 import org.khasanof.core.utils.MethodUtils;
 import org.khasanof.main.annotation.methods.HandleAny;
@@ -28,15 +27,19 @@ public class HandleAnyFunction implements OrderFunction {
     public BiConsumer<Update, Map<Method, Class>> accept(List<Object> list) {
         return ((update, methods) -> {
             Collector collector = MethodUtils.getArg(list, Collector.class);
+
             if (collector.hasHandle(HandleAny.class)) {
+
                 HandleAnyFunctionMatcher anyFunctionMatcher = MethodUtils.getArg(list, HandleAnyFunctionMatcher.class);
                 Map.Entry<HandleType, Object> entry = anyFunctionMatcher.matchFunctions(update);
-                Map.Entry<Method, Class> handleAnyMethod = collector.getHandleAnyMethod(entry.getKey());
-                if (Objects.nonNull(handleAnyMethod)) {
-                    methods.put(handleAnyMethod.getKey(), handleAnyMethod.getValue());
-                    Proceed proceed = handleAnyMethod.getKey().getAnnotation(HandleAny.class)
-                            .proceed();
-                    if (proceed.equals(Proceed.NOT_PROCEED)) {
+                Map<Method, Class> allHandleAnyMethod = collector.getAllHandleAnyMethod(entry.getKey());
+
+                if (Objects.nonNull(allHandleAnyMethod)) {
+
+                    methods.putAll(allHandleAnyMethod);
+                    boolean notProceedMethods = hasNotProceedMethods(allHandleAnyMethod);
+
+                    if (notProceedMethods) {
                         FluentContext.determinationServiceBoolean.set(true);
                     }
                 }
@@ -45,8 +48,15 @@ public class HandleAnyFunction implements OrderFunction {
         });
     }
 
+    private boolean hasNotProceedMethods(Map<Method, Class> methods) {
+        return methods.keySet().stream().anyMatch(method -> {
+            HandleAny annotation = method.getAnnotation(HandleAny.class);
+            return annotation.proceed().equals(Proceed.NOT_PROCEED);
+        });
+    }
+
     @Override
-    public DeterminationService.Order getOrder() {
-        return DeterminationService.Order.HIGH;
+    public Integer getOrder() {
+        return 1;
     }
 }
