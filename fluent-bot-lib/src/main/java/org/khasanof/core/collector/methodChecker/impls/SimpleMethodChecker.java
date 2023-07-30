@@ -1,9 +1,15 @@
 package org.khasanof.core.collector.methodChecker.impls;
 
 import org.khasanof.core.collector.methodChecker.AbstractMethodChecker;
+import org.khasanof.core.exceptions.InvalidParamsException;
+import org.khasanof.core.utils.AnnotationUtils;
 import org.khasanof.core.utils.ReflectionUtils;
+import org.khasanof.main.annotation.process.ProcessFile;
 import org.khasanof.main.annotation.process.ProcessUpdate;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -43,6 +49,12 @@ public class SimpleMethodChecker extends AbstractMethodChecker {
 
         int parameterCount = method.getParameterCount();
 
+        boolean profileFile = AnnotationUtils.hasAnnotation(method, ProcessFile.class, true);
+
+        if (profileFile) {
+            return hasProcessFile(method, annotationValid);
+        }
+
         if (parameterCount != 2) {
             if (!annotationValid) {
                 return false;
@@ -71,4 +83,30 @@ public class SimpleMethodChecker extends AbstractMethodChecker {
     public boolean hasAny() {
         return false;
     }
+
+    private boolean hasProcessFile(Method method, boolean annotationValid) {
+        boolean parameterValid;
+        int parameterCount = method.getParameterCount();
+
+        if (parameterCount < 2 || parameterCount > 3) {
+            throw new InvalidParamsException("There is an error in the method parameters with handle annotations!");
+        } else {
+            if (parameterCount == 3) {
+                Class<?>[] mainParams = new Class[MAIN_PARAMS.length + 1];
+                System.arraycopy(MAIN_PARAMS, 0, mainParams, 0, MAIN_PARAMS.length);
+                mainParams[mainParams.length - 1] = InputStream.class;
+
+                parameterValid = paramsTypeCheckV3(method.getParameterTypes(), mainParams);
+            } else {
+                parameterValid = paramsTypeCheckV2(method.getParameterTypes(), MAIN_PARAMS);
+            }
+
+            if (!parameterValid) {
+                throw new RuntimeException("There is an error in the method parameters with handle annotations!");
+            }
+        }
+
+        return annotationValid;
+    }
+
 }

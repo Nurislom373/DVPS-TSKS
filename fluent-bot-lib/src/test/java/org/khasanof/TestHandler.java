@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.khasanof.core.enums.*;
 import org.khasanof.core.enums.scopes.DocumentScope;
 import org.khasanof.core.enums.scopes.PhotoScope;
+import org.khasanof.core.utils.UpdateUtils;
 import org.khasanof.main.annotation.UpdateController;
 import org.khasanof.main.annotation.methods.*;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
@@ -27,6 +28,9 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -60,6 +64,11 @@ public class TestHandler {
 //        dice.setEmoji("\uD83C\uDFB0"); // 5
         sender.execute(message);
         sender.execute(dice);
+    }
+
+    @HandleMessage(value = "/translate {var1:[0-9]}", scope = MatchScope.UPDATE_VARIABLE)
+    private void updateVariableTest(Update update, AbsSender sender) {
+
     }
 
     @HandleAny(type = HandleType.MESSAGE, proceed = Proceed.PROCEED)

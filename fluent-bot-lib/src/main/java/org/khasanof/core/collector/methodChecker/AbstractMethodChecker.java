@@ -52,6 +52,12 @@ public abstract class AbstractMethodChecker implements AbstractMethodType {
                 .allMatch(param -> Arrays.asList(methodParams).contains(param));
     }
 
+    protected boolean paramsTypeCheckV3(Class<?>[] methodParams, Class<?>[] matchParams) {
+        return Arrays.stream(matchParams)
+                .allMatch(param -> Arrays.stream(methodParams)
+                        .anyMatch(methodParam -> param.equals(methodParam) || param.isAssignableFrom(methodParam)));
+    }
+
     protected boolean hasAnnotation(Method method, Class<? extends Annotation> annotation) {
         return method.isAnnotationPresent(annotation);
     }

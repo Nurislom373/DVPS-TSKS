@@ -51,11 +51,21 @@ public class InvokerExecutor implements Invoker {
     private void absInvoker(InvokerModel invokerModel) throws InstantiationException, IllegalAccessException, InvocationTargetException {
         checkListParams(invokerModel.getMethodParams(), invokerModel.getArgs());
         Map.Entry<Method, Class> classEntry = invokerModel.getClassEntry();
+
         if (invokerModel.isHasMainParam() && !invokerModel.isInputSystem()) {
-            getMainParamAndFillArgs(invokerModel);
+            if (InvokerFunctions.HANDLE_UPDATE_W_PROCESS_FL.equals(invokerModel.getName())) {
+                Method method = invokerModel.getClassEntry().getKey();
+                if (method.getParameterCount() > 2) {
+                    getMainParamAndFillArgs(invokerModel);
+                }
+            } else {
+                getMainParamAndFillArgs(invokerModel);
+            }
         }
+
         Method method = classEntry.getKey();
         method.setAccessible(true);
+
         if (invokerModel.isCanBeNoParam()) {
             if (method.getParameterCount() == 0) {
                 method.invoke(classEntry.getValue().newInstance());

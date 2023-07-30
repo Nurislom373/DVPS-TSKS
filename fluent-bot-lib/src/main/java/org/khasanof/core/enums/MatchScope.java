@@ -16,5 +16,10 @@ public enum MatchScope {
     EQUALS,
     REGEX,
     EQUALS_IGNORE_CASE,
-    EXPRESSION
+    EXPRESSION,
+
+    /**
+     * this new feature use only message and callback handlers!
+     */
+    UPDATE_VARIABLE
 }

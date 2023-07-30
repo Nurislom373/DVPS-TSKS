@@ -2,6 +2,7 @@ package org.khasanof.main.annotation.methods;
 
 import org.khasanof.core.enums.MatchScope;
 import org.khasanof.core.enums.scopes.VideoScope;
+import org.khasanof.main.annotation.process.ProcessFile;
 import org.khasanof.main.annotation.process.ProcessUpdate;
 
 import java.lang.annotation.ElementType;
@@ -14,6 +15,7 @@ import java.lang.annotation.Target;
  * @see org.khasanof.main.annotation.methods
  * @since 06.07.2023 21:42
  */
+@ProcessFile
 @ProcessUpdate
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
