@@ -14,7 +14,7 @@ import java.util.Map;
  * @see org.khasanof.core.executors.expression
  * @since 02.07.2023 19:18
  */
-public class CommonExpression {
+public class SimpleExpressionMatcher implements ExpressionMatcher<Object> {
 
     private final ExpressionConfiguration configuration = ExpressionConfiguration.builder()
             .mathContext(ExpressionConfiguration.DEFAULT_MATH_CONTEXT)
@@ -33,20 +33,15 @@ public class CommonExpression {
         );
     }
 
-    public boolean isMatch(String expression, Object updVal) {
+    @Override
+    public boolean doMatch(String expression, Object value) {
         try {
-            System.out.println("expression = " + expression);
             String replaced = expression.replaceAll("'", "\"");
-            System.out.println("replaced = " + replaced);
-            System.out.println("updVal = " + updVal);
-            boolean value = new Expression(replaced, configuration)
-                    .and("value", updVal).evaluate()
+            return new Expression(replaced, configuration)
+                    .and("value", value).evaluate()
                     .getBooleanValue();
-            System.out.println("value = " + value);
-            return value;
         } catch (EvaluationException | ParseException e) {
             throw new RuntimeException(e);
         }
     }
-
 }

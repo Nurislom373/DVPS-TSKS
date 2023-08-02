@@ -9,6 +9,7 @@
         <option value="$PROJECT_DIR$/UiCachingStrategy/pom.xml" />
         <option value="$PROJECT_DIR$/fluent-bot-lib/fluent-bot-states/pom.xml" />
         <option value="$PROJECT_DIR$/fluent-bot-test/pom.xml" />
+        <option value="$PROJECT_DIR$/reactive-filter-util/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">

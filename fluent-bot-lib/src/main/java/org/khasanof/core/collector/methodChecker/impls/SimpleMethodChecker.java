@@ -1,9 +1,14 @@
 package org.khasanof.core.collector.methodChecker.impls;
 
 import org.khasanof.core.collector.methodChecker.AbstractMethodChecker;
+import org.khasanof.core.exceptions.InvalidExpressionException;
 import org.khasanof.core.exceptions.InvalidParamsException;
+import org.khasanof.core.executors.expression.ExpressionVariables;
+import org.khasanof.core.executors.expression.VariableExpressionMatcher;
 import org.khasanof.core.utils.AnnotationUtils;
 import org.khasanof.core.utils.ReflectionUtils;
+import org.khasanof.main.annotation.methods.HandleMessage;
+import org.khasanof.main.annotation.methods.HandleMessages;
 import org.khasanof.main.annotation.process.ProcessFile;
 import org.khasanof.main.annotation.process.ProcessUpdate;
 
@@ -13,6 +18,7 @@ import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -28,10 +34,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class SimpleMethodChecker extends AbstractMethodChecker {
 
     private final Set<Class<?>> classes = ReflectionUtils.getSubTypesSuperAnnotation(ProcessUpdate.class);
+    private final ExpressionVariables expressionVariables = new VariableExpressionMatcher();
 
     @Override
     public boolean valid(Method method) {
-        boolean annotationValid, parameterValid;
+        boolean annotationValid;
         int length = method.getAnnotations().length;
 
         if (length == 0) {
@@ -55,6 +62,11 @@ public class SimpleMethodChecker extends AbstractMethodChecker {
             return hasProcessFile(method, annotationValid);
         }
 
+        return match(method, annotationValid, parameterCount);
+    }
+
+    private boolean match(Method method, boolean annotationValid, int parameterCount) {
+        boolean parameterValid;
         if (parameterCount != 2) {
             if (!annotationValid) {
                 return false;
@@ -65,6 +77,19 @@ public class SimpleMethodChecker extends AbstractMethodChecker {
                 throw new RuntimeException("There is an error in the method parameters with handle annotations!");
             }
         }
+        return annotationValid;
+    }
+
+    private boolean variableExpMatch(Method method, boolean annotationValid) {
+        HandleMessage annotation = method.getAnnotation(HandleMessage.class);
+        boolean expression = expressionVariables.isExpression(annotation.value());
+        if (!expression) {
+            throw new InvalidExpressionException("Invalid Expression!");
+        }
+
+        List<String> list = Arrays.asList(expressionVariables.getExpression(annotation.value()));
+
+        int parameterCount = method.getParameterCount();
 
         return annotationValid;
     }

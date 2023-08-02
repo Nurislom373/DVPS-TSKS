@@ -21,5 +21,5 @@ public enum MatchScope {
     /**
      * this new feature use only message and callback handlers!
      */
-    UPDATE_VARIABLE
+    EXPRESSION_VARIABLE
 }

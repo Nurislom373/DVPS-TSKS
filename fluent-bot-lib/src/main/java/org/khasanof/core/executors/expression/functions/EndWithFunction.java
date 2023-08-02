@@ -6,7 +6,6 @@ import com.ezylang.evalex.data.EvaluationValue;
 import com.ezylang.evalex.functions.AbstractFunction;
 import com.ezylang.evalex.functions.FunctionParameter;
 import com.ezylang.evalex.parser.Token;
-import org.khasanof.core.executors.expression.EvalFunction;
 
 /**
  * @author Nurislom
@@ -15,17 +14,10 @@ import org.khasanof.core.executors.expression.EvalFunction;
  */
 @FunctionParameter(name = "value")
 @FunctionParameter(name = "const")
-public class EndWithFunction extends AbstractFunction implements EvalFunction {
+public class EndWithFunction extends AbstractFunction {
 
     @Override
     public EvaluationValue evaluate(Expression expression, Token token, EvaluationValue... parameterValues) throws EvaluationException {
-        boolean endsed = "ghfud".endsWith("s");
-        return new EvaluationValue(parameterValues[1].getStringValue()
-                .endsWith(parameterValues[0].getStringValue()));
-    }
-
-    @Override
-    public String getName() {
-        return "END_WITH";
+        return new EvaluationValue(parameterValues[1].getStringValue().endsWith(parameterValues[0].getStringValue()));
     }
 }

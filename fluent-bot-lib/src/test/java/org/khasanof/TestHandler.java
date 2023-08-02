@@ -5,20 +5,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.khasanof.core.enums.*;
 import org.khasanof.core.enums.scopes.DocumentScope;
 import org.khasanof.core.enums.scopes.PhotoScope;
-import org.khasanof.core.utils.UpdateUtils;
 import org.khasanof.main.annotation.UpdateController;
 import org.khasanof.main.annotation.methods.*;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.AnswerInlineQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendDice;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.methods.updates.GetUpdates;
-import org.telegram.telegrambots.meta.api.objects.Audio;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.inlinequery.InlineQuery;
 import org.telegram.telegrambots.meta.api.objects.inlinequery.result.InlineQueryResult;
 import org.telegram.telegrambots.meta.api.objects.inlinequery.result.InlineQueryResultContact;
-import org.telegram.telegrambots.meta.api.objects.inlinequery.result.InlineQueryResultPhoto;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
@@ -28,9 +23,6 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -66,7 +58,7 @@ public class TestHandler {
         sender.execute(dice);
     }
 
-    @HandleMessage(value = "/translate {var1:[0-9]}", scope = MatchScope.UPDATE_VARIABLE)
+    @HandleMessage(value = "/translate {var1:[0-9]}", scope = MatchScope.EXPRESSION_VARIABLE)
     private void updateVariableTest(Update update, AbsSender sender) {
 
     }

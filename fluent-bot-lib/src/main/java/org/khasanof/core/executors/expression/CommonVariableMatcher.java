@@ -1,4 +1,4 @@
-package org.khasanof.core.executors.matchScope.updateVariable;
+package org.khasanof.core.executors.expression;
 
 import org.khasanof.core.utils.BaseUtils;
 
@@ -8,7 +8,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * {@link UpdateVariableMatcher} implementation for Ant-style path patterns.
+ * {@link CommonVariableMatcher} implementation for Ant-style path patterns.
  *
  * <p>Part of this mapping code has been kindly borrowed from <a href="http://ant.apache.org">Apache Ant</a>.
  *
@@ -28,7 +28,7 @@ import java.util.regex.Pattern;
  * @author Nurislom
  * @since 30.07.2023 20:59
  */
-public class UpdateVariableMatcher {
+public class CommonVariableMatcher {
 
 	/** Default path separator: "/" */
 	public static final String DEFAULT_PATH_SEPARATOR = "/";
@@ -58,7 +58,7 @@ public class UpdateVariableMatcher {
 	/**
 	 * Create a new instance with the {@link #DEFAULT_PATH_SEPARATOR}.
 	 */
-	public UpdateVariableMatcher() {
+	public CommonVariableMatcher() {
 		this.pathSeparator = DEFAULT_PATH_SEPARATOR;
 		this.pathSeparatorPatternCache = new PathSeparatorPatternCache(DEFAULT_PATH_SEPARATOR);
 	}
@@ -68,7 +68,7 @@ public class UpdateVariableMatcher {
 	 * @param pathSeparator the path separator to use, must not be {@code null}.
 	 * @since 4.1
 	 */
-	public UpdateVariableMatcher(String pathSeparator) {
+	public CommonVariableMatcher(String pathSeparator) {
 		BaseUtils.notNull(pathSeparator, "'pathSeparator' is required");
 		this.pathSeparator = pathSeparator;
 		this.pathSeparatorPatternCache = new PathSeparatorPatternCache(pathSeparator);

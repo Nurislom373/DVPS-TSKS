@@ -60,12 +60,19 @@ public abstract class UpdateUtils {
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> T getListMatchFunctionValue(Message message, Map<Function<Message, Boolean>, Function<Message, Object>> functionMap,
+    public static <T> T getListMatchFunctionValue(Message message, Map<Function<Message, Boolean>, Function<Message, Object>> functionMap,
                                                    String fieldName) {
         return (T) functionMap.entrySet().stream().filter(functionFunctionEntry ->
                 functionFunctionEntry.getKey().apply(message)).findFirst()
                 .map(functionFunctionEntry -> getObjField(functionFunctionEntry.getValue().apply(message),
                         fieldName)).orElse(null);
+    }
+
+    public static <T, R> R getListMatchFunctionValue(T message, Map<Function<T, Boolean>, Function<T, R>> functionMap) {
+        return functionMap.entrySet().stream().filter(functionFunctionEntry ->
+                        functionFunctionEntry.getKey().apply(message)).findFirst()
+                .map(functionFunctionEntry -> functionFunctionEntry.getValue().apply(message))
+                .orElse(null);
     }
 
     @SneakyThrows

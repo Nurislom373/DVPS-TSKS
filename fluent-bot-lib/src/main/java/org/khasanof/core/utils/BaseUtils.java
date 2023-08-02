@@ -7,7 +7,7 @@ import java.util.*;
  * @see org.khasanof.core.utils
  * @since 25.07.2023 20:55
  */
-public class BaseUtils {
+public abstract class BaseUtils {
 
     private static final String[] EMPTY_STRING_ARRAY = {};
 
