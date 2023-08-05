@@ -41,7 +41,7 @@ public abstract class UpdateUtils {
 
     public static String getFileId(Update update) {
         Map<Function<Message, Boolean>, Function<Message, Object>> functionMap = new HashMap<>() {{
-            put((Message::hasDocument), (Message::getDocument));
+            put((message -> message.getClass().equals(Message.class)), (Message::getDocument));
             put((Message::hasAudio), (Message::getAudio));
             put((Message::hasPhoto), (Message::getPhoto));
             put((Message::hasVideo), (Message::getVideo));

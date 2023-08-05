@@ -22,6 +22,7 @@ public class ApplicationConfigContext {
     private static final ApplicationConfigContext APPLICATION_CONFIG_CONTEXT = new ApplicationConfigContext();
     private final Map<Class<?>, Object> classObjectMap = new HashMap<>();
 
+    @SuppressWarnings("unchecked")
     public <T> T getInstance(Class<T> clazz) {
        return (T) classObjectMap.get(clazz);
     }

@@ -10,6 +10,7 @@
         <module name="UiCachingStrategy" />
         <module name="reactive-filter-util" />
         <module name="fluent-telegrambot" />
+        <module name="spring-boot-starter-fluent" />
         <module name="fluent-bot-test" />
         <module name="ReactiveUiCaching" />
       </profile>
@@ -67,6 +68,7 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="UiCachingStrategy" options="-parameters" />
       <module name="reactive-filter-util" options="-parameters" />
+      <module name="spring-boot-starter-fluent" options="-parameters" />
     </option>
   </component>
 </project>
