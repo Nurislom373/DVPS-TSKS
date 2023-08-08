@@ -21,7 +21,7 @@ import java.util.Map;
 @Component
 public class SimpleCollector extends AbstractCollector implements Collector {
 
-    public SimpleCollector(CommonMethodAdapter commonMethodAdapter, QuestMethod questMethod) {
+    public SimpleCollector(SimpleMethodContext commonMethodAdapter, QuestMethod questMethod) {
         super(commonMethodAdapter, questMethod);
     }
 
@@ -42,7 +42,7 @@ public class SimpleCollector extends AbstractCollector implements Collector {
 
     @Override
     public boolean hasHandle(Class<? extends Annotation> annotation) {
-        return methodAdapter.hasHandle(annotation);
+        return methodAdapter.containsKey(annotation);
     }
 
 }

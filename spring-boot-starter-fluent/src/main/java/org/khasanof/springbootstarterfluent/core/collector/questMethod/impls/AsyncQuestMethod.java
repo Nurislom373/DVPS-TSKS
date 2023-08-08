@@ -1,12 +1,11 @@
 package org.khasanof.springbootstarterfluent.core.collector.questMethod.impls;
 
 import lombok.SneakyThrows;
-import org.khasanof.springbootstarterfluent.core.collector.CommonMethodAdapter;
+import org.khasanof.springbootstarterfluent.core.collector.SimpleMethodContext;
 import org.khasanof.springbootstarterfluent.core.collector.questMethod.QuestMethod;
 import org.khasanof.springbootstarterfluent.core.enums.HandleClasses;
 import org.khasanof.springbootstarterfluent.core.enums.HandleType;
 import org.khasanof.springbootstarterfluent.core.executors.matcher.CompositeMatcher;
-import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -21,10 +20,10 @@ import java.util.stream.Collectors;
  */
 public class AsyncQuestMethod implements QuestMethod {
 
-    private final CommonMethodAdapter commonMethodAdapter;
+    private final SimpleMethodContext commonMethodAdapter;
     private final CompositeMatcher matcher;
 
-    public AsyncQuestMethod(CommonMethodAdapter commonMethodAdapter, CompositeMatcher matcher) {
+    public AsyncQuestMethod(SimpleMethodContext commonMethodAdapter, CompositeMatcher matcher) {
         this.commonMethodAdapter = commonMethodAdapter;
         this.matcher = matcher;
     }
@@ -34,7 +33,7 @@ public class AsyncQuestMethod implements QuestMethod {
         System.out.printf("Enter type - %s, value - %s \n", type, value);
         CompletableFuture<Map.Entry<Method, Object>> supplyAsync;
         if (type.isHasSubType()) {
-            supplyAsync = CompletableFuture.supplyAsync(() -> commonMethodAdapter.getBeanMap().containsKey(type) ?
+            supplyAsync = CompletableFuture.supplyAsync(() -> commonMethodAdapter.containsKey(type) ?
                             commonMethodAdapter.getBeanMap()
                                     .get(type).entrySet()
                                     .stream().filter(aClass -> matcher.chooseMatcher(aClass.getKey(),

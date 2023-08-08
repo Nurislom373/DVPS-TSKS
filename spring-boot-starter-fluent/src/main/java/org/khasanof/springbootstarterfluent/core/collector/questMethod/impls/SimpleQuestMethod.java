@@ -1,11 +1,10 @@
 package org.khasanof.springbootstarterfluent.core.collector.questMethod.impls;
 
-import org.khasanof.springbootstarterfluent.core.collector.CommonMethodAdapter;
+import org.khasanof.springbootstarterfluent.core.collector.SimpleMethodContext;
 import org.khasanof.springbootstarterfluent.core.collector.questMethod.QuestMethod;
 import org.khasanof.springbootstarterfluent.core.enums.HandleClasses;
 import org.khasanof.springbootstarterfluent.core.enums.HandleType;
 import org.khasanof.springbootstarterfluent.core.executors.matcher.CompositeMatcher;
-import org.springframework.stereotype.Component;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -20,10 +19,10 @@ import java.util.stream.Collectors;
  */
 public class SimpleQuestMethod implements QuestMethod {
 
-    private final CommonMethodAdapter commonMethodAdapter;
+    private final SimpleMethodContext commonMethodAdapter;
     private final CompositeMatcher matcher;
 
-    public SimpleQuestMethod(CommonMethodAdapter commonMethodAdapter, CompositeMatcher matcher) {
+    public SimpleQuestMethod(SimpleMethodContext commonMethodAdapter, CompositeMatcher matcher) {
         this.commonMethodAdapter = commonMethodAdapter;
         this.matcher = matcher;
     }

@@ -1,6 +1,6 @@
 package org.khasanof.springbootstarterfluent.core.collector.questMethod;
 
-import org.khasanof.springbootstarterfluent.core.collector.CommonMethodAdapter;
+import org.khasanof.springbootstarterfluent.core.collector.SimpleMethodContext;
 import org.khasanof.springbootstarterfluent.core.collector.questMethod.impls.AsyncQuestMethod;
 import org.khasanof.springbootstarterfluent.core.collector.questMethod.impls.SimpleQuestMethod;
 import org.khasanof.springbootstarterfluent.core.executors.matcher.CompositeMatcher;
@@ -20,14 +20,14 @@ import org.springframework.context.annotation.Configuration;
 public class QuestConfiguration {
 
     @Bean
-    QuestMethod asyncQuestMethod(CommonMethodAdapter commonMethodAdapter, CompositeMatcher matcher) {
+    QuestMethod asyncQuestMethod(SimpleMethodContext commonMethodAdapter, CompositeMatcher matcher) {
         return new AsyncQuestMethod(commonMethodAdapter, matcher);
     }
 
     @Bean
     @ConditionalOnBean(name = "asyncQuestMethod")
     @ConditionalOnMissingBean
-    QuestMethod simpleQuestMethod(CommonMethodAdapter commonMethodAdapter, CompositeMatcher matcher) {
+    QuestMethod simpleQuestMethod(SimpleMethodContext commonMethodAdapter, CompositeMatcher matcher) {
         return new SimpleQuestMethod(commonMethodAdapter, matcher);
     }
 

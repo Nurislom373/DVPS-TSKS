@@ -27,22 +27,29 @@ import java.util.*;
 @Getter
 @Component
 @DependsOn(value = {CommonFluentConfigRunner.NAME})
-public class CommonMethodAdapter implements InitializingBean {
+public class SimpleMethodContext implements InitializingBean, MethodContext {
 
     private final Map<HandleClasses, Map<Method, Object>> beanMap = new HashMap<>();
     private final ResourceLoader resourceLoader;
     private final MethodCheckerAdapter checkerAdapter;
 
-    public CommonMethodAdapter(ResourceLoader resourceLoader, MethodCheckerAdapter checkerAdapter) {
+    public SimpleMethodContext(ResourceLoader resourceLoader, MethodCheckerAdapter checkerAdapter) {
         this.resourceLoader = resourceLoader;
         this.checkerAdapter = checkerAdapter;
     }
 
+    @Override
     public Map<Method, Object> methodsWithAnnotation(Class<? extends Annotation> annotation) {
         return beanMap.get(HandleClasses.getHandleWithType(annotation));
     }
 
-    public boolean hasHandle(Class<? extends Annotation> annotation) {
+    @Override
+    public boolean containsKey(HandleClasses key) {
+        return beanMap.containsKey(key);
+    }
+
+    @Override
+    public boolean containsKey(Class<? extends Annotation> annotation) {
         return beanMap.containsKey(HandleClasses.getHandleWithType(annotation));
     }
 
