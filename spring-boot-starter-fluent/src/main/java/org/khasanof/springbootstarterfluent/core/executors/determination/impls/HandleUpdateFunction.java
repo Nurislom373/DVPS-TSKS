@@ -3,7 +3,6 @@ package org.khasanof.springbootstarterfluent.core.executors.determination.impls;
 import org.khasanof.springbootstarterfluent.core.collector.Collector;
 import org.khasanof.springbootstarterfluent.core.enums.HandleType;
 import org.khasanof.springbootstarterfluent.core.executors.HandleAnyFunctionMatcher;
-import org.khasanof.springbootstarterfluent.core.executors.determination.DeterminationService;
 import org.khasanof.springbootstarterfluent.core.executors.determination.OrderFunction;
 import org.khasanof.springbootstarterfluent.core.utils.MethodUtils;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -23,7 +22,7 @@ import java.util.function.BiConsumer;
 public class HandleUpdateFunction implements OrderFunction {
 
     @Override
-    public BiConsumer<Update, Map<Method, Class>> accept(List<Object> list) {
+    public BiConsumer<Update, Map<Method, Object>> accept(List<Object> list) {
         return ((update, methods) -> {
             HandleAnyFunctionMatcher anyFunctionMatcher = MethodUtils.getArg(list,
                     HandleAnyFunctionMatcher.class);
@@ -34,7 +33,7 @@ public class HandleUpdateFunction implements OrderFunction {
             }
             if (Objects.nonNull(entry)) {
                 Collector collector = MethodUtils.getArg(list, Collector.class);
-                Map.Entry<Method, Class> classEntry = collector.getMethodValueAnn(entry.getKey(), entry.getValue());
+                Map.Entry<Method, Object> classEntry = collector.getMethodValueAnn(entry.getKey(), entry.getValue());
                 if (Objects.nonNull(classEntry))
                     methods.put(classEntry.getKey(), classEntry.getValue());
                 else

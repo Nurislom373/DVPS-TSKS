@@ -21,7 +21,6 @@ public class FluentBot extends FluentBotFactory {
         super(handler, properties.getBot());
     }
 
-
     @Override
     public String getBotUsername() {
         return bot.getUsername();

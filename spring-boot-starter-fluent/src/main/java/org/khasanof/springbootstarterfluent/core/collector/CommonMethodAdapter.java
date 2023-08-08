@@ -1,17 +1,17 @@
 package org.khasanof.springbootstarterfluent.core.collector;
 
 import lombok.Getter;
-import org.khasanof.springbootstarterfluent.core.collector.loader.HandleScannerLoader;
-import org.khasanof.springbootstarterfluent.core.collector.loader.MainClassloader;
+import lombok.extern.slf4j.Slf4j;
 import org.khasanof.springbootstarterfluent.core.collector.loader.ResourceLoader;
 import org.khasanof.springbootstarterfluent.core.collector.methodChecker.MethodCheckerAdapter;
-import org.khasanof.springbootstarterfluent.core.config.ApplicationConfigContext;
+import org.khasanof.springbootstarterfluent.core.config.CommonFluentConfigRunner;
 import org.khasanof.springbootstarterfluent.core.enums.HandleClasses;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.*;
 
 /**
@@ -23,20 +23,19 @@ import java.util.*;
  * <br/>
  * Package: org.khasanof.core.collector
  */
+@Slf4j
 @Getter
 @Component
-public class CommonMethodAdapter {
+@DependsOn(value = {CommonFluentConfigRunner.NAME})
+public class CommonMethodAdapter implements InitializingBean {
 
-    private final HandleScannerLoader handleScannerLoader = new HandleScannerLoader();
-    private final Map<HandleClasses, Map<Method, Class>> collectMap = new HashMap<>();
     private final Map<HandleClasses, Map<Method, Object>> beanMap = new HashMap<>();
-    private final ApplicationConfigContext context = ApplicationConfigContext.getConfigInstance();
-    private final CommonInterfaceAdapter interfaceAdapter = new CommonInterfaceAdapter();
     private final ResourceLoader resourceLoader;
+    private final MethodCheckerAdapter checkerAdapter;
 
-    public CommonMethodAdapter(ResourceLoader resourceLoader) {
+    public CommonMethodAdapter(ResourceLoader resourceLoader, MethodCheckerAdapter checkerAdapter) {
         this.resourceLoader = resourceLoader;
-        setMethodClassMap();
+        this.checkerAdapter = checkerAdapter;
     }
 
     public Map<Method, Object> methodsWithAnnotation(Class<? extends Annotation> annotation) {
@@ -47,24 +46,28 @@ public class CommonMethodAdapter {
         return beanMap.containsKey(HandleClasses.getHandleWithType(annotation));
     }
 
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        setMethodClassMap();
+    }
+
     void setMethodClassMap() {
-        MethodCheckerAdapter methodCheckerAdapter = context.getInstance(MethodCheckerAdapter.class);
-        for (Iterator<Object> iterator = resourceLoader.getBeans().values().iterator(); iterator.hasNext(); ) {
-            final Class<?> clazz = iterator.next().getClass();
+        resourceLoader.getBeans().values().forEach(bean -> {
+            final Class<?> clazz = bean.getClass();
             Arrays.stream(clazz.getDeclaredMethods()).forEach(method -> {
-                if (methodCheckerAdapter.valid(method)) {
+                if (checkerAdapter.valid(method)) {
                     HandleClasses key = getMethodAnnotation(method);
                     if (beanMap.containsKey(key)) {
-                        beanMap.get(key).put(method, iterator.next());
+                        beanMap.get(key).put(method, bean);
                     } else {
                         beanMap.put(key, new HashMap<>() {{
-                            put(method, iterator.next());
+                            put(method, bean);
                         }});
                     }
                 }
             });
-        }
-        beanMap.forEach((key, value) -> System.out.println(key + " : " + value.size()));
+        });
+        beanMap.forEach((key, value) -> log.info("{} : {}", key, value.size()));
     }
 
     private HandleClasses getMethodAnnotation(Method method) {
@@ -79,5 +82,4 @@ public class CommonMethodAdapter {
                             .findFirst().orElse(null));
         }
     }
-
 }

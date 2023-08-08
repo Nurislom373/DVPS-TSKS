@@ -20,10 +20,6 @@ public class HandleScannerLoader {
 
     private HandlerScan scanner;
 
-    {
-        setScanner();
-    }
-
     // TODO write get annotation value method!
     private HandlerScan findAllClassesWithHandlerScannerClass() {
         try {

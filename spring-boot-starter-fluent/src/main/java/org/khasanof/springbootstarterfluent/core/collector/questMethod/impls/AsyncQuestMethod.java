@@ -19,7 +19,6 @@ import java.util.stream.Collectors;
  * @see org.khasanof.core.collector.questMethod
  * @since 23.06.2023 23:46
  */
-@Component
 public class AsyncQuestMethod implements QuestMethod {
 
     private final CommonMethodAdapter commonMethodAdapter;

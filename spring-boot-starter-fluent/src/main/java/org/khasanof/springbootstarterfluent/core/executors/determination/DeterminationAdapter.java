@@ -3,6 +3,7 @@ package org.khasanof.springbootstarterfluent.core.executors.determination;
 import org.khasanof.springbootstarterfluent.core.utils.MethodUtils;
 import org.khasanof.springbootstarterfluent.core.utils.ReflectionUtils;
 import org.reflections.Reflections;
+import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.lang.reflect.Method;
@@ -19,12 +20,12 @@ import java.util.function.BiConsumer;
  */
 public class DeterminationAdapter {
 
-    private final Reflections reflections = ReflectionUtils.getReflections(true);
+    private final Reflections reflections = ReflectionUtils.getReflections();
 
-    public void fillMap(Map<Integer, List<BiConsumer<Update, Map<Method, Class>>>> map,
+    public void fillMap(Map<Integer, List<BiConsumer<Update, Map<Method, Object>>>> map,
                         List<Object> list) {
         Set<Class<? extends OrderFunction>> types = reflections.getSubTypesOf(OrderFunction.class);
-        types.stream().forEach(type -> {
+        types.forEach(type -> {
             OrderFunction orderFunction = MethodUtils.createInstanceDefaultConstructor(type);
             if (map.containsKey(orderFunction.getOrder())) {
                 map.get(orderFunction.getOrder()).add(orderFunction.accept(list));

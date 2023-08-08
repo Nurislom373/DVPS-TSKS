@@ -5,7 +5,7 @@ import com.ezylang.evalex.Expression;
 import com.ezylang.evalex.config.ExpressionConfiguration;
 import com.ezylang.evalex.operators.OperatorIfc;
 import com.ezylang.evalex.parser.ParseException;
-import org.khasanof.core.executors.expression.functions.*;
+import org.khasanof.springbootstarterfluent.core.executors.expression.functions.*;
 
 import java.util.Map;
 

@@ -7,8 +7,9 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="UiCachingStrategy" />
         <module name="reactive-filter-util" />
+        <module name="spring-fluent-test" />
+        <module name="UiCachingStrategy" />
         <module name="fluent-telegrambot" />
         <module name="spring-boot-starter-fluent" />
         <module name="fluent-bot-test" />
@@ -69,6 +70,7 @@
       <module name="UiCachingStrategy" options="-parameters" />
       <module name="reactive-filter-util" options="-parameters" />
       <module name="spring-boot-starter-fluent" options="-parameters" />
+      <module name="spring-fluent-test" options="-parameters" />
     </option>
   </component>
 </project>

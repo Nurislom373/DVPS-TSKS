@@ -6,6 +6,7 @@ import org.khasanof.springbootstarterfluent.core.custom.FluentContext;
 import org.khasanof.springbootstarterfluent.core.enums.HandleType;
 import org.khasanof.springbootstarterfluent.core.enums.Proceed;
 import org.khasanof.springbootstarterfluent.core.executors.determination.DeterminationService;
+import org.khasanof.springbootstarterfluent.core.executors.determination.SimpleDeterminationService;
 import org.khasanof.springbootstarterfluent.core.state.StateRepository;
 import org.khasanof.springbootstarterfluent.core.utils.UpdateUtils;
 import org.khasanof.springbootstarterfluent.main.annotation.extra.HandleState;
@@ -27,19 +28,20 @@ import java.util.function.BiConsumer;
 public class DeterminationUpdate {
 
     private final Collector collector;
-    private final HandleAnyFunctionMatcher anyFunctionMatcher = new HandleAnyFunctionMatcher();
+    private final HandleAnyFunctionMatcher anyFunctionMatcher;
     private final StateRepository usersRepository = StateRepository.getInstance();
     private final DeterminationService determinationService;
 
-    public DeterminationUpdate(Collector collector) {
+    public DeterminationUpdate(Collector collector, HandleAnyFunctionMatcher anyFunctionMatcher) {
         this.collector = collector;
-        this.determinationService = new DeterminationService(new ArrayList<>(
+        this.anyFunctionMatcher = anyFunctionMatcher;
+        this.determinationService = new SimpleDeterminationService(new ArrayList<>(
                 List.of(collector, anyFunctionMatcher, usersRepository)));
     }
 
-    public Map<Method, Class> determinationV2(Update update) {
-        Map<Method, Class> methods = new LinkedHashMap<>();
-        List<BiConsumer<Update, Map<Method, Class>>> list = determinationService.getDeterminationsByOrder();
+    public Map<Method, Object> determinationV2(Update update) {
+        Map<Method, Object> methods = new LinkedHashMap<>();
+        List<BiConsumer<Update, Map<Method, Object>>> list = determinationService.getDeterminations();
         BreakerForEach.forEach(list.stream(), ((updateMapBiConsumer, breaker) -> {
             if (!FluentContext.determinationServiceBoolean.get()) {
                 updateMapBiConsumer.accept(update, methods);
@@ -74,7 +76,7 @@ public class DeterminationUpdate {
         return methods;
     }
 
-    private void setStateMethod(Update update, Map<Method, Class> methods) {
+    private void setStateMethod(Update update, Map<Method, Object> methods) {
         Long id = UpdateUtils.getUserId(update);
         boolean hassed = usersRepository.hasUserId(id);
         if (hassed) {
@@ -85,23 +87,23 @@ public class DeterminationUpdate {
         }
     }
 
-    private void addStateMethod(Map<Method, Class> methods, Long id) {
+    private void addStateMethod(Map<Method, Object> methods, Long id) {
         int count = usersRepository.count();
         System.out.println("count = " + count);
         Enum state = usersRepository.getState(id);
         System.out.println("state = " + state);
         if (Objects.nonNull(state)) {
-            Map.Entry<Method, Class> classEntry = collector.getMethodValueAnn(state, HandleState.class);
+            Map.Entry<Method, Object> classEntry = collector.getMethodValueAnn(state, HandleState.class);
             if (Objects.nonNull(classEntry)) {
                 methods.put(classEntry.getKey(), classEntry.getValue());
             }
         }
     }
 
-    private void pushMatchMethod(Update update, Map<Method, Class> methods) {
+    private void pushMatchMethod(Update update, Map<Method, Object> methods) {
         Map.Entry<Object, Class<? extends Annotation>> entry = switchAndGet(update);
         if (Objects.nonNull(entry)) {
-            Map.Entry<Method, Class> classEntry = collector.getMethodValueAnn(entry.getKey(), entry.getValue());
+            Map.Entry<Method, Object> classEntry = collector.getMethodValueAnn(entry.getKey(), entry.getValue());
             if (Objects.nonNull(classEntry))
                 methods.put(classEntry.getKey(), classEntry.getValue());
             else

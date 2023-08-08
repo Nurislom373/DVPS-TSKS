@@ -30,7 +30,7 @@ public class InvokerModel {
     private boolean isInputSystem;
     private MainParam mainParam;
     private Object[] args;
-    private Map.Entry<Method, Class> classEntry;
+    private Map.Entry<Method, Object> classEntry;
     private boolean hasClassEntry;
     private boolean canBeNoParam;
 
@@ -74,7 +74,7 @@ public class InvokerModel {
         private Function<Update, Object> valueFunction;
     }
 
-    public InvokerModel methodSClass(Map.Entry<Method, Class> entry) {
+    public InvokerModel methodSClass(Map.Entry<Method, Object> entry) {
         this.classEntry = entry;
         this.hasClassEntry = Objects.nonNull(entry);
         return this;

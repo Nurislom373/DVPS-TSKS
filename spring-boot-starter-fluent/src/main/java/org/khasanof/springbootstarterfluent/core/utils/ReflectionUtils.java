@@ -13,17 +13,12 @@ import java.util.stream.Collectors;
  * @see org.khasanof.core.utils
  * @since 05.07.2023 22:33
  */
-public abstract class ReflectionUtils {
+public class ReflectionUtils {
 
-    private static final HandleScannerLoader loader = new HandleScannerLoader();
-    private static final Reflections reflections = new Reflections(loader.getBasePackage());
     private static final Reflections systemReflections = new Reflections("org.khasanof");
 
-    public static Reflections getReflections(boolean isSystem) {
-        if (isSystem) {
-            return systemReflections;
-        }
-        return reflections;
+    public static Reflections getReflections() {
+        return systemReflections;
     }
 
     @SuppressWarnings("unchecked")

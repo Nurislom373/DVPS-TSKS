@@ -23,7 +23,7 @@ public class ApplicationProperties {
     public static class Bot {
         private String token;
         private String username;
-        private ProcessType processType;
+        private ProcessType processType = ProcessType.UPDATE;
     }
 
 }

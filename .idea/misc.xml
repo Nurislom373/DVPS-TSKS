@@ -11,6 +11,7 @@
         <option value="$PROJECT_DIR$/fluent-bot-test/pom.xml" />
         <option value="$PROJECT_DIR$/reactive-filter-util/pom.xml" />
         <option value="$PROJECT_DIR$/spring-boot-starter-fluent/pom.xml" />
+        <option value="$PROJECT_DIR$/spring-fluent-test/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">

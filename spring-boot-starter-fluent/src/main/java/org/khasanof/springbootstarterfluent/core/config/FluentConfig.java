@@ -7,12 +7,6 @@ package org.khasanof.springbootstarterfluent.core.config;
  */
 public interface FluentConfig {
 
-    FluentConfig instance = new CommonFluentConfig();
-
     Configs getConfig();
-
-    static FluentConfig getInstance() {
-        return instance;
-    }
 
 }

@@ -41,7 +41,7 @@ public class InvokerFunctions implements ApplicationContextAware {
         invokerModels.add(invokerModel);
     }
 
-    public InvokerModel fillAndGet(Map.Entry<Method, Class> entry, Object... args) {
+    public InvokerModel fillAndGet(Map.Entry<Method, Object> entry, Object... args) {
         InvokerModel model = invokerModels.stream().filter(invokerModel -> AnnotationUtils.hasAnnotation(entry.getKey(),
                         invokerModel.getAnnotation(), invokerModel.isSuperAnnotation()))
                 .findFirst().orElseThrow(() -> new RuntimeException("InvokerModel not found!"));

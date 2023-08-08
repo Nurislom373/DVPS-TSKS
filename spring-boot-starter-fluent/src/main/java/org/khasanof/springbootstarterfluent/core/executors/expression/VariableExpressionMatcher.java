@@ -38,7 +38,7 @@ public class VariableExpressionMatcher implements ExpressionMatcher<String>, Exp
 
     @Override
     public String[] getExpression(String expression) {
-        return matcher.tokenizePattern(expression);
+        return new String[0];
     }
 
     private String getRegex(String var) {

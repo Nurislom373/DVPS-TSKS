@@ -1,4 +1,4 @@
-package org.khasanof.springbootstarterfluent.core.handler;
+package org.khasanof.springbootstarterfluent.core.executors;
 
 import org.khasanof.springbootstarterfluent.core.executors.CommonUpdateExecutor;
 import org.khasanof.springbootstarterfluent.main.inferaces.MainHandler;

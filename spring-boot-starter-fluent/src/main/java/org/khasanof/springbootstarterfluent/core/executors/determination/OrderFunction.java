@@ -14,7 +14,7 @@ import java.util.function.BiConsumer;
  */
 public interface OrderFunction {
 
-    BiConsumer<Update, Map<Method, Class>> accept(List<Object> list);
+    BiConsumer<Update, Map<Method, Object>> accept(List<Object> list);
 
     Integer getOrder();
 

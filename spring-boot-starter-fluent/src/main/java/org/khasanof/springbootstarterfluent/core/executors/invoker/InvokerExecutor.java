@@ -53,7 +53,7 @@ public class InvokerExecutor implements Invoker {
 
     private void absInvoker(InvokerModel invokerModel) throws InstantiationException, IllegalAccessException, InvocationTargetException {
         checkListParams(invokerModel.getMethodParams(), invokerModel.getArgs());
-        Map.Entry<Method, Class> classEntry = invokerModel.getClassEntry();
+        Map.Entry<Method, Object> classEntry = invokerModel.getClassEntry();
 
         if (invokerModel.isHasMainParam() && !invokerModel.isInputSystem()) {
             if (InvokerFunctions.HANDLE_UPDATE_W_PROCESS_FL.equals(invokerModel.getName())) {
@@ -71,7 +71,7 @@ public class InvokerExecutor implements Invoker {
 
         if (invokerModel.isCanBeNoParam()) {
             if (method.getParameterCount() == 0) {
-                method.invoke(classEntry.getValue().newInstance());
+                method.invoke(classEntry.getValue());
             } else {
                 execute(invokerModel, classEntry, method);
             }
@@ -80,9 +80,9 @@ public class InvokerExecutor implements Invoker {
         }
     }
 
-    private static void execute(InvokerModel invokerModel, Map.Entry<Method, Class> classEntry, Method method) throws IllegalAccessException, InvocationTargetException, InstantiationException {
+    private static void execute(InvokerModel invokerModel, Map.Entry<Method, Object> classEntry, Method method) throws IllegalAccessException, InvocationTargetException, InstantiationException {
         Object[] objects = MethodUtils.sorterV2(invokerModel.getArgs(), method.getParameterTypes());
-        method.invoke(classEntry.getValue().newInstance(), objects);
+        method.invoke(classEntry.getValue(), objects);
     }
 
     private void checkListParams(List<Class<?>> params, Object[] args) {
@@ -105,7 +105,7 @@ public class InvokerExecutor implements Invoker {
     }
 
     private void exceptionDirector(Throwable throwable, InvokerModel prevInvoker) throws Throwable {
-        Map.Entry<Method, Class> exceptionHandleMethod = getExceptionHandleMethod(throwable);
+        Map.Entry<Method, Object> exceptionHandleMethod = getExceptionHandleMethod(throwable);
         if (Objects.isNull(exceptionHandleMethod)) {
             throw throwable;
         }
@@ -115,7 +115,7 @@ public class InvokerExecutor implements Invoker {
         invoke(invokerModel);
     }
 
-    private Map.Entry<Method, Class> getExceptionHandleMethod(Throwable throwable) throws Throwable {
+    private Map.Entry<Method, Object> getExceptionHandleMethod(Throwable throwable) throws Throwable {
         if (collector.hasHandle(HandleException.class)) {
             return collector.getMethodValueAnn(throwable, HandleException.class);
         }

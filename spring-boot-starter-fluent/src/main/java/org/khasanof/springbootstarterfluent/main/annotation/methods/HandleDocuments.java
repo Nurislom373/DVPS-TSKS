@@ -1,7 +1,8 @@
 package org.khasanof.springbootstarterfluent.main.annotation.methods;
 
-import org.khasanof.main.annotation.process.ProcessFile;
-import org.khasanof.main.annotation.process.ProcessUpdate;
+
+import org.khasanof.springbootstarterfluent.main.annotation.process.ProcessFile;
+import org.khasanof.springbootstarterfluent.main.annotation.process.ProcessUpdate;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

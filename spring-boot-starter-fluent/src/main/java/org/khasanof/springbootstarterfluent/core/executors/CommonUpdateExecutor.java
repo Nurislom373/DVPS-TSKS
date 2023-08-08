@@ -6,6 +6,7 @@ import org.khasanof.springbootstarterfluent.core.custom.FluentContext;
 import org.khasanof.springbootstarterfluent.core.executors.invoker.Invoker;
 import org.khasanof.springbootstarterfluent.core.executors.invoker.InvokerFunctions;
 import org.khasanof.springbootstarterfluent.main.FluentBot;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
@@ -23,7 +24,7 @@ public class CommonUpdateExecutor extends AbstractExecutor {
     private final Invoker invoker; // method invoker
     private final FluentBot fluentBot; // bot instance
 
-    public CommonUpdateExecutor(InvokerFunctions invokerFunctions, DeterminationUpdate determinationUpdateType, Invoker invoker, FluentBot fluentBot, Collector collector) {
+    public CommonUpdateExecutor(InvokerFunctions invokerFunctions, DeterminationUpdate determinationUpdateType, Invoker invoker, @Lazy FluentBot fluentBot, Collector collector) {
         super(collector);
         this.invokerFunctions = invokerFunctions;
         this.determination = determinationUpdateType;

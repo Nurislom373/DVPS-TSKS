@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
  * @see org.khasanof.core.collector.questMethod
  * @since 24.06.2023 0:11
  */
-@Component
 public class SimpleQuestMethod implements QuestMethod {
 
     private final CommonMethodAdapter commonMethodAdapter;
@@ -58,13 +57,13 @@ public class SimpleQuestMethod implements QuestMethod {
 
     @Override
     public Map<Method, Object> getAllHandleAnyMethod(HandleType handleType) {
-        return commonMethodAdapter.getCollectMap().get(HandleClasses.HANDLE_ANY).entrySet()
+        return commonMethodAdapter.getBeanMap().get(HandleClasses.HANDLE_ANY).entrySet()
                 .stream().filter(clazz -> matcher.chooseMatcher(clazz.getKey(), handleType))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     private Map.Entry<Method, Object> getSubHandleType(Object value, HandleClasses type) {
-        if (commonMethodAdapter.getCollectMap().containsKey(type.getSubHandleClasses())) {
+        if (commonMethodAdapter.getBeanMap().containsKey(type.getSubHandleClasses())) {
             return getMethodClassEntry(value, type.getSubHandleClasses(), true);
         } else {
             return null;

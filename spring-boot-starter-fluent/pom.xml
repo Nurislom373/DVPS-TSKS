@@ -53,6 +53,7 @@
             <groupId>org.khasanof</groupId>
             <artifactId>khasanof-common-util</artifactId>
             <version>1.0.0</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.telegram</groupId>
@@ -84,18 +85,6 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <excludes>
-                        <exclude>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                        </exclude>
-                    </excludes>
-                </configuration>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <configuration>
@@ -112,7 +101,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>fluent-telegrambot.src.main.java.org.khasanof.main.FluentStarter</mainClass>
+                            <mainClass>spring-boot-starter-fluent.src.main.java.org.khasanof.main.FluentStarter</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

@@ -24,7 +24,7 @@ import java.util.function.BiConsumer;
 public class HandleAnyFunction implements OrderFunction {
 
     @Override
-    public BiConsumer<Update, Map<Method, Class>> accept(List<Object> list) {
+    public BiConsumer<Update, Map<Method, Object>> accept(List<Object> list) {
         return ((update, methods) -> {
             Collector collector = MethodUtils.getArg(list, Collector.class);
 
@@ -32,7 +32,7 @@ public class HandleAnyFunction implements OrderFunction {
 
                 HandleAnyFunctionMatcher anyFunctionMatcher = MethodUtils.getArg(list, HandleAnyFunctionMatcher.class);
                 Map.Entry<HandleType, Object> entry = anyFunctionMatcher.matchFunctions(update);
-                Map<Method, Class> allHandleAnyMethod = collector.getAllHandleAnyMethod(entry.getKey());
+                Map<Method, Object> allHandleAnyMethod = collector.getAllHandleAnyMethod(entry.getKey());
 
                 if (Objects.nonNull(allHandleAnyMethod)) {
 
@@ -48,7 +48,7 @@ public class HandleAnyFunction implements OrderFunction {
         });
     }
 
-    private boolean hasNotProceedMethods(Map<Method, Class> methods) {
+    private boolean hasNotProceedMethods(Map<Method, Object> methods) {
         return methods.keySet().stream().anyMatch(method -> {
             HandleAny annotation = method.getAnnotation(HandleAny.class);
             return annotation.proceed().equals(Proceed.NOT_PROCEED);
