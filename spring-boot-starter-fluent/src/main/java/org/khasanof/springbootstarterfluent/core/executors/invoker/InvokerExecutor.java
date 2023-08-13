@@ -2,20 +2,21 @@ package org.khasanof.springbootstarterfluent.core.executors.invoker;
 
 import org.khasanof.springbootstarterfluent.core.collector.Collector;
 import org.khasanof.springbootstarterfluent.core.custom.FluentContext;
+import org.khasanof.springbootstarterfluent.core.event.methodInvoke.MethodV1Event;
 import org.khasanof.springbootstarterfluent.core.exceptions.InvalidParamsException;
 import org.khasanof.springbootstarterfluent.core.model.InvokerModel;
 import org.khasanof.springbootstarterfluent.core.utils.MethodUtils;
 import org.khasanof.springbootstarterfluent.main.annotation.exception.HandleException;
+import org.khasanof.springbootstarterfluent.main.annotation.extra.BotVariable;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @author Nurislom
@@ -27,10 +28,12 @@ public class InvokerExecutor implements Invoker {
 
     private final Collector collector;
     private final InvokerFunctions invokerFunctions;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
-    public InvokerExecutor(Collector collector, InvokerFunctions invokerFunctions) {
+    public InvokerExecutor(Collector collector, InvokerFunctions invokerFunctions, ApplicationEventPublisher applicationEventPublisher) {
         this.collector = collector;
         this.invokerFunctions = invokerFunctions;
+        this.applicationEventPublisher = applicationEventPublisher;
     }
 
     @Override
@@ -52,19 +55,11 @@ public class InvokerExecutor implements Invoker {
     }
 
     private void absInvoker(InvokerModel invokerModel) throws InstantiationException, IllegalAccessException, InvocationTargetException {
-        checkListParams(invokerModel.getMethodParams(), invokerModel.getArgs());
-        Map.Entry<Method, Object> classEntry = invokerModel.getClassEntry();
-
-        if (invokerModel.isHasMainParam() && !invokerModel.isInputSystem()) {
-            if (InvokerFunctions.HANDLE_UPDATE_W_PROCESS_FL.equals(invokerModel.getName())) {
-                Method method = invokerModel.getClassEntry().getKey();
-                if (method.getParameterCount() > 2) {
-                    getMainParamAndFillArgs(invokerModel);
-                }
-            } else {
-                getMainParamAndFillArgs(invokerModel);
-            }
+        if (Objects.isNull(invokerModel.getAdditionalParam())) {
+            checkListParams(invokerModel.getMethodParams(), invokerModel.getArgs());
         }
+
+        Map.Entry<Method, Object> classEntry = invokerModel.getClassEntry();
 
         Method method = classEntry.getKey();
         method.setAccessible(true);
@@ -80,9 +75,8 @@ public class InvokerExecutor implements Invoker {
         }
     }
 
-    private static void execute(InvokerModel invokerModel, Map.Entry<Method, Object> classEntry, Method method) throws IllegalAccessException, InvocationTargetException, InstantiationException {
-        Object[] objects = MethodUtils.sorterV2(invokerModel.getArgs(), method.getParameterTypes());
-        method.invoke(classEntry.getValue(), objects);
+    private void execute(InvokerModel invokerModel, Map.Entry<Method, Object> classEntry, Method method) throws IllegalAccessException, InvocationTargetException, InstantiationException {
+        applicationEventPublisher.publishEvent(new MethodV1Event(this, invokerModel, classEntry, method));
     }
 
     private void checkListParams(List<Class<?>> params, Object[] args) {
@@ -90,17 +84,6 @@ public class InvokerExecutor implements Invoker {
                 .anyMatch(any -> any.isAssignableFrom(arg.getClass())));
         if (!allMatch) {
             throw new InvalidParamsException("Param type doesn't match expected param!");
-        }
-    }
-
-    private void getMainParamAndFillArgs(InvokerModel invokerModel) {
-        InvokerModel.MainParam mainParam = invokerModel.getMainParam();
-        Object[] args = invokerModel.getArgs();
-        Object apply = mainParam.getValueFunction()
-                .apply(MethodUtils.getArg(invokerModel.getArgs(), Update.class));
-        if (Objects.nonNull(apply)) {
-            args = Arrays.copyOf(args, args.length + 1);
-            args[args.length - 1] = apply;
         }
     }
 

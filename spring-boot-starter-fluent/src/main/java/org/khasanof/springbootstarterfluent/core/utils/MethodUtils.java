@@ -56,6 +56,10 @@ public abstract class MethodUtils {
         return newObjects;
     }
 
+    public static Object[] cleanerV2(Object[] args) {
+        return Arrays.stream(args).filter(Objects::nonNull).toArray();
+    }
+
     @SuppressWarnings("unchecked")
     public static <T> T getArg(Object[] args, Class<T> clazz) {
         return (T) Arrays.stream(args).filter(arg -> arg.getClass().equals(clazz) ||

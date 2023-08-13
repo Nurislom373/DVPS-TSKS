@@ -1,14 +1,12 @@
 package org.khasanof.springbootstarterfluent.core.model;
 
 import lombok.*;
-import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Function;
 
 /**
  * @author Nurislom
@@ -23,35 +21,47 @@ import java.util.function.Function;
 public class InvokerModel {
 
     private String name;
-    private boolean isSuperAnnotation;
     private Class<? extends Annotation> annotation;
     private List<Class<?>> methodParams;
-    private boolean hasMainParam;
-    private boolean isInputSystem;
-    private MainParam mainParam;
+    private AdditionalParam additionalParam;
     private Object[] args;
     private Map.Entry<Method, Object> classEntry;
+    private AdditionalChecks additionalChecks;
+    private boolean isSuperAnnotation;
+    private boolean hasMainParam;
+    private boolean isInputSystem;
     private boolean hasClassEntry;
     private boolean canBeNoParam;
 
     public InvokerModel(String name, boolean isSuperAnnotation, Class<? extends Annotation> annotation,
-                        List<Class<?>> methodParams, boolean hasMainParam, MainParam mainParam) {
+                        List<Class<?>> methodParams, boolean hasMainParam, AdditionalParam mainParam) {
         this.name = name;
         this.isSuperAnnotation = isSuperAnnotation;
         this.annotation = annotation;
         this.methodParams = methodParams;
         this.hasMainParam = hasMainParam;
-        this.mainParam = mainParam;
+        this.additionalParam = mainParam;
     }
 
     public InvokerModel(String name, boolean isSuperAnnotation, Class<? extends Annotation> annotation,
-                        List<Class<?>> methodParams, boolean hasMainParam, MainParam mainParam, boolean canBeNoParam) {
+                        List<Class<?>> methodParams, boolean hasMainParam, AdditionalParam mainParam, AdditionalChecks checks) {
         this.name = name;
         this.isSuperAnnotation = isSuperAnnotation;
         this.annotation = annotation;
         this.methodParams = methodParams;
         this.hasMainParam = hasMainParam;
-        this.mainParam = mainParam;
+        this.additionalParam = mainParam;
+        this.additionalChecks = checks;
+    }
+
+    public InvokerModel(String name, boolean isSuperAnnotation, Class<? extends Annotation> annotation,
+                        List<Class<?>> methodParams, boolean hasMainParam, AdditionalParam mainParam, boolean canBeNoParam) {
+        this.name = name;
+        this.isSuperAnnotation = isSuperAnnotation;
+        this.annotation = annotation;
+        this.methodParams = methodParams;
+        this.hasMainParam = hasMainParam;
+        this.additionalParam = mainParam;
         this.canBeNoParam = canBeNoParam;
     }
 
@@ -63,15 +73,6 @@ public class InvokerModel {
         this.methodParams = methodParams;
         this.hasMainParam = hasMainParam;
         this.isInputSystem = isInputSystem;
-    }
-
-    @Getter
-    @Setter
-    @ToString
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class MainParam {
-        private Function<Update, Object> valueFunction;
     }
 
     public InvokerModel methodSClass(Map.Entry<Method, Object> entry) {

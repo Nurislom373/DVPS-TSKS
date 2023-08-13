@@ -55,7 +55,7 @@ public abstract class UpdateUtils {
         GetFile file = new GetFile();
         file.setFileId(id);
         File executed = bot.execute(file);
-        return new URL(executed.getFileUrl(""))
+        return new URL(executed.getFileUrl(bot.getBotToken()))
                 .openStream();
     }
 

@@ -52,9 +52,6 @@ public class MainClassloader implements Config, ResourceLoader {
 
     private Map<String, Object> validBeansTake(Map<String, Object> beanMap) {
         return beanMap.entrySet().stream()
-                .peek(System.out::println)
-                .filter(entry -> Arrays.stream(entry.getValue().getClass().getDeclaredMethods())
-                        .anyMatch(method -> hasAnnotationMethodLevel(method, HandleClasses.getAllAnnotations())))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 

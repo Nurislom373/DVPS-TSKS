@@ -15,7 +15,6 @@ import java.io.IOException;
  * <br/>
  * Package: org.khasanof.core.collector.flattenPackage
  */
-@Component
 public class HandleScannerLoader {
 
     private HandlerScan scanner;

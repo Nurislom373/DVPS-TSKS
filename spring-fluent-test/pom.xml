@@ -24,7 +24,12 @@
         <dependency>
             <groupId>org.khasanof</groupId>
             <artifactId>spring-boot-starter-fluent</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>1.0.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.khasanof</groupId>
+            <artifactId>khasanof-common-util</artifactId>
+            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

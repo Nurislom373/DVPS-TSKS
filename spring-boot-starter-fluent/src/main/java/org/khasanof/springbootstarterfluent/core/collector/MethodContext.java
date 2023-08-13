@@ -13,7 +13,9 @@ import java.util.Map;
  */
 public interface MethodContext {
 
-    Map<Method, Object> methodsWithAnnotation(Class<? extends Annotation> annotation);
+    Map<Method, Object> getMethodsWithAnnotation(Class<? extends Annotation> annotation);
+
+    Map<Method, Object> getMethodsWithHandleClass(HandleClasses classes);
 
     boolean containsKey(HandleClasses key);
 

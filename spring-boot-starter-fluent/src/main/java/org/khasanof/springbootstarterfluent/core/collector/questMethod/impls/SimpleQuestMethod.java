@@ -70,7 +70,7 @@ public class SimpleQuestMethod implements QuestMethod {
     }
 
     private Map.Entry<Method, Object> getMethodClassEntry(Object value, HandleClasses type, boolean isSubType) {
-        return commonMethodAdapter.methodsWithAnnotation(type.getType()).entrySet()
+        return commonMethodAdapter.getMethodsWithAnnotation(type.getType()).entrySet()
                 .stream().filter(aClass -> methodHasVal(aClass.getKey(), value, getAnnotation(type, isSubType)))
                 .findFirst().orElse(null);
     }

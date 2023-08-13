@@ -29,7 +29,7 @@ public class HandleAudioTest {
     @HandleAudios(values = {
             @HandleAudio(value = "BETWEEN_UNIT(value, 1.5, 3.9, 'MB')",
                     match = MatchScope.EXPRESSION, scope = AudioScope.FILE_SIZE)
-    }, match = MultiMatchScope.ANY_MATCH)
+    }, match = MultiMatchScope.ALL_MATCH)
     private void audioTest(Update update, AbsSender sender) throws TelegramApiException {
         String value = update.getMessage().getAudio().getMimeType();
         String text = "I'm between_unit expression match and handle : \n" + value;

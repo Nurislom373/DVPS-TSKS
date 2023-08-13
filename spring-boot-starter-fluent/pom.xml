@@ -12,7 +12,8 @@
 
     <groupId>org.khasanof</groupId>
     <artifactId>spring-boot-starter-fluent</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.2</version>
+
     <name>spring-boot-starter-fluent</name>
     <description>spring-boot-starter-fluent</description>
 

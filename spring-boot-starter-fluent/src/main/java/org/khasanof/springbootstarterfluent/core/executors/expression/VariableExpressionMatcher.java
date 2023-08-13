@@ -2,8 +2,7 @@ package org.khasanof.springbootstarterfluent.core.executors.expression;
 
 import org.khasanof.tokenizer.StringTokenizerUtils;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 
 /**
@@ -15,7 +14,9 @@ public class VariableExpressionMatcher implements ExpressionMatcher<String>, Exp
 
     @Override
     public boolean doMatch(String expression, String value) {
-        return false;
+        List<String> expList = StringTokenizerUtils.getTokenWithList(expression, " ");
+        List<String> valList = StringTokenizerUtils.getTokenWithList(value, " ");
+        return expValListsMatcher(expList, valList).getKey();
     }
 
     @Override
@@ -25,7 +26,13 @@ public class VariableExpressionMatcher implements ExpressionMatcher<String>, Exp
 
     @Override
     public Map<String, String> getMatchVariables(String expression, String value) {
-        return null;
+        List<String> expList = StringTokenizerUtils.getTokenWithList(expression, " ");
+        List<String> valList = StringTokenizerUtils.getTokenWithList(value, " ");
+        Map.Entry<Boolean, Map<String, String>> booleanMapEntry = expValListsMatcher(expList, valList);
+        if (booleanMapEntry.getKey()) {
+            return booleanMapEntry.getValue();
+        }
+        return new HashMap<>();
     }
 
     @Override
@@ -42,7 +49,57 @@ public class VariableExpressionMatcher implements ExpressionMatcher<String>, Exp
     }
 
     private String getRegex(String var) {
-        return var.substring(var.indexOf(":"), var.length() - 1);
+        return var.substring(var.indexOf(":") + 1, var.length() - 1);
+    }
+
+    private String getVarName(String var) {
+        return var.substring(1, var.indexOf(":"));
+    }
+
+    private Map.Entry<Boolean, Map<String, String>> expValListsMatcher(List<String> expList, List<String> valList) {
+        Map<String, String> variables = new HashMap<>();
+        boolean hasTwoListNext = true, allMatch = true;
+        int expCount = 0, valCount = 0;
+        while (hasTwoListNext) {
+            String varExp = null, varVal = null;
+            if (expList.size() > expCount) {
+                varExp = expList.get(expCount);
+                expCount++;
+            }
+            if (valList.size() > valCount) {
+                varVal = valList.get(valCount);
+                valCount++;
+            }
+            if (expCount == expList.size() && valCount == valList.size()) {
+                if (Objects.isNull(varExp) && Objects.isNull(varVal)) {
+                    break;
+                }
+            } else if ((Objects.isNull(varExp) || varExp.isBlank()) || (Objects.isNull(varVal) || varVal.isBlank())) {
+                allMatch = false;
+                break;
+            }
+            assert varExp != null;
+            if (strStartAndMatch(varExp, "{", "}")) {
+                assert varVal != null;
+                boolean matches = Pattern.compile(getRegex(varExp)).matcher(varVal).find();
+                if (!matches) {
+                    hasTwoListNext = false;
+                    allMatch = false;
+                } else {
+                    variables.put(getVarName(varExp), varVal);
+                }
+            } else {
+                if (!varExp.equals(varVal)) {
+                    hasTwoListNext = false;
+                    allMatch = false;
+                }
+            }
+        }
+        return Map.entry(allMatch, variables);
+    }
+
+    private boolean strStartAndMatch(String var, String start, String end) {
+        return var.startsWith(start) && var.endsWith(end);
     }
 
     private boolean isValidRegex(String regex) {

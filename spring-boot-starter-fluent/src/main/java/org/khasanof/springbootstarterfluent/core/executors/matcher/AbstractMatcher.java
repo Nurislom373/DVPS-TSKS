@@ -44,7 +44,7 @@ public abstract class AbstractMatcher {
                 Pattern.compile(String.valueOf(var1)).matcher(String.valueOf(var2)).find());
         matchFunctions.put(Map.entry(MatchScope.EXPRESSION, Object.class), (var1, var2) ->
                 ExpressionMatcherAdapter.doMatch(simpleExpressionMatcher, String.valueOf(var1), var2));
-        matchFunctions.put(Map.entry(MatchScope.EXPRESSION_VARIABLE, String.class), (var1, var2) ->
+        matchFunctions.put(Map.entry(MatchScope.VAR_EXPRESSION, String.class), (var1, var2) ->
                 ExpressionMatcherAdapter.doMatch(variableExpressionMatcher,
                         String.valueOf(var1), String.valueOf(var2)));
     }
