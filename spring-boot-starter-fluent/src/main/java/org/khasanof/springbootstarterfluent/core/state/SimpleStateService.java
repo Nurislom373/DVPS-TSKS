@@ -28,6 +28,8 @@ public class SimpleStateService implements StateService {
         return INSTANCE;
     }
 
+
+
     @Override
     @SneakyThrows
     public void registerState() {
