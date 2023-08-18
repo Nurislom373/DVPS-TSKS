@@ -5,6 +5,7 @@ import org.khasanof.springbootstarterfluent.core.event.methodInvoke.MethodV1Even
 import org.khasanof.springbootstarterfluent.core.executors.execution.Execution;
 import org.khasanof.springbootstarterfluent.core.utils.MethodUtils;
 import org.khasanof.springbootstarterfluent.main.annotation.extra.BotVariable;
+import org.reflections.ReflectionUtils;
 import org.springframework.stereotype.Component;
 
 import java.lang.annotation.Annotation;
@@ -47,6 +48,8 @@ public class VarExpressionExecution implements Execution {
     }
 
     private Object[] mapGetValues(Map<String, String> stringMap, Method method) {
+        Set<Annotation> allAnnotations = ReflectionUtils.getAllAnnotations(method,
+                (annotation -> annotation.annotationType().equals(BotVariable.class)));
         List<String> variables = new ArrayList<>();
         Arrays.stream(method.getParameterAnnotations()).forEach(annotations -> {
             Annotation fAnn = Arrays.stream(annotations)

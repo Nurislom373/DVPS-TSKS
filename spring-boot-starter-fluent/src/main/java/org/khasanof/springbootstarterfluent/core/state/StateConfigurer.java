@@ -7,7 +7,8 @@ import java.util.Set;
  * @see org.khasanof.springbootstarterfluent.core.state
  * @since 8/15/2023 9:09 PM
  */
-public interface StateConfigurer<S extends Enum> {
+public interface StateConfigurer {
 
-    Set<S> stateEnums();
+    Set<Class<Enum>> stateEnums();
+
 }
