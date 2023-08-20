@@ -1,8 +1,10 @@
 package org.khasanof.springbootstarterfluent.core.executors.determination;
 
+import org.khasanof.springbootstarterfluent.core.model.InvokerResult;
 import org.khasanof.springbootstarterfluent.core.utils.MethodUtils;
 import org.khasanof.springbootstarterfluent.core.utils.ReflectionUtils;
 import org.reflections.Reflections;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
@@ -20,21 +22,16 @@ import java.util.function.BiConsumer;
  */
 public class DeterminationAdapter {
 
-    private final Reflections reflections = ReflectionUtils.getReflections();
-
-    public void fillMap(Map<Integer, List<BiConsumer<Update, Map<Method, Object>>>> map,
-                        List<Object> list) {
-        Set<Class<? extends OrderFunction>> types = reflections.getSubTypesOf(OrderFunction.class);
-        types.forEach(type -> {
-            OrderFunction orderFunction = MethodUtils.createInstanceDefaultConstructor(type);
+    public void fillMap(Map<Integer, List<BiConsumer<Update, Set<InvokerResult>>>> map, ApplicationContext applicationContext) {
+        applicationContext.getBeansOfType(OrderFunction.class).forEach(((s, orderFunction) -> {
             if (map.containsKey(orderFunction.getOrder())) {
-                map.get(orderFunction.getOrder()).add(orderFunction.accept(list));
+                map.get(orderFunction.getOrder()).add(orderFunction.accept(applicationContext));
             } else {
                 map.put(orderFunction.getOrder(), new ArrayList<>(){{
-                    add(orderFunction.accept(list));
+                    add(orderFunction.accept(applicationContext));
                 }});
             }
-        });
+        }));
     }
 
 }

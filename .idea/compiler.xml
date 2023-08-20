@@ -63,6 +63,8 @@
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="fluent-bot-states" target="17" />
+      <module name="khasanof-rate-limiting" target="17" />
+      <module name="RateLimitingTests" target="17" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">

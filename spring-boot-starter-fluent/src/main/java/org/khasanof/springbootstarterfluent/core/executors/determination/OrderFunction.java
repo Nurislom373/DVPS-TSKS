@@ -1,10 +1,13 @@
 package org.khasanof.springbootstarterfluent.core.executors.determination;
 
+import org.khasanof.springbootstarterfluent.core.model.InvokerResult;
+import org.springframework.context.ApplicationContext;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.BiConsumer;
 
 /**
@@ -14,7 +17,7 @@ import java.util.function.BiConsumer;
  */
 public interface OrderFunction {
 
-    BiConsumer<Update, Map<Method, Object>> accept(List<Object> list);
+    BiConsumer<Update, Set<InvokerResult>> accept(ApplicationContext applicationContext);
 
     Integer getOrder();
 

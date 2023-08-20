@@ -1,15 +1,18 @@
 package org.khasanof.springbootstarterfluent.core.collector.questMethod.impls;
 
 import lombok.SneakyThrows;
-import org.khasanof.springbootstarterfluent.core.collector.MethodContext;
+import org.khasanof.springbootstarterfluent.core.collector.GenericMethodContext;
 import org.khasanof.springbootstarterfluent.core.collector.questMethod.QuestMethod;
 import org.khasanof.springbootstarterfluent.core.enums.HandleClasses;
 import org.khasanof.springbootstarterfluent.core.enums.HandleType;
 import org.khasanof.springbootstarterfluent.core.executors.matcher.CompositeMatcher;
+import org.khasanof.springbootstarterfluent.core.model.InvokerMethod;
+import org.khasanof.springbootstarterfluent.core.model.InvokerResult;
 
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -18,30 +21,30 @@ import java.util.stream.Collectors;
  * @see org.khasanof.core.collector.questMethod
  * @since 23.06.2023 23:46
  */
-public class AsyncQuestMethod implements QuestMethod {
+public class AsyncSimpleQuestMethod implements QuestMethod<HandleClasses> {
 
-    private final MethodContext methodContext;
+    private final GenericMethodContext<HandleClasses, Map<Method, Object>> methodContext;
     private final CompositeMatcher matcher;
 
-    public AsyncQuestMethod(MethodContext methodContext, CompositeMatcher matcher) {
+    public AsyncSimpleQuestMethod(GenericMethodContext<HandleClasses, Map<Method, Object>> methodContext, CompositeMatcher matcher) {
         this.methodContext = methodContext;
         this.matcher = matcher;
     }
 
     @Override
-    public Map.Entry<Method, Object> getMethodValueAnn(Object value, HandleClasses type) {
+    public InvokerResult getMethodValueAnn(Object value, HandleClasses type) {
         System.out.printf("Enter type - %s, value - %s \n", type, value);
         CompletableFuture<Map.Entry<Method, Object>> supplyAsync;
         if (type.isHasSubType()) {
             supplyAsync = CompletableFuture.supplyAsync(() -> methodContext.containsKey(type) ?
-                            methodContext.getMethodsWithHandleClass(type).entrySet()
+                            methodContext.getMethodsByT(type).entrySet()
                                     .stream().filter(aClass -> matcher.chooseMatcher(aClass.getKey(),
                                             value, type.getType()))
                                     .findFirst().orElse(null) : null)
                     .thenComposeAsync(s -> CompletableFuture.supplyAsync(() -> {
                         if (Objects.isNull(s)) {
                             return methodContext.containsKey(type.getSubHandleClasses()) ?
-                                    methodContext.getMethodsWithHandleClass(type.getSubHandleClasses()).entrySet()
+                                    methodContext.getMethodsByT(type.getSubHandleClasses()).entrySet()
                                             .stream().filter(aClass -> matcher.chooseMatcher(aClass.getKey(),
                                                     value, type.getSubHandleClasses().getType()))
                                             .findFirst().orElse(null) : null;
@@ -51,31 +54,39 @@ public class AsyncQuestMethod implements QuestMethod {
         } else {
             supplyAsync = CompletableFuture.supplyAsync(
                     () -> methodContext.containsKey(type) ?
-                            methodContext.getMethodsWithHandleClass(type).entrySet()
+                            methodContext.getMethodsByT(type).entrySet()
                                     .stream().filter(aClass -> matcher.chooseMatcher(aClass.getKey(),
                                             value, type.getType()))
                                     .findFirst().orElse(null) : null);
         }
-        return supplyAsync.join();
+        return supplyAsync.thenApply(this::resultCreator).join();
     }
 
     @Override
     @SneakyThrows
-    public Map.Entry<Method, Object> getHandleAnyMethod(HandleType handleType) {
+    public InvokerResult getHandleAnyMethod(HandleType handleType) {
         return CompletableFuture.supplyAsync(() -> methodContext.containsKey(HandleClasses.HANDLE_ANY) ?
-                methodContext.getMethodsWithHandleClass(HandleClasses.HANDLE_ANY).entrySet().stream().filter(
+                methodContext.getMethodsByT(HandleClasses.HANDLE_ANY).entrySet().stream().filter(
                                 clazz -> matcher.chooseMatcher(clazz.getKey(), handleType))
-                        .findFirst().orElse(null) : null).get();
+                        .findFirst().orElse(null) : null).thenApply(this::resultCreator).get();
     }
 
     @SneakyThrows
     @Override
-    public Map<Method, Object> getAllHandleAnyMethod(HandleType handleType) {
+    public Set<InvokerResult> getAllHandleAnyMethod(HandleType handleType) {
         return CompletableFuture.supplyAsync(() -> methodContext.containsKey(HandleClasses.HANDLE_ANY) ?
-                methodContext.getMethodsWithHandleClass(HandleClasses.HANDLE_ANY).entrySet().stream().filter(
+                methodContext.getMethodsByT(HandleClasses.HANDLE_ANY).entrySet().stream().filter(
                                 clazz -> matcher.chooseMatcher(clazz.getKey(), handleType))
-                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)) : null)
+                        .map(this::resultCreator)
+                        .collect(Collectors.toSet()) : null)
                 .get();
+    }
+
+    private InvokerResult resultCreator(Map.Entry<Method, Object> entry) {
+        if (Objects.isNull(entry)) {
+            return null;
+        }
+        return new InvokerMethod(entry.getKey(), entry.getValue());
     }
 
 }

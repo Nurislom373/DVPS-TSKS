@@ -1,8 +1,9 @@
 package org.khasanof.springbootstarterfluent.core.state;
 
 import org.khasanof.springbootstarterfluent.core.exceptions.NotFoundException;
-import org.khasanof.springbootstarterfluent.core.state.SimpleStateService;
+import org.khasanof.springbootstarterfluent.core.state.processor.StateEnumsCollector;
 import org.khasanof.springbootstarterfluent.main.inferaces.state.State;
+import org.springframework.stereotype.Repository;
 import org.telegram.telegrambots.meta.api.objects.User;
 
 import java.util.HashMap;
@@ -14,49 +15,30 @@ import java.util.Objects;
  * @see org.khasanof.core.state
  * @since 09.07.2023 17:42
  */
+@Repository
 public class StateRepository {
 
-    private final SimpleStateService service = new SimpleStateService();
-    private static final StateRepository instance = new StateRepository();
-    private Map<Long, Enum> userConcurrentMap = new HashMap<>();
+    public Map<Long, State> userConcurrentMap = new HashMap<>();
+    private final StateEnumsCollector statesCollector;
+
+    public StateRepository(StateEnumsCollector statesCollector) {
+        this.statesCollector = statesCollector;
+    }
 
     public Enum getState(Long id) {
-        Enum enumType = userConcurrentMap.get(id);
+        Enum enumType = userConcurrentMap.get(id).getState();
         if (Objects.isNull(enumType)) {
             throw new NotFoundException("State not found!");
         }
         return enumType;
     }
 
-    public <T extends Enum> State<T> getState(Long id, Class<T> clazz) {
-        return new State<>() {
-            @Override
-            public T getState() {
-                return (T) userConcurrentMap.get(id);
-            }
-
-            @Override
-            public void nextState() {
-                userConcurrentMap.put(id, enumNextValue(service.getType(), getState()));
-            }
-        };
+    public State getStateById(Long id) {
+        return userConcurrentMap.get(id);
     }
 
-    private Enum enumNextValue(Class<? extends Enum> enumType, Enum currentState) {
-        boolean isCurrent = false;
-        for (Enum enumConstant : enumType.getEnumConstants()) {
-            if (isCurrent) {
-                return enumConstant;
-            }
-            if (enumConstant.equals(currentState)) {
-                isCurrent = true;
-            }
-        }
-        throw new RuntimeException("next state not found!");
-    }
-
-    public int count() {
-        return userConcurrentMap.size();
+    public void nextState(Long id) {
+        userConcurrentMap.get(id).nextState();
     }
 
     public boolean hasUserId(Long id) {
@@ -64,11 +46,8 @@ public class StateRepository {
     }
 
     public void addUser(User user) {
-        userConcurrentMap.put(user.getId(), service.getType().getEnumConstants()[0]);
-    }
-
-    public static StateRepository getInstance() {
-        return instance;
+        userConcurrentMap.put(user.getId(), new StateImpl(statesCollector.enums.iterator().next()
+                .getEnumConstants()[0]));
     }
 
 }

@@ -1,8 +1,10 @@
 package org.khasanof.springbootstarterfluent.core.executors.execution;
 
+import lombok.SneakyThrows;
 import org.khasanof.springbootstarterfluent.core.event.methodInvoke.MethodV1Event;
 import org.khasanof.springbootstarterfluent.core.model.AdditionalType;
-import org.khasanof.springbootstarterfluent.main.annotation.extra.ExecutionException;
+import org.khasanof.springbootstarterfluent.core.utils.MethodUtils;
+import org.khasanof.springbootstarterfluent.main.annotation.exception.ExecutionException;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -23,7 +25,6 @@ public interface Execution extends AdditionalType {
      * @throws InvocationTargetException The exception that is thrown when the method is executed
      * @throws IllegalAccessException Exception thrown without access to method input
      */
-    @ExecutionException
     void run(MethodV1Event methodV1Event) throws InvocationTargetException, IllegalAccessException;
 
 }

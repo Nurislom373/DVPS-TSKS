@@ -1,6 +1,7 @@
 package org.khasanof.springbootstarterfluent.core.executors.invoker;
 
 import org.khasanof.springbootstarterfluent.core.model.InvokerModel;
+import org.khasanof.springbootstarterfluent.core.model.InvokerModelV2;
 import org.khasanof.springbootstarterfluent.core.model.MethodArgs;
 import org.khasanof.springbootstarterfluent.core.utils.MethodUtils;
 
@@ -17,6 +18,8 @@ import java.util.Objects;
 public interface Invoker {
 
     void invoke(InvokerModel invokerModel);
+
+    void invokeV2(InvokerModelV2 invokerModelV2);
 
     static void invoke(Map.Entry<Method, Class> entry, MethodArgs args) {
         try {

@@ -41,7 +41,7 @@ public class HandleCallbackTest {
     @HandleCallbacks(values = {
             @HandleCallback(values = {"NEXT", "PREV"}),
             @HandleCallback(values = {"TOP", "BOTTOM"}),
-            @HandleCallback(values = {"LST"}, scope = MatchScope.START_WITH)
+            @HandleCallback(values = {"LST", "DEVOPS", "JECK"})
     })
     private void multiCallback(Update update, AbsSender sender) throws TelegramApiException {
         String text = "NPTB one handle \uD83D\uDE0E";

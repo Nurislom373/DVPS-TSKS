@@ -26,7 +26,6 @@ public class TestController {
         String text = "start : " + update.getMessage().getText();
         SendMessage message = new SendMessage(update.getMessage().getChatId().toString(), text);
         sender.execute(message);
-        throw new RuntimeException("Jeck pot");
     }
 
     @HandleMessage(value = "START_WITH('abs', value)", scope = MatchScope.EXPRESSION)
@@ -34,7 +33,6 @@ public class TestController {
         String text = "start regex : " + update.getMessage().getText();
         SendMessage message = new SendMessage(update.getMessage().getChatId().toString(), text);
         sender.execute(message);
-        throw new RuntimeException("Jeck pot");
     }
 
     @HandleMessage(value = "START_WITH('c', value) && END_WITH('z', value)", scope = MatchScope.EXPRESSION)

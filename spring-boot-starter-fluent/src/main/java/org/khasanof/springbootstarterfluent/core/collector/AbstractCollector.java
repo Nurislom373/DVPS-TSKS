@@ -10,11 +10,15 @@ import org.khasanof.springbootstarterfluent.core.collector.questMethod.QuestMeth
  */
 public abstract class AbstractCollector {
 
-    protected final SimpleMethodContext methodAdapter;
     protected final QuestMethod questMethod;
+    protected AnnotationMethodContext annotationContext;
 
-    public AbstractCollector(SimpleMethodContext methodAdapter, QuestMethod questMethod) {
-        this.methodAdapter = methodAdapter;
+    public AbstractCollector(QuestMethod questMethod) {
         this.questMethod = questMethod;
+    }
+
+    public AbstractCollector(QuestMethod questMethod, AnnotationMethodContext annotationContext) {
+        this.questMethod = questMethod;
+        this.annotationContext = annotationContext;
     }
 }

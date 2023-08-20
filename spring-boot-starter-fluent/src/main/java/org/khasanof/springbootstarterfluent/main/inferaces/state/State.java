@@ -5,10 +5,12 @@ package org.khasanof.springbootstarterfluent.main.inferaces.state;
  * @see org.khasanof.core.state
  * @since 12.07.2023 22:07
  */
-public interface State<T> {
+public interface State {
 
-    T getState();
+    Enum getState();
 
     void nextState();
+
+    void nextState(Enum state);
 
 }

@@ -2,6 +2,7 @@ package org.khasanof.springbootstarterfluent.core.executors.invoker.additional.p
 
 import org.khasanof.springbootstarterfluent.core.enums.additional.AdditionalParamType;
 import org.khasanof.springbootstarterfluent.core.model.InvokerModel;
+import org.khasanof.springbootstarterfluent.core.model.InvokerModelV2;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
@@ -28,13 +29,14 @@ public class TWTCommonAdapter implements InitializingBean {
         this.applicationContext = applicationContext;
     }
 
-    public Object takeParam(AdditionalParamType type, InvokerModel invokerModel, Object[] args, Method method) {
+    public Object takeParam(AdditionalParamType type, InvokerModelV2 invokerModel, Object[] args, Method method) {
         return twtMap.get(type).getValue(invokerModel, args, method);
     }
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        applicationContext.getBeansOfType(TWT.class).values().forEach(twt -> twtMap.put(twt.getType(), twt));
+        applicationContext.getBeansOfType(TWT.class).values()
+                .forEach(twt -> twtMap.put(twt.getType(), twt));
     }
 
 }

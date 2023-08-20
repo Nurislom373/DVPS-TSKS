@@ -1,6 +1,7 @@
 package org.khasanof.springbootstarterfluent.core.model;
 
 import lombok.*;
+import org.khasanof.springbootstarterfluent.core.enums.InvokerType;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -12,12 +13,17 @@ import java.lang.reflect.Method;
  */
 @Getter
 @Setter
+@Builder
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class InvokerMethod {
-    private Annotation annotation;
-    private Class<? extends Annotation> annotationType;
+public class InvokerMethod implements InvokerResult {
+
     private Method method;
     private Object reference;
+
+    @Override
+    public InvokerType getType() {
+        return InvokerType.METHOD;
+    }
 }

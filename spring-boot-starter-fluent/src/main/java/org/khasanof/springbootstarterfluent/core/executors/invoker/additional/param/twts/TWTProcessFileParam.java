@@ -3,6 +3,7 @@ package org.khasanof.springbootstarterfluent.core.executors.invoker.additional.p
 import org.khasanof.springbootstarterfluent.core.enums.additional.AdditionalParamType;
 import org.khasanof.springbootstarterfluent.core.executors.invoker.additional.param.TWT;
 import org.khasanof.springbootstarterfluent.core.model.InvokerModel;
+import org.khasanof.springbootstarterfluent.core.model.InvokerModelV2;
 import org.khasanof.springbootstarterfluent.core.utils.MethodUtils;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -18,7 +19,8 @@ import java.lang.reflect.Method;
 public class TWTProcessFileParam implements TWT {
 
     @Override
-    public Object getValue(InvokerModel invokerModel, Object[] args, Method method) {
+    @SuppressWarnings("unchecked")
+    public Object getValue(InvokerModelV2 invokerModel, Object[] args, Method method) {
         return invokerModel.getAdditionalParam().getParam(MethodUtils.getArg(args, Update.class));
     }
 

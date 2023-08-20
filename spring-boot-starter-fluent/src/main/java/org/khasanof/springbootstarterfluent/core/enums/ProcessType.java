@@ -12,5 +12,4 @@ public enum ProcessType {
     BOTH,
     STATE,
     UPDATE;
-    private Class<?> type;
 }

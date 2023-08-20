@@ -4,6 +4,7 @@ import org.khasanof.springbootstarterfluent.core.enums.additional.AdditionalPara
 import org.khasanof.springbootstarterfluent.core.executors.invoker.additional.param.TWT;
 import org.khasanof.springbootstarterfluent.core.model.AdditionalParam;
 import org.khasanof.springbootstarterfluent.core.model.InvokerModel;
+import org.khasanof.springbootstarterfluent.core.model.InvokerModelV2;
 import org.khasanof.springbootstarterfluent.core.utils.MethodUtils;
 import org.khasanof.springbootstarterfluent.main.annotation.methods.HandleMessage;
 import org.springframework.stereotype.Component;
@@ -24,7 +25,8 @@ import java.util.Objects;
 public class TWTVarExpressionParam implements TWT {
 
     @Override
-    public Object getValue(InvokerModel invokerModel, Object[] args, Method method) {
+    @SuppressWarnings("unchecked")
+    public Object getValue(InvokerModelV2 invokerModel, Object[] args, Method method) {
         AdditionalParam additionalParam = invokerModel.getAdditionalParam();
         Annotation[] annotations = method.getDeclaredAnnotations();
         Annotation fAnn = Arrays.stream(annotations).filter(annotation -> annotation.annotationType()

@@ -24,8 +24,7 @@ public class CommonUpdateExecutor extends AbstractExecutor {
     private final Invoker invoker; // method invoker
     private final FluentBot fluentBot; // bot instance
 
-    public CommonUpdateExecutor(InvokerFunctions invokerFunctions, DeterminationUpdate determinationUpdateType, Invoker invoker, @Lazy FluentBot fluentBot, Collector collector) {
-        super(collector);
+    public CommonUpdateExecutor(InvokerFunctions invokerFunctions, DeterminationUpdate determinationUpdateType, Invoker invoker, @Lazy FluentBot fluentBot) {
         this.invokerFunctions = invokerFunctions;
         this.determination = determinationUpdateType;
         this.invoker = invoker;
@@ -39,10 +38,10 @@ public class CommonUpdateExecutor extends AbstractExecutor {
      * @param update from telegram is coming.
      */
     public void executeV2(Update update) {
-        BreakerForEach.forEach(determination.determinationV2(update).entrySet().stream(),
+        BreakerForEach.forEach(determination.determinationV2(update).stream(),
                 ((entry, breaker) -> {
                     if (!FluentContext.updateExecutorBoolean.get()) {
-                        invoker.invoke(invokerFunctions.fillAndGet(entry, update, fluentBot));
+                        invoker.invokeV2(invokerFunctions.fillAndGetV2(entry, update, fluentBot));
                     } else {
                         breaker.stop();
                     }

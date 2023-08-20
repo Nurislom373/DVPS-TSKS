@@ -42,12 +42,22 @@ public class MainClassloader implements Config, ResourceLoader {
     public Map<String, Object> getBeans() {
         Map<String, Object> objectMap = new HashMap<>();
         for (Class<? extends Annotation> classLevelAnnotation : classLevelAnnotations) {
-            Map<String, Object> validBeansTake = validBeansTake(applicationContext.getBeansWithAnnotation(classLevelAnnotation));
+            Map<String, Object> validBeansTake = applicationContext.getBeansWithAnnotation(classLevelAnnotation);
             if (!validBeansTake.isEmpty()) {
                 objectMap.putAll(validBeansTake);
             }
         }
         return objectMap;
+    }
+
+    @Override
+    public <T> Map<String, T> getBeansOfType(Class<T> type) {
+        return applicationContext.getBeansOfType(type);
+    }
+
+    @Override
+    public Map<String, Object> getBeans(Class<? extends Annotation> annotation) {
+        return applicationContext.getBeansWithAnnotation(annotation);
     }
 
     private Map<String, Object> validBeansTake(Map<String, Object> beanMap) {

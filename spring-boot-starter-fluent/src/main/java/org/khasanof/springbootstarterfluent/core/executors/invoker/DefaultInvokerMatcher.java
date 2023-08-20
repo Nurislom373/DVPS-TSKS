@@ -1,7 +1,9 @@
 package org.khasanof.springbootstarterfluent.core.executors.invoker;
 
 import org.khasanof.springbootstarterfluent.core.enums.MatchScope;
+import org.khasanof.springbootstarterfluent.core.model.InvokerMethod;
 import org.khasanof.springbootstarterfluent.core.model.InvokerModel;
+import org.khasanof.springbootstarterfluent.core.utils.AnnotationUtils;
 import org.khasanof.springbootstarterfluent.main.annotation.methods.HandleMessage;
 import org.springframework.stereotype.Component;
 
@@ -20,6 +22,17 @@ public class DefaultInvokerMatcher {
 
     public boolean messageScopeEq(InvokerModel invokerModel) {
         Annotation[] annotations = invokerModel.getClassEntry().getKey().getDeclaredAnnotations();
+        return Arrays.stream(annotations).anyMatch(annotation -> {
+            if (annotation.annotationType().equals(HandleMessage.class)) {
+                HandleMessage handleMessage = (HandleMessage) annotation;
+                return handleMessage.scope().equals(MatchScope.VAR_EXPRESSION);
+            }
+            return false;
+        });
+    }
+
+    public boolean messageScopeEq(InvokerMethod method) {
+        Annotation[] annotations = method.getMethod().getDeclaredAnnotations();
         return Arrays.stream(annotations).anyMatch(annotation -> {
             if (annotation.annotationType().equals(HandleMessage.class)) {
                 HandleMessage handleMessage = (HandleMessage) annotation;

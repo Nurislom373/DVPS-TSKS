@@ -12,7 +12,7 @@
 
     <groupId>org.khasanof</groupId>
     <artifactId>spring-boot-starter-fluent</artifactId>
-    <version>1.0.2</version>
+    <version>1.1.2</version>
 
     <name>spring-boot-starter-fluent</name>
     <description>spring-boot-starter-fluent</description>
@@ -36,6 +36,10 @@
     </developers>
 
     <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>

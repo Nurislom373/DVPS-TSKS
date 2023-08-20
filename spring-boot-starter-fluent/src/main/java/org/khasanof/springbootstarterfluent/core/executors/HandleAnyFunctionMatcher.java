@@ -2,6 +2,7 @@ package org.khasanof.springbootstarterfluent.core.executors;
 
 import lombok.extern.slf4j.Slf4j;
 import org.khasanof.springbootstarterfluent.core.enums.HandleType;
+import org.khasanof.springbootstarterfluent.core.executors.determination.impls.HandleAnyFunction;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
@@ -15,9 +16,10 @@ import java.util.function.Function;
  * @since 27.06.2023 21:32
  */
 @Slf4j
-@Component
+@Component(HandleAnyFunctionMatcher.NAME)
 public class HandleAnyFunctionMatcher {
 
+    public static final String NAME = "handleAnyFunctionMatcher";
     final Function<Update, MatchFunctions.MatchType> function = MatchFunctions.MatchType::getMatchType;
 
     public Map.Entry<HandleType, Object> matchFunctions(Update update) {

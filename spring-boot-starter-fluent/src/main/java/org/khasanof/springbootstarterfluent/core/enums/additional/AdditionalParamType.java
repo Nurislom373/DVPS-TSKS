@@ -2,6 +2,7 @@ package org.khasanof.springbootstarterfluent.core.enums.additional;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.khasanof.springbootstarterfluent.main.inferaces.state.State;
 
 import java.io.InputStream;
 import java.util.HashMap;
@@ -15,6 +16,7 @@ import java.util.HashMap;
 @RequiredArgsConstructor
 public enum AdditionalParamType {
 
+    STATE_PARAM(State.class),
     VAR_EXPRESSION_PARAM(HashMap.class),
     PROCESS_FILE_PARAM(InputStream.class);
 

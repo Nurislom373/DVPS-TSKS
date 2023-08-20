@@ -1,10 +1,12 @@
 package org.khasanof.springbootstarterfluent.core.executors.determination;
 
+import org.khasanof.springbootstarterfluent.core.model.InvokerResult;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.BiConsumer;
 
 /**
@@ -14,6 +16,6 @@ import java.util.function.BiConsumer;
  */
 public interface DeterminationService {
 
-    List<BiConsumer<Update, Map<Method, Object>>> getDeterminations();
+    List<BiConsumer<Update, Set<InvokerResult>>> getDeterminations();
 
 }

@@ -5,9 +5,10 @@ import org.khasanof.springbootstarterfluent.core.custom.FluentContext;
 import org.khasanof.springbootstarterfluent.core.event.methodInvoke.MethodV1Event;
 import org.khasanof.springbootstarterfluent.core.exceptions.InvalidParamsException;
 import org.khasanof.springbootstarterfluent.core.model.InvokerModel;
+import org.khasanof.springbootstarterfluent.core.model.InvokerModelV2;
+import org.khasanof.springbootstarterfluent.core.model.InvokerResult;
 import org.khasanof.springbootstarterfluent.core.utils.MethodUtils;
 import org.khasanof.springbootstarterfluent.main.annotation.exception.HandleException;
-import org.khasanof.springbootstarterfluent.main.annotation.extra.BotVariable;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -26,40 +27,58 @@ import java.util.*;
 @Component
 public class InvokerExecutor implements Invoker {
 
-    private final Collector collector;
+    private final Collector<Class<? extends Annotation>> collector;
     private final InvokerFunctions invokerFunctions;
+    private final InvokerResultService resultService;
     private final ApplicationEventPublisher applicationEventPublisher;
 
-    public InvokerExecutor(Collector collector, InvokerFunctions invokerFunctions, ApplicationEventPublisher applicationEventPublisher) {
+    public InvokerExecutor(Collector<Class<? extends Annotation>> collector, InvokerFunctions invokerFunctions, InvokerResultService resultService, ApplicationEventPublisher applicationEventPublisher) {
         this.collector = collector;
         this.invokerFunctions = invokerFunctions;
+        this.resultService = resultService;
         this.applicationEventPublisher = applicationEventPublisher;
     }
 
     @Override
     public void invoke(InvokerModel invokerModel) {
-        if (invokerModel.isHasClassEntry()) {
+//        if (invokerModel.isHasClassEntry()) {
+//            try {
+//                absInvoker(invokerModel);
+//            } catch (InstantiationException | IllegalAccessException e) {
+//                throw new RuntimeException(e);
+//            } catch (InvocationTargetException e) {
+//                try {
+//                    exceptionDirector(e.getCause(), invokerModel);
+//                    FluentContext.updateExecutorBoolean.set(true);
+//                } catch (Throwable ex) {
+//                    throw new RuntimeException(ex);
+//                }
+//            }
+//        }
+    }
+
+    @Override
+    public void invokeV2(InvokerModelV2 invokerModelV2) {
+        try {
+            absInvoker(invokerModelV2);
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        } catch (InvocationTargetException e) {
             try {
-                absInvoker(invokerModel);
-            } catch (InstantiationException | IllegalAccessException e) {
-                throw new RuntimeException(e);
-            } catch (InvocationTargetException e) {
-                try {
-                    exceptionDirector(e.getCause(), invokerModel);
-                    FluentContext.updateExecutorBoolean.set(true);
-                } catch (Throwable ex) {
-                    throw new RuntimeException(ex);
-                }
+                exceptionDirector(e.getCause(), invokerModelV2);
+                FluentContext.updateExecutorBoolean.set(true);
+            } catch (Throwable ex) {
+                throw new RuntimeException(ex);
             }
         }
     }
 
-    private void absInvoker(InvokerModel invokerModel) throws InstantiationException, IllegalAccessException, InvocationTargetException {
+    private void absInvoker(InvokerModelV2 invokerModel) throws InstantiationException, IllegalAccessException, InvocationTargetException {
         if (Objects.isNull(invokerModel.getAdditionalParam())) {
             checkListParams(invokerModel.getMethodParams(), invokerModel.getArgs());
         }
 
-        Map.Entry<Method, Object> classEntry = invokerModel.getClassEntry();
+        Map.Entry<Method, Object> classEntry = resultService.getResultEntry(invokerModel.getInvokerReference());
 
         Method method = classEntry.getKey();
         method.setAccessible(true);
@@ -75,7 +94,7 @@ public class InvokerExecutor implements Invoker {
         }
     }
 
-    private void execute(InvokerModel invokerModel, Map.Entry<Method, Object> classEntry, Method method) throws IllegalAccessException, InvocationTargetException, InstantiationException {
+    private void execute(InvokerModelV2 invokerModel, Map.Entry<Method, Object> classEntry, Method method) {
         applicationEventPublisher.publishEvent(new MethodV1Event(this, invokerModel, classEntry, method));
     }
 
@@ -87,18 +106,18 @@ public class InvokerExecutor implements Invoker {
         }
     }
 
-    private void exceptionDirector(Throwable throwable, InvokerModel prevInvoker) throws Throwable {
-        Map.Entry<Method, Object> exceptionHandleMethod = getExceptionHandleMethod(throwable);
+    private void exceptionDirector(Throwable throwable, InvokerModelV2 prevInvoker) throws Throwable {
+        InvokerResult exceptionHandleMethod = getExceptionHandleMethod(throwable);
         if (Objects.isNull(exceptionHandleMethod)) {
             throw throwable;
         }
-        InvokerModel invokerModel = invokerFunctions.fillAndGet(exceptionHandleMethod, throwable,
+        InvokerModelV2 invokerModel = invokerFunctions.fillAndGetV2(exceptionHandleMethod, throwable,
                 MethodUtils.getArg(prevInvoker.getArgs(), Update.class), MethodUtils.getArg(
                         prevInvoker.getArgs(), AbsSender.class));
-        invoke(invokerModel);
+        invokeV2(invokerModel);
     }
 
-    private Map.Entry<Method, Object> getExceptionHandleMethod(Throwable throwable) throws Throwable {
+    private InvokerResult getExceptionHandleMethod(Throwable throwable) throws Throwable {
         if (collector.hasHandle(HandleException.class)) {
             return collector.getMethodValueAnn(throwable, HandleException.class);
         }

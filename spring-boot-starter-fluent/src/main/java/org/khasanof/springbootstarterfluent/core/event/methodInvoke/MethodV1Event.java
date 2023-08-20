@@ -2,6 +2,7 @@ package org.khasanof.springbootstarterfluent.core.event.methodInvoke;
 
 import lombok.*;
 import org.khasanof.springbootstarterfluent.core.model.InvokerModel;
+import org.khasanof.springbootstarterfluent.core.model.InvokerModelV2;
 import org.springframework.context.ApplicationEvent;
 
 import java.lang.reflect.Method;
@@ -17,11 +18,11 @@ import java.util.Map;
 @ToString
 public class MethodV1Event extends ApplicationEvent {
 
-    private InvokerModel invokerModel;
+    private InvokerModelV2 invokerModel;
     private Map.Entry<Method, Object> classEntry;
     private Method method;
 
-    public MethodV1Event(Object source, InvokerModel invokerModel, Map.Entry<Method, Object> classEntry, Method method) {
+    public MethodV1Event(Object source, InvokerModelV2 invokerModel, Map.Entry<Method, Object> classEntry, Method method) {
         super(source);
         this.invokerModel = invokerModel;
         this.classEntry = classEntry;

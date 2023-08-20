@@ -8,6 +8,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -25,15 +26,22 @@ public class CommonExecutionAdapter implements ApplicationContextAware {
     private final List<Execution> executions = new ArrayList<>();
     private Execution simpleExecution;
 
-    @SneakyThrows
     public void execution(MethodV1Event event) {
         if (Objects.isNull(event.getInvokerModel().getAdditionalParam())) {
-            simpleExecution.run(event);
+            try {
+                simpleExecution.run(event);
+            } catch (InvocationTargetException | IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
         } else {
             AdditionalParamType paramType = event.getInvokerModel().getAdditionalParam().getType();
             for (Execution execution : executions) {
                 if (execution.getType().equals(paramType)) {
-                    execution.run(event);
+                    try {
+                        execution.run(event);
+                    } catch (InvocationTargetException | IllegalAccessException e) {
+                        throw new RuntimeException(e);
+                    }
                     break;
                 }
             }

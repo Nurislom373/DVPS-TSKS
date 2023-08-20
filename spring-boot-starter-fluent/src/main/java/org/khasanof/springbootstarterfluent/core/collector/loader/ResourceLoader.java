@@ -1,5 +1,6 @@
 package org.khasanof.springbootstarterfluent.core.collector.loader;
 
+import java.lang.annotation.Annotation;
 import java.util.Map;
 
 /**
@@ -10,5 +11,9 @@ import java.util.Map;
 public interface ResourceLoader {
 
     Map<String, Object> getBeans();
+
+    <T> Map<String, T> getBeansOfType(Class<T> type);
+
+    Map<String, Object> getBeans(Class<? extends Annotation> annotation);
 
 }

@@ -7,6 +7,6 @@ package org.khasanof.springbootstarterfluent.core.config;
  */
 public class ApplicationConstants {
 
-    public static final String STATE_PROCESSOR_EXPRESSION = "${fluent.bot.process-type} == 'state'";
+    public static final String STATE_PROCESSOR_EXPRESSION = "${fluent.bot.process-type} != 'update'";
 
 }

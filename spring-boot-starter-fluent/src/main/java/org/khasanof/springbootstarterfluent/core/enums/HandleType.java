@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 @AllArgsConstructor
 @RequiredArgsConstructor
 public enum HandleType {
+
     MESSAGE(HandleClasses.HANDLE_MESSAGE),
     CALLBACK(HandleClasses.HANDLE_CALLBACK), STICKER,
     PHOTO(HandleClasses.HANDLE_PHOTO),

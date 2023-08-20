@@ -1,8 +1,7 @@
 package org.khasanof.springbootstarterfluent.core.collector;
 
-import org.khasanof.springbootstarterfluent.core.enums.HandleType;
+import org.khasanof.springbootstarterfluent.core.model.InvokerResult;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Map;
 
@@ -15,14 +14,10 @@ import java.util.Map;
  * <br/>
  * Package: org.khasanof.springbootstarterfluent.core.collector
  */
-public interface Collector {
+public interface Collector<P> extends HandleTypeCollector {
 
-    Map.Entry<Method, Object> getMethodValueAnn(Object value, Class<? extends Annotation> annotation);
+    InvokerResult getMethodValueAnn(Object value, P param);
 
-    Map.Entry<Method, Object> getHandleAnyMethod(HandleType handleType);
-
-    Map<Method, Object> getAllHandleAnyMethod(HandleType handleType);
-
-    boolean hasHandle(Class<? extends Annotation> annotation);
+    boolean hasHandle(P param);
 
 }

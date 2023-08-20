@@ -2,6 +2,7 @@ package org.khasanof.springbootstarterfluent.core.executors.invoker.additional.p
 
 import org.khasanof.springbootstarterfluent.core.model.AdditionalType;
 import org.khasanof.springbootstarterfluent.core.model.InvokerModel;
+import org.khasanof.springbootstarterfluent.core.model.InvokerModelV2;
 
 import java.lang.reflect.Method;
 
@@ -14,6 +15,6 @@ import java.lang.reflect.Method;
  */
 public interface TWT extends AdditionalType {
 
-    Object getValue(InvokerModel invokerModel, Object[] args, Method method);
+    Object getValue(InvokerModelV2 invokerModel, Object[] args, Method method);
 
 }

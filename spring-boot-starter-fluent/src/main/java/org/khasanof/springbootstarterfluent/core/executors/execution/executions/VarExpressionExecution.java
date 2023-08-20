@@ -48,8 +48,6 @@ public class VarExpressionExecution implements Execution {
     }
 
     private Object[] mapGetValues(Map<String, String> stringMap, Method method) {
-        Set<Annotation> allAnnotations = ReflectionUtils.getAllAnnotations(method,
-                (annotation -> annotation.annotationType().equals(BotVariable.class)));
         List<String> variables = new ArrayList<>();
         Arrays.stream(method.getParameterAnnotations()).forEach(annotations -> {
             Annotation fAnn = Arrays.stream(annotations)

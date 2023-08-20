@@ -1,4 +1,4 @@
-package org.khasanof.springbootstarterfluent.main.annotation.extra;
+package org.khasanof.springbootstarterfluent.main.annotation.exception;
 
 import java.lang.annotation.*;
 

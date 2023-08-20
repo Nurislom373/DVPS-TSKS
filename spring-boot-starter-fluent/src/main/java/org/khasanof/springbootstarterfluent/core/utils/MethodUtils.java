@@ -7,6 +7,7 @@ import org.khasanof.springbootstarterfluent.main.annotation.process.ProcessUpdat
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,6 +20,13 @@ import java.util.Objects;
  * @since 06.07.2023 21:28
  */
 public abstract class MethodUtils {
+
+    public static Method getClassMethodByName(Object o, String name) {
+        return Arrays.stream(o.getClass().getDeclaredMethods())
+                .peek(method -> method.setAccessible(true))
+                .filter(method -> method.getName().equals(name))
+                .findFirst().orElse(null);
+    }
 
     public static Object[] sorter(Object[] objects, Class<?>[] parameterTypes) {
         return Arrays.stream(objects).filter(any -> Arrays.stream(parameterTypes)

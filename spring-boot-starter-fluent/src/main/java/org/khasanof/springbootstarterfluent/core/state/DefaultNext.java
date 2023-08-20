@@ -11,9 +11,9 @@ import java.util.List;
 public interface DefaultNext<S> {
 
     @SuppressWarnings("unchecked")
-    default S getNext(S state, S current) {
+    default S getNext(S state) {
         List<S> enums = (List<S>) Arrays.stream(state.getClass().getEnumConstants())
-                .dropWhile(ste -> !ste.equals(current))
+                .dropWhile(ste -> !ste.equals(state))
                 .toList();
         if (enums.size() >= 2) {
             return enums.get(1);

@@ -9,6 +9,6 @@ import java.util.Set;
  */
 public interface StateConfigurer {
 
-    Set<Class<Enum>> stateEnums();
+    Set<Class<? extends Enum>> stateEnums();
 
 }
