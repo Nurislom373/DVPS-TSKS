@@ -19,7 +19,7 @@ public abstract class StringTokenizerUtils {
     }
 
     @SuppressWarnings("unchecked")
-    public static  <T extends Collection> T getTokensWithGeneric(String str, String delim, boolean returnDelim,
+    protected static  <T extends Collection> T getTokensWithGeneric(String str, String delim, boolean returnDelim,
                                                                 Supplier<T> collectionFactory) {
         T objects = collectionFactory.get();
         StringTokenizer token = new StringTokenizer(str, delim, returnDelim);
