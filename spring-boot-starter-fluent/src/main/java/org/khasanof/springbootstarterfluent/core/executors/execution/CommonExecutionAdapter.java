@@ -1,6 +1,7 @@
 package org.khasanof.springbootstarterfluent.core.executors.execution;
 
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.khasanof.springbootstarterfluent.core.enums.additional.AdditionalParamType;
 import org.khasanof.springbootstarterfluent.core.event.methodInvoke.MethodV1Event;
 import org.springframework.beans.BeansException;
@@ -18,6 +19,7 @@ import java.util.Objects;
  * @see org.khasanof.springbootstarterfluent.core.executors.execution
  * @since 8/13/2023 9:19 PM
  */
+@Slf4j
 @Component(CommonExecutionAdapter.NAME)
 public class CommonExecutionAdapter implements ApplicationContextAware {
 
@@ -31,7 +33,8 @@ public class CommonExecutionAdapter implements ApplicationContextAware {
             try {
                 simpleExecution.run(event);
             } catch (InvocationTargetException | IllegalAccessException e) {
-                throw new RuntimeException(e);
+                log.warn("exception throwing. method name : {}, exception cause : {}",
+                        event.getMethod().getName(), e.getCause().getMessage());
             }
         } else {
             AdditionalParamType paramType = event.getInvokerModel().getAdditionalParam().getType();
@@ -40,7 +43,8 @@ public class CommonExecutionAdapter implements ApplicationContextAware {
                     try {
                         execution.run(event);
                     } catch (InvocationTargetException | IllegalAccessException e) {
-                        throw new RuntimeException(e);
+                        log.warn("exception throwing. method name : {}, exception cause : {}",
+                                event.getMethod().getName(), e.getCause().getMessage());
                     }
                     break;
                 }

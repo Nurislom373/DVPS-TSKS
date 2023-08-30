@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
  * to the {@link ClassLevelTypes} enum.
  * <p>
  * <br/>
- * <br/>
  * Author: Nurislom
  * <br/>
  * Date: 18.06.2023

@@ -1,5 +1,6 @@
 package org.khasanof.springbootstarterfluent.core.event;
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.khasanof.springbootstarterfluent.core.collector.Collector;
 import org.khasanof.springbootstarterfluent.core.event.exceptionDirector.ExceptionDirectorEvent;
@@ -33,6 +34,7 @@ public class ExceptionDirectorEventListener implements ApplicationListener<Excep
         this.collector = collector;
     }
 
+    @SneakyThrows
     @Override
     public void onApplicationEvent(ExceptionDirectorEvent event) {
         if (collector.hasHandle(HandleException.class)) {
@@ -40,7 +42,8 @@ public class ExceptionDirectorEventListener implements ApplicationListener<Excep
             InvokerModelV2 modelV2 = invokerFunctions.fillAndGetV2(result, event.getUpdate(), event.getAbsSender(),
                     event.getThrowable());
             invoker.invokeV2(modelV2);
+        } else {
+            throw event.getThrowable();
         }
     }
-
 }

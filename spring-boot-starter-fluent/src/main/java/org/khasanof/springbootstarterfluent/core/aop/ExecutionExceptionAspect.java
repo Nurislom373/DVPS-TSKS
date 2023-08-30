@@ -6,6 +6,7 @@ import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.khasanof.springbootstarterfluent.core.custom.FluentContext;
 import org.khasanof.springbootstarterfluent.core.event.exceptionDirector.ExceptionDirectorEvent;
 import org.khasanof.springbootstarterfluent.core.event.methodInvoke.MethodV1Event;
 import org.khasanof.springbootstarterfluent.core.utils.MethodUtils;
@@ -37,22 +38,17 @@ public class ExecutionExceptionAspect {
     @Pointcut("execution(* org.khasanof.springbootstarterfluent.core.executors.execution.Execution.run(..))")
     void exceptionPointcut(){}
 
-    @Around(value = "exceptionPointcut()")
-    private Object afterThrowing(ProceedingJoinPoint pjp) throws Throwable {
-        try {
-            return pjp.proceed();
-        } catch (Throwable ex) {
-            log.warn("execution method throwing exception!");
-            if (ex.getClass().equals(InvocationTargetException.class)) {
-                MethodV1Event event = MethodUtils.getArg(pjp.getArgs(), MethodV1Event.class);
-                Object[] args = event.getInvokerModel().getArgs();
-                AbsSender sender = MethodUtils.getArg(args, AbsSender.class);
-                Update update = MethodUtils.getArg(args, Update.class);
-                publisher.publishEvent(new ExceptionDirectorEvent(this, update, sender, ex.getCause()));
-                return null;
-            } else {
-                throw ex;
-            }
+    @AfterThrowing(value = "exceptionPointcut()", throwing = "ex")
+    private void afterThrowing(JoinPoint joinPoint, Throwable ex) throws Throwable {
+        FluentContext.updateExecutorBoolean.set(true);
+        if (ex.getClass().equals(InvocationTargetException.class)) {
+            MethodV1Event event = MethodUtils.getArg(joinPoint.getArgs(), MethodV1Event.class);
+            Object[] args = event.getInvokerModel().getArgs();
+            AbsSender sender = MethodUtils.getArg(args, AbsSender.class);
+            Update update = MethodUtils.getArg(args, Update.class);
+            publisher.publishEvent(new ExceptionDirectorEvent(this, update, sender, ex.getCause()));
+        } else {
+            throw ex;
         }
     }
 
