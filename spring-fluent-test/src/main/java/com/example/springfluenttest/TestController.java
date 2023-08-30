@@ -28,7 +28,7 @@ public class TestController {
         sender.execute(message);
     }
 
-    @HandleMessage(value = "START_WITH('abs', value)", scope = MatchScope.EXPRESSION)
+    @HandleMessage(value = "START_WITH('abs', value)", scope = MatchScope.EQUALS)
     public void testExp(Update update, AbsSender sender) throws TelegramApiException {
         String text = "start regex : " + update.getMessage().getText();
         SendMessage message = new SendMessage(update.getMessage().getChatId().toString(), text);
