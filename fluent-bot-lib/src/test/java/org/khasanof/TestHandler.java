@@ -132,8 +132,8 @@ public class TestHandler {
     }
 
     @HandleMessages(values = {
-            @HandleMessage(value = "may", scope = MatchScope.START_WITH),
-            @HandleMessage(value = "yam", scope = MatchScope.END_WITH),
+            @HandleMessage(value = "start", scope = MatchScope.START_WITH),
+            @HandleMessage(value = "end", scope = MatchScope.END_WITH),
             @HandleMessage(value = "boom", scope = MatchScope.EQUALS_IGNORE_CASE)
     })
     void multiMessageHandler(Update update, AbsSender sender) throws TelegramApiException {

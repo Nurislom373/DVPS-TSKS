@@ -8,17 +8,101 @@ package org.khasanof.springbootstarterfluent.core.enums;
  * Time: 21:51
  * <br/>
  * Package: org.khasanof.core.enums
+ * <br/>
+ * <br/>
+ *
+ * MatchScope is used in annotations that accept enum updates. The purpose of this Annotation is to show how to match a
+ * given update value. Defaults to EQUALS if no value is specified.
  */
 public enum MatchScope {
+
+    /**
+     * END_WITH checks that the start of the incoming update matches the specified value.
+     *
+     * <br/>
+     *
+     * Using Example:
+     *
+     * <pre>
+     *    &#064HandleMessage(value = "start", scope = MatchScope.START_WITH)
+     * </pre>
+     */
     START_WITH,
+
+    /**
+     * END_WITH checks that the end of the incoming update matches the specified value.
+     *
+     * <br/>
+     *
+     * Using Example:
+     *
+     * <pre>
+     *    &#064HandleMessage(value = "end", scope = MatchScope.END_WITH)
+     * </pre>
+     */
     END_WITH,
+
+    /**
+     * CONTAINS checks whether the incoming update contains the specified value.
+     *
+     * <br/>
+     *
+     * Using Example:
+     *
+     * <pre>
+     *    &#064HandleMessage(value = "abs", scope = MatchScope.CONTAINS)
+     * </pre>
+     */
     CONTAINS,
+
+    /**
+     * EQUALS checks the incoming update to match the given value.
+     *
+     * <br/>
+     *
+     * Using Example:
+     *
+     * <pre>
+     *    &#064@HandleMessage(value = "/start", scope = MatchScope.EQUALS)
+     * </pre>
+     *
+     */
     EQUALS,
+
+    /**
+     * REGEX checks that the update received matches the given regex.
+     *
+     * <br/>
+     *
+     * Using Example:
+     *
+     * <pre>
+     *    &#064HandleDocument(
+     *             value = "([a-zA-Z0-9\\s_\\\\.\\-\\(\\):])+(.jpeg|.png|.pdf)$",
+     *             match = MatchScope.REGEX,
+     *             scope = DocumentScope.FILE_NAME
+     *     )
+     * </pre>
+     *
+     */
     REGEX,
+
+    /**
+     * EQUALS_IGNORE_CASE checks that the incoming update matches the ignore case
+     *
+     * <br/>
+     *
+     * Using Example:
+     *
+     * <pre>
+     *    &#064HandleMessage(value = "boom", scope = MatchScope.EQUALS_IGNORE_CASE)
+     * </pre>
+     *
+     */
     EQUALS_IGNORE_CASE,
 
     /**
-     * this expression EvalEx is used, we can write it like spring expression language.
+     * EXPRESSION checks whether the incoming update matches this written expression.
      *
      * <br/>
      *
@@ -32,7 +116,9 @@ public enum MatchScope {
     EXPRESSION,
 
     /**
-     * this new feature use only message handlers!
+     * VAR_EXPRESSION checks whether the incoming update matches this written expression.
+     * In addition, we can use this VAR_EXPRESSION to enter the updated variables as parameters to the method.
+     * This new feature use only message handlers!
      *
      * <br/>
      *
