@@ -1,0 +1,10 @@
+= Fluent 1.0.0
+:author: Xasanov Nurislom
+:email: khasanof373@gmail.com
+:localdate: 2023-09-03
+
+== Preface
+
+Ushbu Fluent librarysi sizga Spring framework bilan birgalikda telegram bot yozishingizni ancha osonlashtiradi.
+Telegram bot yasash juda oson va chunarli sababi siz endi ushbu librarydan foydalanish orqali siz faqat annoatatsiyalarni
+o'zi bilan bot yozishingiz mumkin.

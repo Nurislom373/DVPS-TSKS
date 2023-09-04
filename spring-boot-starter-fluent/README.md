@@ -1,6 +1,6 @@
 # Spring Boot Start Fluent
 
-Ushbu Fluent librarysi sizga Spring framework bilan birlalikda telegram bot yozishingizni ancha osonlashtiradi.
+Ushbu Fluent librarysi sizga Spring framework bilan birgalikda telegram bot yozishingizni ancha osonlashtiradi.
 Telegram bot yasash juda oson va chunarli sababi siz endi ushbu librarydan foydalanish orqali siz faqat annoatatsiyalarni
 o'zi bilan bot yozishingiz mumkin. 
 
