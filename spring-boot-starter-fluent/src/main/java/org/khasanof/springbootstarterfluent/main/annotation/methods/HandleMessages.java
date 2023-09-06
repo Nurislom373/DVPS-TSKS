@@ -1,5 +1,6 @@
 package org.khasanof.springbootstarterfluent.main.annotation.methods;
 
+import org.khasanof.springbootstarterfluent.core.enums.MultiMatchScope;
 import org.khasanof.springbootstarterfluent.main.annotation.process.ProcessUpdate;
 
 import java.lang.annotation.ElementType;
@@ -22,5 +23,7 @@ import java.lang.annotation.Target;
 public @interface HandleMessages {
 
     HandleMessage[] values();
+
+    MultiMatchScope match() default MultiMatchScope.ANY_MATCH;
 
 }

@@ -6,5 +6,184 @@
 == Preface
 
 Ushbu Fluent librarysi sizga Spring framework bilan birgalikda telegram bot yozishingizni ancha osonlashtiradi.
-Telegram bot yasash juda oson va chunarli sababi siz endi ushbu librarydan foydalanish orqali siz faqat annoatatsiyalarni
-o'zi bilan bot yozishingiz mumkin.
+Telegram bot yasash juda oson va chunarli sababi siz endi ushbu librarydan foydalanish orqali siz faqat annoatatsiyalarni o'zi bilan bot yozishingiz mumkin.
+
+== 1. Set Up
+
+Ushbu bo'limda kod yozishgacha bo'lgan jarayoncha nimalarni qilishingiz kerakligi bilib olasiz.
+
+=== 1.1 System Requirements
+
+Ushbu fluent librarysidan foydalanish uchun Java 17 versiyasi va Spring boot-ni 3.1 dan baland versiyasi bo'lishi kerak.
+
+=== 1.2 Dependency
+
+Fluent dan foydalanish uchun POM faylingizga quyidagi depedency qo'shishingiz kerak.
+
+.Maven
+[source,xml]
+[subs=attributes+]
+----
+<dependency>
+    <groupId>org.khasanof</groupId>
+    <artifactId>spring-boot-starter-fluent</artifactId>
+    <version>1.0.0</version>
+</dependency>
+----
+
+.Gradle
+[source,groovy,indent=0]
+[subs=attributes+]
+....
+dependencies {
+    implementation 'org.khasanof:spring-boot-starter-fluent:1.0.0'
+}
+....
+
+=== 1.3 Configuration
+
+Tepadagi dependency-larni qo'shib bo'lganimizdan so'ng application yaml yoki properties filega botimizni token va username-ni ko'ratishimiz kerak bo'ladi.
+
+.properties
+[source,properties,indent=0]
+[subs=attributes+]
+....
+fluent.bot.token=<your bot token>
+fluent.bot.username=<your bot username>
+fluent.bot.process-type=both
+....
+
+.yml
+[source,yaml,indent=0]
+[subs=attributes+]
+....
+fluent:
+  bot:
+    token: <your bot token>
+    username: <your bot username>
+    process-type: both
+....
+
+`token` va `username` tashqari `process-type` ham ko'rsatilgan u haqida pastgi bo'limlar to'liq tushintirilgan.
+
+== 2. Defining a Handler
+
+Ushbu bo'limda telegram botga kelgan updatelarni Handler-lar yordamida qanday ushlashni bilib olamiz.
+
+=== 2.1 Handle Message
+
+Telegram botdan kelgan oddiy xabarni qanday qilib handle qilishni ushbu bo'limda ko'rib chiqamiz.
+
+Quyidagi misolga qarang:
+
+[source,java,indent=0]
+[subs=attributes+]
+....
+@UpdateController
+public class TestController {
+
+    @HandleMessage("/start")
+    public void test(Update update, AbsSender sender) throws TelegramApiException {
+        String text = "start : " + update.getMessage().getText();
+        SendMessage message = new SendMessage(update.getMessage().getChatId().toString(), text);
+        sender.execute(message);
+    }
+
+}
+....
+
+`@UpdateController` annotatsiyasi updatelarni handle qiladigan classlarni ustiga qo'yish majburiy.
+Ushbu annotatsiya classni update handle qilishi ko'rsatish uchun kerak.
+
+`@HandleMessage` annotatsiyasiga kelsak.
+Ushbu annotatsiya oddiy message sifatida kelgan updatelarni berilgan qiymatga mos kelgan taqdirdagina methodga kiritadi.
+Yani botga `/start` xabar yuborilgandagina ushbu method ishlaydi.
+
+`update` esa bu bot-dan kirib kelgan update undan o'zimizga kerakli barcha narsalarni olib ishlatishimiz mumkin.
+
+`sender` esa bu ushbu bot-dan kelgan update-ga javob tariqasida xabar yoki istalgan boshqa narsa yubormoqchi bo'lganimizda ishlatishimiz uchun kerak bo'ladigan jo'natuvchi yani sender.
+
+=== 2.2 Handle Callback
+
+2.2 bo'limda esa callbacklarni qanday qilib handle qilishni bilib olasiz.
+
+Quyidagi misolga qarang:
+
+[source,java,indent=0]
+[subs=attributes+]
+....
+@UpdateController
+public class TestController {
+
+    @HandleCallback(values = {"RU", "UZ"})
+    private void callBack(Update update, AbsSender sender) throws TelegramApiException {
+        String text = "I'm Callback Handler!";
+        SendMessage message = new SendMessage(update.getCallbackQuery().getMessage()
+            .getChatId().toString(), text);
+        sender.execute(message);
+    }
+
+}
+....
+
+`@HandleCallback` annotatsiya nomidan ko'rinib turib callback sifatida kelgan update-larni handle qilish uchun ishlatishimiz mumkin.
+Ushbu annotatsiya `String[]` qabul qiladi yani qaysi callbacklarni handle qilishini ushbu values methoddiga berish orqali ko'rsatishimiz mumkin.
+
+=== 2.3 Callback and Message are multiple groups
+
+Ushbu bo'limda tepada ishlatgan annotatsiyalarimizni bitta ko'plik variantlarni qanday yozishni bilib olamiz.
+
+=== 2.3.1 Handle Callbacks
+
+Quyidagi misolga qarang:
+
+[source,java,indent=0]
+[subs=attributes+]
+....
+@UpdateController
+public class TestController {
+
+    @HandleCallbacks(values = {
+        @HandleCallback(values = {"NEXT", "PREV"}),
+        @HandleCallback(values = {"TOP", "BOTTOM"}),
+        @HandleCallback(values = {"LAST", "FIRST"})
+    })
+    private void multiCallback(Update update, AbsSender sender) throws TelegramApiException {
+        String text = "I'm Callback Handler!";
+        SendMessage message = new SendMessage(update.getCallbackQuery().getMessage()
+            .getChatId().toString(), text);
+        sender.execute(message);
+    }
+
+}
+....
+
+`@HandleCallbacks` annotatsiyasi bir nechta `@HandleCallback` annotatsiyalarni guruhlash uchun ishlatiladi.
+
+=== 2.3.2 Handle Messages
+
+Quyidagi misolga qarang:
+
+[source,java,indent=0]
+[subs=attributes+]
+....
+@UpdateController
+public class TestController {
+
+     @HandleMessages(values = {
+            @HandleMessage(value = "start", scope = MatchScope.START_WITH),
+            @HandleMessage(value = "end", scope = MatchScope.END_WITH),
+            @HandleMessage(value = "boom", scope = MatchScope.EQUALS_IGNORE_CASE)
+    })
+    void multiMessageHandler(Update update, AbsSender sender) throws TelegramApiException {
+        String text = "Hello Everyone! MultiHandler";
+        SendMessage message = new SendMessage(update.getMessage().getChatId().toString(), text);
+        message.setReplyMarkup(enterMenu());
+        sender.execute(message);
+    }
+
+}
+....
+
+`@HandleMessages` annotatsiyasi ham huddi `@HandleCallbacks` bilan bir xil bir nechta faqat `@HandleMessage` annotatsiyasi guruhlash uchun ishlatiladi.
+
