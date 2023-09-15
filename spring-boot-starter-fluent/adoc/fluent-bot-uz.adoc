@@ -6,7 +6,11 @@
 == Preface
 
 Ushbu Fluent librarysi sizga Spring framework bilan birgalikda telegram bot yozishingizni ancha osonlashtiradi.
-Telegram bot yasash juda oson va chunarli sababi siz endi ushbu librarydan foydalanish orqali siz faqat annoatatsiyalarni o'zi bilan bot yozishingiz mumkin.
+Telegram bot yasash juda oson va chunarli sababi siz endi ushbu librarydan foydalanish orqali siz faqat annoatatsiyalarni
+o'zi bilan bot yozishingiz mumkin.
+
+Ushbu Fluent library ichki `https://github.com/rubenlagus/TelegramBots[telegrambots]` librarysidan foydalangan.
+
 
 == 1. Set Up
 
@@ -66,7 +70,7 @@ fluent:
 
 `token` va `username` tashqari `process-type` ham ko'rsatilgan u haqida pastgi bo'limlar to'liq tushintirilgan.
 
-== 2. Defining a Handler
+== 2. Using Simple Examples
 
 Ushbu bo'limda telegram botga kelgan updatelarni Handler-lar yordamida qanday ushlashni bilib olamiz.
 
@@ -99,9 +103,9 @@ Ushbu annotatsiya classni update handle qilishi ko'rsatish uchun kerak.
 Ushbu annotatsiya oddiy message sifatida kelgan updatelarni berilgan qiymatga mos kelgan taqdirdagina methodga kiritadi.
 Yani botga `/start` xabar yuborilgandagina ushbu method ishlaydi.
 
-`update` esa bu bot-dan kirib kelgan update undan o'zimizga kerakli barcha narsalarni olib ishlatishimiz mumkin.
+`Update` esa bu bot-dan kirib kelgan update undan o'zimizga kerakli barcha narsalarni olib ishlatishimiz mumkin.
 
-`sender` esa bu ushbu bot-dan kelgan update-ga javob tariqasida xabar yoki istalgan boshqa narsa yubormoqchi bo'lganimizda ishlatishimiz uchun kerak bo'ladigan jo'natuvchi yani sender.
+`AbsSender` esa bu ushbu bot-dan kelgan update-ga javob tariqasida xabar yoki istalgan boshqa narsa yubormoqchi bo'lganimizda ishlatishimiz uchun kerak bo'ladigan jo'natuvchi yani sender.
 
 === 2.2 Handle Callback
 
@@ -186,4 +190,114 @@ public class TestController {
 ....
 
 `@HandleMessages` annotatsiyasi ham huddi `@HandleCallbacks` bilan bir xil bir nechta faqat `@HandleMessage` annotatsiyasi guruhlash uchun ishlatiladi.
+
+== 3. Handler Parameters
+
+Ahamiyat bergan bo'lsangiz kerak deyarli barcha handler-larning kirib keluvchi parameterlarni bir xil tepadagi misol
+larda. Ushbu bo'limda ushbu parameterlar haqida bilib olasiz.
+
+=== 3.1 *Update* Parameter
+
+Ushbu `Update` classi telegramdan kiruvchi update yani yangilanishini ifodalaydi. Har qanday update da ushbu classni
+ichidagi istalgan ixtiyoriy parameterlardan faqat bittasi bo'lishi mumkin.
+
+Ushbu update-dan o'zizmizga kerakli parameterlarni olib ishlatishimiz mumkin misol uchun xabar yuborish uchun yoki kirib
+kelgan update-dan text olish uchun va hokazo-lar uchun.
+
+----
+@HandleMessage("/start")
+public void test(Update update, AbsSender sender) throws TelegramApiException {
+    String text = "start : " + update.getMessage().getText(); <1>
+    SendMessage message = new SendMessage(update.getMessage().getChatId().toString(), text); <2>
+    sender.execute(message); <3>
+}
+----
+
+
+<1> statementga e'tibor bersangiz kelgan updatedan messageni qanday qilib olish ko'rsatilgan.
+<2> statementga e'tibor bersangiz ushbu statementda kelgan updatedan chatId olish ko'rsatilgan ushbu chatId bizga hali
+juda ko'p kerak bo'ladi sababi chatId orqali biz ushbu kirib kelgan updatega javob qaytarish uchun foydalanamiz.
+<3> ikkinchi va uchinchi statementda ko'rgan bo'lsangiz `SendMessage` classni instance yaratilgan chatId va textdan
+foydalanib va ushbu classni `AbsSender` classni execute method foydalanib botga xabar yuborilgan.
+
+=== 3.2 *AbsSender* Parameter
+
+Ushbu `AbsSender` classi faqat bot ga xabar yuborish uchun ishlatiladi. Boshqacha qilib aytganda biz AbsSenderdan foydalanib
+istalga formatdagi xabarimizni botga yuborishimiz mumkin misol uchun text, video, rasm, audio va hokazo.
+
+AbsSender class 2ta asosiy methodlari bor ular `execute` va `executeAsync`.
+
+ikkala methodlarni bir birdan farqi shundaki `execute` method current threaddan foydalanib botga xabar yuboradi.
+`executeAsync` method esa boshqa thread ushbu ishni amalga oshiradi.
+
+....
+sender.executeAsync(message, new SentCallback<Message>() {
+    @Override
+    public void onResult(BotApiMethod<Message> method, Message response) {
+        // ...
+    }
+
+    @Override
+    public void onError(BotApiMethod<Message> method, TelegramApiRequestException apiException) {
+        // ...
+    }
+
+    @Override
+    public void onException(BotApiMethod<Message> method, Exception exception) {
+        // ...
+    }
+});
+....
+
+== 4. Send Message, Photo and etc
+
+Ushbu 4 chi bo'lim botga har xil narsalarni yuborishni bilib olamiz.
+
+=== 4.1 Send Message
+
+Bot ga oddiy xabar yuborishni tepadagi misollarda ko'p kordik. Shunga uni qayta ko'rishimiz shart emas.
+Endi kelgan update reply qilib javob yuborishni ko'ramiz, uning uchun biz ushbu `SendMessage` classni
+`setReplyToMessageId` method foydalanib reply xabar yuborishimiz mumkin.
+
+.Reply Message Example
+image::images/ac163a6ce4803784b1.jpg[Wolpertinger,pdfwidth=50%,float=center,role=thumb]
+
+.Following Example
+
+....
+SendMessage message = new SendMessage(update.getMessage().getChatId().toString(), text);
+message.setReplyToMessageId(update.getMessage().getMessageId()); <1>
+sender.execute(message);
+....
+
+<1> `setReplyToMessageId` method qaysi message reply belgilashimiz uchun ushbu messageId si kerak bo'ladi.
+Ushu kodda kelgan updatedagi message reply qilib botga xabar yuborilgan.
+
+=== 4.1 Send Photo
+
+Endi esa botga rasm yuborishni ko'ramiz.
+
+Ushbu `SendPhoto` nomidan nima vazifa bajarishi ma'lum rasm yuborish uchun ishlatiladi. `SendPhoto` classi ham
+`SendMessage` juda o'xshaydi. `SendPhoto` ni farqi shundaki u text o'ringa InputFile classni qabul qiladi.
+InputFIle classi esa File qabul qiladi. Biz ushbu classga istalgan filimizni Urlni yoki `InpuStream` formatda file
+berib yuborishimiz mumkin.
+
+Following Example
+
+....
+SendPhoto sendPhoto = new SendPhoto(update.getMessage().getChatId().toString(),
+        new InputFile(new File("..."))); <1>
+sender.execute(sendPhoto);
+....
+
+Send bilan boshlgan bir qancha classlardan foydalanib botga istalgan narsani yuborishimiz mumkin.
+Pastdagi rasmda `Send` bilan boshlangan class ro'yxati ko'rsatilgan biz ushbu classlar tepada ko'rsatilgan 2tasidan
+foydalanganimizga o'xshab foydalanishimiz mumkin. Qolgan `Send` classlarimizni pastdagi bo'limlarimizda birma bir
+ko'rsatib ketamiz.
+
+.Send Classes
+image::images/send_methods.png[Wolpertinger,pdfwidth=50%,float=center,role=thumb]
+
+
+
 
