@@ -24,6 +24,4 @@ public @interface HandleMessages {
 
     HandleMessage[] values();
 
-    MultiMatchScope match() default MultiMatchScope.ANY_MATCH;
-
 }

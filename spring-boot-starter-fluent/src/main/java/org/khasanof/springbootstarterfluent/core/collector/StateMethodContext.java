@@ -32,7 +32,7 @@ public class StateMethodContext implements GenericMethodContext<Enum, Map.Entry<
     }
 
     @Override
-    public Map.Entry<Method, Object> getMethodsByT(Enum key) {
+    public Map.Entry<Method, Object> getMethodsByGenericKey(Enum key) {
         return invokerMethodsMap.get(key);
     }
 

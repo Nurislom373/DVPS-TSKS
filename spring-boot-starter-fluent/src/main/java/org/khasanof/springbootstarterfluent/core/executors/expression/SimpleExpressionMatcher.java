@@ -41,7 +41,7 @@ public class SimpleExpressionMatcher implements ExpressionMatcher<Object> {
                     .and("value", value).evaluate()
                     .getBooleanValue();
         } catch (EvaluationException | ParseException e) {
-            throw new RuntimeException(e);
+            return false;
         }
     }
 }

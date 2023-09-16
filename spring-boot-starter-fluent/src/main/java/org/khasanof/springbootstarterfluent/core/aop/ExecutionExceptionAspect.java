@@ -1,9 +1,7 @@
 package org.khasanof.springbootstarterfluent.core.aop;
 
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.AfterThrowing;
-import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.khasanof.springbootstarterfluent.core.custom.FluentContext;
@@ -36,9 +34,9 @@ public class ExecutionExceptionAspect {
     }
 
     @Pointcut("execution(* org.khasanof.springbootstarterfluent.core.executors.execution.Execution.run(..))")
-    void exceptionPointcut(){}
+    void executionRunMethodPointcut(){}
 
-    @AfterThrowing(value = "exceptionPointcut()", throwing = "ex")
+    @AfterThrowing(value = "executionRunMethodPointcut()", throwing = "ex")
     private void afterThrowing(JoinPoint joinPoint, Throwable ex) throws Throwable {
         FluentContext.updateExecutorBoolean.set(true);
         if (ex.getClass().equals(InvocationTargetException.class)) {

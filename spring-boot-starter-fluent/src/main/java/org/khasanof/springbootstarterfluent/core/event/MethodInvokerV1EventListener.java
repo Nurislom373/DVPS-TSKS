@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.khasanof.springbootstarterfluent.core.event.methodInvoke.MethodV1Event;
 import org.khasanof.springbootstarterfluent.core.executors.execution.CommonExecutionAdapter;
 import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 /**
@@ -21,6 +22,7 @@ public class MethodInvokerV1EventListener {
         this.commonExecutionAdapter = commonExecutionAdapter;
     }
 
+    @Async
     @EventListener(value = MethodV1Event.class)
     public void onApplicationEvent(MethodV1Event methodV1Event) {
         log.info("event listen invoker name : {}", methodV1Event.getInvokerModel().getName());

@@ -20,7 +20,7 @@ public class StateCollector extends AbstractCollector implements Collector<Enum>
 
     @Override
     @SuppressWarnings("unchecked")
-    public InvokerResult getMethodValueAnn(Object value, Enum param) {
+    public InvokerResult getInvokerResult(Object value, Enum param) {
         return questMethod.getMethodValueAnn(value, param);
     }
 

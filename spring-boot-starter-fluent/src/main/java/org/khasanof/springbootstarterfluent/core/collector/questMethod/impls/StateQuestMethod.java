@@ -2,7 +2,6 @@ package org.khasanof.springbootstarterfluent.core.collector.questMethod.impls;
 
 import org.khasanof.springbootstarterfluent.core.collector.GenericMethodContext;
 import org.khasanof.springbootstarterfluent.core.collector.questMethod.QuestMethod;
-import org.khasanof.springbootstarterfluent.core.model.InvokerMethod;
 import org.khasanof.springbootstarterfluent.core.model.InvokerObject;
 import org.khasanof.springbootstarterfluent.core.model.InvokerResult;
 
@@ -15,17 +14,17 @@ import java.util.Objects;
  * @see org.khasanof.springbootstarterfluent.core.collector.questMethod.impls
  * @since 8/19/2023 2:16 PM
  */
-public class AsyncStateQuestMethod implements QuestMethod<Enum> {
+public class StateQuestMethod implements QuestMethod<Enum> {
 
     private final GenericMethodContext<Enum, Map.Entry<Method, Object>> methodContext;
 
-    public AsyncStateQuestMethod(GenericMethodContext<Enum, Map.Entry<Method, Object>> methodContext) {
+    public StateQuestMethod(GenericMethodContext<Enum, Map.Entry<Method, Object>> methodContext) {
         this.methodContext = methodContext;
     }
 
     @Override
     public InvokerResult getMethodValueAnn(Object value, Enum param) {
-        return resultCreator(methodContext.getMethodsByT(param));
+        return resultCreator(methodContext.getMethodsByGenericKey(param));
     }
 
     @Override

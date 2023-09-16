@@ -4,7 +4,6 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.khasanof.springbootstarterfluent.core.collector.Collector;
 import org.khasanof.springbootstarterfluent.core.event.exceptionDirector.ExceptionDirectorEvent;
-import org.khasanof.springbootstarterfluent.core.executors.invoker.DefaultInvokerFunctions;
 import org.khasanof.springbootstarterfluent.core.executors.invoker.Invoker;
 import org.khasanof.springbootstarterfluent.core.executors.invoker.InvokerFunctions;
 import org.khasanof.springbootstarterfluent.core.model.InvokerModelV2;
@@ -38,7 +37,7 @@ public class ExceptionDirectorEventListener implements ApplicationListener<Excep
     @Override
     public void onApplicationEvent(ExceptionDirectorEvent event) {
         if (collector.hasHandle(HandleException.class)) {
-            InvokerResult result = collector.getMethodValueAnn(event.getThrowable(), HandleException.class);
+            InvokerResult result = collector.getInvokerResult(event.getThrowable(), HandleException.class);
             InvokerModelV2 modelV2 = invokerFunctions.fillAndGetV2(result, event.getUpdate(), event.getAbsSender(),
                     event.getThrowable());
             invoker.invokeV2(modelV2);

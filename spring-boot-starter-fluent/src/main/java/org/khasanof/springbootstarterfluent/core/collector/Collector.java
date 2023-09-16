@@ -2,9 +2,6 @@ package org.khasanof.springbootstarterfluent.core.collector;
 
 import org.khasanof.springbootstarterfluent.core.model.InvokerResult;
 
-import java.lang.reflect.Method;
-import java.util.Map;
-
 /**
  * Author: Nurislom
  * <br/>
@@ -16,7 +13,7 @@ import java.util.Map;
  */
 public interface Collector<P> extends HandleTypeCollector {
 
-    InvokerResult getMethodValueAnn(Object value, P param);
+    InvokerResult getInvokerResult(Object value, P param);
 
     boolean hasHandle(P param);
 

@@ -1,11 +1,13 @@
 package org.khasanof.springbootstarterfluent.core.executors.determination.impls;
 
+import lombok.extern.slf4j.Slf4j;
 import org.khasanof.springbootstarterfluent.core.collector.Collector;
 import org.khasanof.springbootstarterfluent.core.collector.SimpleCollector;
 import org.khasanof.springbootstarterfluent.core.custom.FluentContext;
 import org.khasanof.springbootstarterfluent.core.enums.HandleType;
 import org.khasanof.springbootstarterfluent.core.enums.Proceed;
-import org.khasanof.springbootstarterfluent.core.executors.HandleAnyFunctionMatcher;
+import org.khasanof.springbootstarterfluent.core.enums.ProcessType;
+import org.khasanof.springbootstarterfluent.core.executors.HandleFunctionsMatcher;
 import org.khasanof.springbootstarterfluent.core.executors.determination.OrderFunction;
 import org.khasanof.springbootstarterfluent.core.model.InvokerMethod;
 import org.khasanof.springbootstarterfluent.core.model.InvokerResult;
@@ -17,6 +19,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import java.lang.annotation.Annotation;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
 
@@ -25,6 +28,7 @@ import java.util.function.BiConsumer;
  * @see org.khasanof.core.executors.determination.impls
  * @since 16.07.2023 19:13
  */
+@Slf4j
 @Component(HandleAnyFunction.NAME)
 public class HandleAnyFunction implements OrderFunction {
 
@@ -37,25 +41,27 @@ public class HandleAnyFunction implements OrderFunction {
             Collector<Class<? extends Annotation>> collector = applicationContext.getBean(SimpleCollector.NAME, Collector.class);
 
             if (collector.hasHandle(HandleAny.class)) {
-                HandleAnyFunctionMatcher matcher = applicationContext.getBean(HandleAnyFunctionMatcher.class);
-                Map.Entry<HandleType, Object> entry = matcher.matchFunctions(update);
-                Set<InvokerResult> allHandleAnyMethod = collector.getAllHandleAnyMethod(entry.getKey());
+                HandleFunctionsMatcher matcher = applicationContext.getBean(HandleFunctionsMatcher.class);
+                Optional<Map.Entry<HandleType, Object>> optional = matcher.matchFunctions(update);
 
-                if (Objects.nonNull(allHandleAnyMethod)) {
+                optional.ifPresentOrElse((handleTypeObjectEntry -> {
+                    Set<InvokerResult> allHandleAnyMethods = collector.getAllHandleAnyMethod(handleTypeObjectEntry.getKey());
 
-                    invokerResults.addAll(allHandleAnyMethod);
-                    boolean notProceedMethods = hasNotProceedMethods(allHandleAnyMethod);
+                    if (Objects.nonNull(allHandleAnyMethods)) {
 
-                    if (notProceedMethods) {
-                        FluentContext.determinationServiceBoolean.set(true);
+                        invokerResults.addAll(allHandleAnyMethods);
+                        boolean hasValueNotProceedInMethods = hasValueNotProceedInMethods(allHandleAnyMethods);
+
+                        if (hasValueNotProceedInMethods) {
+                            FluentContext.determinationServiceBoolean.set(true);
+                        }
                     }
-                }
-
+                }), () -> log.warn("HandleType not found!"));
             }
         });
     }
 
-    private boolean hasNotProceedMethods(Set<InvokerResult> methods) {
+    private boolean hasValueNotProceedInMethods(Set<InvokerResult> methods) {
         return methods.stream().map(result -> ((InvokerMethod) result).getMethod())
                 .anyMatch(method -> {
                     HandleAny annotation = method.getAnnotation(HandleAny.class);
@@ -66,5 +72,10 @@ public class HandleAnyFunction implements OrderFunction {
     @Override
     public Integer getOrder() {
         return 1;
+    }
+
+    @Override
+    public ProcessType processType() {
+        return ProcessType.BOTH;
     }
 }

@@ -119,7 +119,7 @@ public class InvokerExecutor implements Invoker {
 
     private InvokerResult getExceptionHandleMethod(Throwable throwable) throws Throwable {
         if (collector.hasHandle(HandleException.class)) {
-            return collector.getMethodValueAnn(throwable, HandleException.class);
+            return collector.getInvokerResult(throwable, HandleException.class);
         }
         throw throwable;
     }

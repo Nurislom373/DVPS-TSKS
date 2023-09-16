@@ -1,6 +1,5 @@
 package org.khasanof.springbootstarterfluent.core.utils;
 
-import org.khasanof.springbootstarterfluent.core.collector.loader.HandleScannerLoader;
 import org.reflections.Reflections;
 
 import java.lang.annotation.Annotation;

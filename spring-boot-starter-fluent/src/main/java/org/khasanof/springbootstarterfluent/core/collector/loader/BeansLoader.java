@@ -2,9 +2,7 @@ package org.khasanof.springbootstarterfluent.core.collector.loader;
 
 import org.khasanof.springbootstarterfluent.core.config.ApplicationProperties;
 import org.khasanof.springbootstarterfluent.core.config.Config;
-import org.khasanof.springbootstarterfluent.core.config.FluentConfig;
 import org.khasanof.springbootstarterfluent.core.enums.ClassLevelTypes;
-import org.khasanof.springbootstarterfluent.core.enums.HandleClasses;
 import org.khasanof.springbootstarterfluent.core.enums.ProcessType;
 import org.khasanof.springbootstarterfluent.main.annotation.ExceptionController;
 import org.khasanof.springbootstarterfluent.main.annotation.StateController;
@@ -27,13 +25,13 @@ import java.util.stream.Collectors;
  * Package: org.khasanof.core.collector
  */
 @Component
-public class MainClassloader implements Config, ResourceLoader {
+public class BeansLoader implements Config, ResourceLoader {
 
     private final ApplicationProperties.Bot bot;
     private final ApplicationContext applicationContext;
     private final Set<Class<? extends Annotation>> classLevelAnnotations = new HashSet<>();
 
-    public MainClassloader(ApplicationContext applicationContext, ApplicationProperties properties) {
+    public BeansLoader(ApplicationContext applicationContext, ApplicationProperties properties) {
         this.applicationContext = applicationContext;
         this.bot = properties.getBot();
     }
@@ -94,9 +92,8 @@ public class MainClassloader implements Config, ResourceLoader {
         } else {
             if (processType.equals(ProcessType.STATE)) {
                 this.classLevelAnnotations.add(StateController.class);
-            } else if (processType.equals(ProcessType.UPDATE)) {
-                this.classLevelAnnotations.add(UpdateController.class);
             }
+            this.classLevelAnnotations.add(UpdateController.class);
             this.classLevelAnnotations.add(ExceptionController.class);
         }
     }

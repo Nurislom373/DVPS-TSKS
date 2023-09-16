@@ -3,13 +3,20 @@ package com.example.springfluenttest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.khasanof.springbootstarterfluent.core.enums.HandleType;
+import org.khasanof.springbootstarterfluent.core.enums.MatchScope;
 import org.khasanof.springbootstarterfluent.core.enums.Proceed;
 import org.khasanof.springbootstarterfluent.main.annotation.UpdateController;
+import org.khasanof.springbootstarterfluent.main.annotation.extra.BotVariable;
 import org.khasanof.springbootstarterfluent.main.annotation.methods.HandleAny;
+import org.khasanof.springbootstarterfluent.main.annotation.methods.HandleMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+
+import java.io.File;
 
 /**
  * @author Nurislom
@@ -28,6 +35,10 @@ public class HandleAnyTest {
         sender.execute(message);
     }
 
+    @HandleMessage(value = "/username", scope = MatchScope.EXPRESSION)
+    private void handleUsername(Update update, AbsSender sender) {
+    }
+
     @HandleAny(type = HandleType.MESSAGE, proceed = Proceed.PROCEED)
     private void handleAnyMessagesV2(Update update, AbsSender sender) throws TelegramApiException {
         String text = "I'm handle any v2 this message : " + update.getMessage().getText();
@@ -42,6 +53,7 @@ public class HandleAnyTest {
         SendMessage message = new SendMessage(update.getMessage().getChatId().toString(), text);
         sender.execute(message);
     }
+
 
     @HandleAny(type = HandleType.PHOTO, proceed = Proceed.NOT_PROCEED)
     private void handleAnyPhoto(Update update, AbsSender sender) throws TelegramApiException, JsonProcessingException {
@@ -79,8 +91,9 @@ public class HandleAnyTest {
     private void handleAnyPhotos(Update update, AbsSender sender) throws TelegramApiException, JsonProcessingException {
         String value = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(update.getMessage().getVideo());
         String text = "I'm handle this video : \n" + value;
-        SendMessage message = new SendMessage(update.getMessage().getChatId().toString(), text);
-        sender.execute(message);
+        SendPhoto sendPhoto = new SendPhoto(update.getMessage().getChatId().toString(),
+                new InputFile(new File("...")));
+        sender.execute(sendPhoto);
     }
 
 }

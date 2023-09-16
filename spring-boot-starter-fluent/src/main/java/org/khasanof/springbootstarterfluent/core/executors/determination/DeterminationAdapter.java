@@ -1,5 +1,7 @@
 package org.khasanof.springbootstarterfluent.core.executors.determination;
 
+import org.khasanof.springbootstarterfluent.core.custom.ProcessTypeResolver;
+import org.khasanof.springbootstarterfluent.core.enums.ProcessType;
 import org.khasanof.springbootstarterfluent.core.model.InvokerResult;
 import org.khasanof.springbootstarterfluent.core.utils.MethodUtils;
 import org.khasanof.springbootstarterfluent.core.utils.ReflectionUtils;
@@ -9,10 +11,7 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiConsumer;
 
 /**
@@ -22,16 +21,20 @@ import java.util.function.BiConsumer;
  */
 public class DeterminationAdapter {
 
-    public void fillMap(Map<Integer, List<BiConsumer<Update, Set<InvokerResult>>>> map, ApplicationContext applicationContext) {
-        applicationContext.getBeansOfType(OrderFunction.class).forEach(((s, orderFunction) -> {
-            if (map.containsKey(orderFunction.getOrder())) {
-                map.get(orderFunction.getOrder()).add(orderFunction.accept(applicationContext));
-            } else {
-                map.put(orderFunction.getOrder(), new ArrayList<>(){{
-                    add(orderFunction.accept(applicationContext));
-                }});
-            }
-        }));
+    public void fillMap(Map<Integer, List<BiConsumer<Update, Set<InvokerResult>>>> map,
+                        ApplicationContext applicationContext, ProcessType processType) {
+        applicationContext.getBeansOfType(OrderFunction.class)
+                .values().stream()
+                .filter((orderFunction -> ProcessTypeResolver.hasAcceptProcessType(orderFunction, processType)))
+                .forEach((orderFunction) -> {
+                    if (map.containsKey(orderFunction.getOrder())) {
+                        map.get(orderFunction.getOrder()).add(orderFunction.accept(applicationContext));
+                    } else {
+                        map.put(orderFunction.getOrder(), new ArrayList<>() {{
+                            add(orderFunction.accept(applicationContext));
+                        }});
+                    }
+                });
     }
 
 }

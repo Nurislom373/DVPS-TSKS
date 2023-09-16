@@ -37,14 +37,14 @@ public class AsyncSimpleQuestMethod implements QuestMethod<HandleClasses> {
         CompletableFuture<Map.Entry<Method, Object>> supplyAsync;
         if (type.isHasSubType()) {
             supplyAsync = CompletableFuture.supplyAsync(() -> methodContext.containsKey(type) ?
-                            methodContext.getMethodsByT(type).entrySet()
+                            methodContext.getMethodsByGenericKey(type).entrySet()
                                     .parallelStream().filter(aClass -> matcher.chooseMatcher(aClass.getKey(),
                                             value, type.getType()))
                                     .findFirst().orElse(null) : null)
                     .thenComposeAsync(s -> CompletableFuture.supplyAsync(() -> {
                         if (Objects.isNull(s)) {
                             return methodContext.containsKey(type.getSubHandleClasses()) ?
-                                    methodContext.getMethodsByT(type.getSubHandleClasses()).entrySet()
+                                    methodContext.getMethodsByGenericKey(type.getSubHandleClasses()).entrySet()
                                             .parallelStream().filter(aClass -> matcher.chooseMatcher(aClass.getKey(),
                                                     value, type.getSubHandleClasses().getType()))
                                             .findFirst().orElse(null) : null;
@@ -54,7 +54,7 @@ public class AsyncSimpleQuestMethod implements QuestMethod<HandleClasses> {
         } else {
             supplyAsync = CompletableFuture.supplyAsync(
                     () -> methodContext.containsKey(type) ?
-                            methodContext.getMethodsByT(type).entrySet()
+                            methodContext.getMethodsByGenericKey(type).entrySet()
                                     .parallelStream().filter(aClass -> matcher.chooseMatcher(aClass.getKey(),
                                             value, type.getType()))
                                     .findFirst().orElse(null) : null);
@@ -66,7 +66,7 @@ public class AsyncSimpleQuestMethod implements QuestMethod<HandleClasses> {
     @SneakyThrows
     public InvokerResult getHandleAnyMethod(HandleType handleType) {
         return CompletableFuture.supplyAsync(() -> methodContext.containsKey(HandleClasses.HANDLE_ANY) ?
-                methodContext.getMethodsByT(HandleClasses.HANDLE_ANY).entrySet().parallelStream().filter(
+                methodContext.getMethodsByGenericKey(HandleClasses.HANDLE_ANY).entrySet().parallelStream().filter(
                                 clazz -> matcher.chooseMatcher(clazz.getKey(), handleType))
                         .findFirst().orElse(null) : null).thenApply(this::resultCreator).get();
     }
@@ -75,7 +75,7 @@ public class AsyncSimpleQuestMethod implements QuestMethod<HandleClasses> {
     @Override
     public Set<InvokerResult> getAllHandleAnyMethod(HandleType handleType) {
         return CompletableFuture.supplyAsync(() -> methodContext.containsKey(HandleClasses.HANDLE_ANY) ?
-                methodContext.getMethodsByT(HandleClasses.HANDLE_ANY).entrySet().parallelStream().filter(
+                methodContext.getMethodsByGenericKey(HandleClasses.HANDLE_ANY).entrySet().parallelStream().filter(
                                 clazz -> matcher.chooseMatcher(clazz.getKey(), handleType))
                         .map(this::resultCreator)
                         .collect(Collectors.toSet()) : null)

@@ -7,7 +7,7 @@ package org.khasanof.springbootstarterfluent.core.collector;
  */
 public interface GenericMethodContext<T, R> {
 
-    R getMethodsByT(T key);
+    R getMethodsByGenericKey(T key);
 
     boolean containsKey(T key);
 

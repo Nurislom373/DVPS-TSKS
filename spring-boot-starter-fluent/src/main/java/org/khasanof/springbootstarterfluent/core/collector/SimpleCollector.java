@@ -31,7 +31,7 @@ public class SimpleCollector extends AbstractCollector implements Collector<Clas
 
     @Override
     @SuppressWarnings("unchecked")
-    public InvokerResult getMethodValueAnn(Object value, Class<? extends Annotation> annotation) {
+    public InvokerResult getInvokerResult(Object value, Class<? extends Annotation> annotation) {
         return questMethod.getMethodValueAnn(value, HandleClasses.getHandleWithType(annotation));
     }
 

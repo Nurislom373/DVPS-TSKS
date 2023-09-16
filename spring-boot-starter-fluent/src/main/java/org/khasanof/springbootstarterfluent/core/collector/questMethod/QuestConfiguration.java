@@ -1,14 +1,11 @@
 package org.khasanof.springbootstarterfluent.core.collector.questMethod;
 
 import org.khasanof.springbootstarterfluent.core.collector.GenericMethodContext;
-import org.khasanof.springbootstarterfluent.core.collector.SimpleMethodContextClass;
 import org.khasanof.springbootstarterfluent.core.collector.questMethod.impls.AsyncSimpleQuestMethod;
-import org.khasanof.springbootstarterfluent.core.collector.questMethod.impls.AsyncStateQuestMethod;
+import org.khasanof.springbootstarterfluent.core.collector.questMethod.impls.StateQuestMethod;
 import org.khasanof.springbootstarterfluent.core.enums.HandleClasses;
 import org.khasanof.springbootstarterfluent.core.executors.matcher.CompositeMatcher;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -31,7 +28,7 @@ public class QuestConfiguration {
 
     @Bean
     QuestMethod<Enum> asyncStateQuestMethod(GenericMethodContext<Enum, Map.Entry<Method, Object>> methodContext) {
-        return new AsyncStateQuestMethod(methodContext);
+        return new StateQuestMethod(methodContext);
     }
 
 }

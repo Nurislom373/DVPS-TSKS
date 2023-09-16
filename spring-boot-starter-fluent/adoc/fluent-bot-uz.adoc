@@ -204,6 +204,8 @@ ichidagi istalgan ixtiyoriy parameterlardan faqat bittasi bo'lishi mumkin.
 Ushbu update-dan o'zizmizga kerakli parameterlarni olib ishlatishimiz mumkin misol uchun xabar yuborish uchun yoki kirib
 kelgan update-dan text olish uchun va hokazo-lar uchun.
 
+[source,java,indent=0]
+[subs=attributes+]
 ----
 @HandleMessage("/start")
 public void test(Update update, AbsSender sender) throws TelegramApiException {
@@ -230,6 +232,8 @@ AbsSender class 2ta asosiy methodlari bor ular `execute` va `executeAsync`.
 ikkala methodlarni bir birdan farqi shundaki `execute` method current threaddan foydalanib botga xabar yuboradi.
 `executeAsync` method esa boshqa thread ushbu ishni amalga oshiradi.
 
+[source,java,indent=0]
+[subs=attributes+]
 ....
 sender.executeAsync(message, new SentCallback<Message>() {
     @Override
@@ -264,6 +268,8 @@ image::images/ac163a6ce4803784b1.jpg[Wolpertinger,pdfwidth=50%,float=center,role
 
 .Following Example
 
+[source,java,indent=0]
+[subs=attributes+]
 ....
 SendMessage message = new SendMessage(update.getMessage().getChatId().toString(), text);
 message.setReplyToMessageId(update.getMessage().getMessageId()); <1>
@@ -284,6 +290,8 @@ berib yuborishimiz mumkin.
 
 Following Example
 
+[source,java,indent=0]
+[subs=attributes+]
 ....
 SendPhoto sendPhoto = new SendPhoto(update.getMessage().getChatId().toString(),
         new InputFile(new File("..."))); <1>

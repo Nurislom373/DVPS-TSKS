@@ -53,7 +53,7 @@ public class SimpleMethodContextClass implements SimpleMethodContext {
     }
 
     @Override
-    public Map<Method, Object> getMethodsByT(HandleClasses classes) {
+    public Map<Method, Object> getMethodsByGenericKey(HandleClasses classes) {
         return beanMap.get(classes);
     }
 
