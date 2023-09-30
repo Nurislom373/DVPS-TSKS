@@ -97,7 +97,7 @@ public class TestController {
 ....
 
 `@UpdateController` annotatsiyasi updatelarni handle qiladigan classlarni ustiga qo'yish majburiy.
-Ushbu annotatsiya classni update handle qilishi ko'rsatish uchun kerak.
+Ushbu annotatsiya classni telegramdan kelgan update handle qilishi ko'rsatish uchun kerak.
 
 `@HandleMessage` annotatsiyasiga kelsak.
 Ushbu annotatsiya oddiy message sifatida kelgan updatelarni berilgan qiymatga mos kelgan taqdirdagina methodga kiritadi.
@@ -306,6 +306,202 @@ ko'rsatib ketamiz.
 .Send Classes
 image::images/send_methods.png[Wolpertinger,pdfwidth=50%,float=center,role=thumb]
 
+== 5. Annotations
 
+Fluent telegramdan kelgan updatelarni handle qilish uchun quyidagi annotatsiyalarni qo'llab-quvvatlaydi.
 
+=== 5.1 Controller Annotations
 
+Controller annotatsiyalari classlarni ustiga qoyiladigan annotatsiyalar, ushbu annotatsiyalarni qo'yishdan maqsad
+classni nima maqsad ishlatilishi belgilashdir. Misol uchun `@UpdateController` ushbu annotatsiyani bundan oldingi
+bo'limlarda ko'rdik ushbu annotatsiyani maqsadi classni telegramdan kelgan updatelarni handle qilishi ko'rsatish.
+
+|====
+| Annotation | Description
+
+| @UpdateController
+| Ushbu annotatsiya telegramdan kelgan updatelarni handle qilishini ko'rsatish uchun classlarga qo'yiladi.
+  Huddi `@Controller` annotatsiyasiga o'xshaydi lekin ikklasi ham boshqa maqsadlarda ishlatiladi.
+
+| @ExceptionController
+| Ushbu annotatsiya esa Springdagi `@ControllerAdvice` maqsadi bir xil methodda sodir bo'lgan exceptionlarni ushlaydigan
+  yani handle qiladigan class sifatida Spring ko'rsatish. `@ExceptionController` esa shuni Fluentga ko'rsatish uchun ishlatiladi.
+
+|====
+
+=== 5.2 Handler Annotations
+
+Handler annotatsiyalari methodlarni ustiga qoyiladigan annotatsiyalar, ushbu annotatsiyalarni qo'yishdan maqsad
+telegramdan kelgan updatelarni methodga map qilishni yani kiritish ko'rstish uchun. Handler annotatsiyalarni
+Spring ni `@RequestMapping` va shunga o'xshash annotatsiyalariga juda o'xshaydi lekin ikklasi ham boshqa maqsadlarda
+ishlatiladi. Bittasi kelgan HTTP requestlarni handle qilsa, ikkinchi telegramdan kelgan updatelarni handle qilish
+uchun.
+
+|====
+| Annotation | Description
+
+| @HandleAny
+| Ushbu annotatsiya telegramdan kelgan istalgan update handle qilish uchun ishlatiladi. `@HandleAny` annotatsiya
+qo'yilgan method kelgan har qanday update handle qiladi.
+
+| @HandleMessage
+| Ushbu annotatsiya telegramdan text formatda kelgan updatelarni handle qilish uchun ishlatiladi. `@HandleMessage`
+annotatsiyasini bundan oldingi bo'limlarda ko'rdik va ushbu annotatsiyadan foydalanib o'zimiz istagan text formatdagi
+updatelarni qabul qila olishimiz mumkin.
+
+| @HandleCallback
+| Ushbu annotatsiya telegramdan callback formatda kelgan updatelarni handle qilish uchun ishlatiladi. `@HandleCallback`
+annotatsiyasidan foydalanib o'zingiz istagan callback formatdagi updatelarni qabul qilishingiz mumkin. Misol uchun
+aynan bitta formatga mos bo'lgan yoki bir nechta formatlarga mos bo'lgan.
+
+| @HandlePhoto
+| Ushbu annotatsiya telegramdan photo yani rasm formatda kelagn updatelarni handle qilish uchun ishlatiladi.
+`@HandlePhoto` annotatsiyasidan foydalanib biz rasm formatida kelagn updateni caption yoki sizega qarab filter qilishimiz
+mumkin. Shunda faqat o'zimizga kerak updatelarnigina qabul imkoniga ega bo'lamiz.
+
+| @HandleDocument
+| Ushbu annotatsiya telegramdan document formatda kelgan updatelarni handle qilish uchun ishlatiladi.
+
+| @HandleVideo
+| Ushbu annotatsiya telegramdan video formatda kelgan updatelarni handle qilish uchun ishlatiladi.
+
+| @HandleVideoNote
+| Ushbu annotatsiya telegramdan video note o'zbekchasiga etganda dumaloqcha😂 video formatda kelgan updatelarni handle
+qilish uchun ishlatiladi.
+
+| @HandleException
+| Ushbu annotatsiya handler method birida exception sodir bo'lganda exception handle qilish uchun ishlatiladi.
+Springni `@ExceptionHandler` annotatsiyasiga o'xshash.
+
+| @BotVariable
+| Ushbu annotatsiya `@HandleMessage` annotatsiyasi bilan birgalikda ishlatiladi. Springni `@PathVariable` annotatsiya
+o'xshash. Ushbu annotatsiya haqida pastki bo'limlar to'liq ma'lumot misollari bilan birgalikda berilgan.
+
+Birinchi versiya uchun shu annotatsiyalar.
+
+|====
+
+=== 5.3 @HandleAny
+
+`@HandleAny` annotatsiyasi istalgan update handle qilish uchun ishlatiladi. `@HandleAny` boshqa handler
+annotatsiyalaridan birinchi ishlaydi yani kelgan update birinchi `@HandleAny` annotatsiya bor method kiradi undan keyin
+boshqa handler methodlarga birin ketin kirishni boshlaydi.
+
+`@HandleAny` annotatsiyasi 2ta parameter qabul qiladi.
+
+1. type - orqali biz qaysi typedagi updatelarni handle qilishni ko'rsatish uchun ishlatishimiz mumkin. default holatda biz
+`@HandleAny` type ko'rsatmasak HandleType.MESSAGE ni oladi.
+
+misol uchun quyidagi codega qarang.
+
+[source,java,indent=0]
+[subs=attributes+]
+....
+@HandleAny(type = HandleType.MESSAGE, proceed = Proceed.PROCEED)
+private void handleAnyMessagesV2(Update update, AbsSender sender) {
+    String chatId = update.getMessage().getChatId().toString();
+    SendMessage message = new SendMessage(chatId, "Handler Any Message");
+    sender.execute(message);
+}
+
+@HandleAny(type = HandleType.STICKER, proceed = Proceed.NOT_PROCEED)
+private void handleAnyStickers(Update update, AbsSender sender) {
+    String chatId = update.getMessage().getChatId().toString();
+    SendMessage message = new SendMessage(chatId, "Handler Any Sticker");
+    sender.execute(message);
+}
+
+@HandleAny(type = HandleType.PHOTO, proceed = Proceed.PROCEED)
+private void handleAnyPhoto(Update update, AbsSender sender) {
+    String chatId = update.getMessage().getChatId().toString();
+    SendMessage message = new SendMessage(chatId, "Handler Any Photo");
+    sender.execute(message);
+}
+
+@HandleAny(type = HandleType.DOCUMENT, proceed = Proceed.PROCEED)
+private void handleAnyDocument(Update update, AbsSender sender) {
+    String chatId = update.getMessage().getChatId().toString();
+    SendMessage message = new SendMessage(chatId, "Handler Any Document");
+    sender.execute(message);
+}
+....
+
+Tepadagi code da hal formatda kelgan updatelarni `@HandleAny` annotatsiyasi orqali qanday handle qilish ko'rsatilgan
+
+2.. proceed - orqali biz `@HandleAny` annotatsiyasi qoyilgan method bajarilgandan so'ng undan keyingi handler methodlar
+bajarilishi yoki bajarilmasligini belgilashimiz mumkin. Agar Proceed.PROCEED turgan bo'lsa o'zidan keyingi
+method bajarilishiga ruhsat beradi. Agar aksi bo'lsa unda o'zidan keyingi handler methodlarni bajarilishiga ruhsat
+bermaydi. Qiymat belgilanmagan holda `@HandleAny` type parameteri _HandleType.MESSAGE_ ni, proceed parameteri esa
+_Proceed.PROCEED_ oladi.
+
+Quyidagi misolga qarang.
+
+[source,java,indent=0]
+[subs=attributes+]
+....
+@UpdateController
+public class SimpleController {
+
+    @HandleAny
+    void handleAnyMessage(Update update, AbsSender sender) {
+        String chatId = update.getMessage().getChatId().toString();
+        SendMessage message = new SendMessage(chatId, "Handler Any Message😎");
+        sender.execute(message);
+    }
+
+    @HandleMessage(value = "abs", scope = MatchScope.START_WITH)
+    void startWithAbsHandler(Update update, AbsSender sender) {
+        String chatId = update.getMessage().getChatId().toString();
+        String text = "Start With 'abs' : " + update.getMessage().getText();
+        SendMessage message = new SendMessage(chatId, text);
+        sender.execute(message);
+    }
+
+}
+....
+
+.Handle Any Proceed Test
+image::images/handle_any_1.png[Wolpertinger,pdfwidth=50%,float=center,role=thumb]
+
+Endi PROCEED ni NOT_PROCEED ga almashtirib ishlatib ko'ramiz.
+
+[source,java,indent=0]
+[subs=attributes+]
+....
+@UpdateController
+public class SimpleController {
+
+    @HandleAny(proceed = Proceed.NOT_PROCEED)
+    void handleAnyMessage(Update update, AbsSender sender) {
+        String chatId = update.getMessage().getChatId().toString();
+        SendMessage message = new SendMessage(chatId, "Handler Any Message😎");
+        sender.execute(message);
+    }
+
+    @HandleMessage(value = "abs", scope = MatchScope.START_WITH)
+    void startWithAbsHandler(Update update, AbsSender sender) {
+        String chatId = update.getMessage().getChatId().toString();
+        String text = "Start With 'abs' : " + update.getMessage().getText();
+        SendMessage message = new SendMessage(chatId, text);
+        sender.execute(message);
+    }
+
+}
+....
+
+.Handle Any Not Proceed Test
+image::images/handle_any_2.png[Wolpertinger,pdfwidth=50%,float=center,role=thumb]
+
+rasmdagi natijani ko'rgan bo'lsangiz faqat `@HandleAny` method ishladi va undan keyin handlar method bajarilmadi.
+
+`@HandleAny` annotatsiyasi qoyilgan method kirib keladigan parameterlarsiz ham yozishimiz mumkin. Lekin Update yoki
+AbsSender ikklasinidan birini kiritishimiz hozircha mumkin emas!.
+
+[source,java,indent=0]
+[subs=attributes+]
+....
+@HandleAny
+void handleAnyMessage() {
+    log.info("Handle Any Message!");
+}
+....
