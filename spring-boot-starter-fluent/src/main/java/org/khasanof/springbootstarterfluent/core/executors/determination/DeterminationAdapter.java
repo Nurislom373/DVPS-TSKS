@@ -3,14 +3,9 @@ package org.khasanof.springbootstarterfluent.core.executors.determination;
 import org.khasanof.springbootstarterfluent.core.custom.ProcessTypeResolver;
 import org.khasanof.springbootstarterfluent.core.enums.ProcessType;
 import org.khasanof.springbootstarterfluent.core.model.InvokerResult;
-import org.khasanof.springbootstarterfluent.core.utils.MethodUtils;
-import org.khasanof.springbootstarterfluent.core.utils.ReflectionUtils;
-import org.reflections.Reflections;
 import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-import java.lang.reflect.Method;
 import java.util.*;
 import java.util.function.BiConsumer;
 
@@ -23,7 +18,7 @@ public class DeterminationAdapter {
 
     public void fillMap(Map<Integer, List<BiConsumer<Update, Set<InvokerResult>>>> map,
                         ApplicationContext applicationContext, ProcessType processType) {
-        applicationContext.getBeansOfType(OrderFunction.class)
+        applicationContext.getBeansOfType(DeterminationFunction.class)
                 .values().stream()
                 .filter((orderFunction -> ProcessTypeResolver.hasAcceptProcessType(orderFunction, processType)))
                 .forEach((orderFunction) -> {

@@ -4,6 +4,8 @@ import org.khasanof.springbootstarterfluent.core.collector.questMethod.QuestMeth
 import org.khasanof.springbootstarterfluent.core.model.InvokerResult;
 import org.springframework.stereotype.Component;
 
+import java.util.EnumSet;
+
 /**
  * @author Nurislom
  * @see org.khasanof.springbootstarterfluent.core.collector

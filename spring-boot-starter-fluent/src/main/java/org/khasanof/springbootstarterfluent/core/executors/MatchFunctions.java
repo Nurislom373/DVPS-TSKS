@@ -34,8 +34,8 @@ public enum MatchFunctions {
     M_HS_DOCUMENT((update -> setFunction(update.getMessage(),
             Message::hasDocument, Message::getDocument, HandleType.DOCUMENT)), MatchType.MESSAGE),
 
-    M_HS_PHOTO((update -> setFunction(update.getMessage(),
-            Message::hasPhoto, Message::getPhoto, HandleType.PHOTO)), MatchType.MESSAGE),
+    M_HS_PHOTO((update -> setFunction(update, update1 -> update1.getMessage().hasPhoto(),
+            Update::getMessage, HandleType.PHOTO)), MatchType.MESSAGE),
 
     M_HS_AUDIO((update -> setFunction(update.getMessage(),
             Message::hasAudio, Message::getAudio, HandleType.AUDIO)), MatchType.MESSAGE),

@@ -7,7 +7,7 @@ import org.khasanof.springbootstarterfluent.core.collector.SimpleCollector;
 import org.khasanof.springbootstarterfluent.core.enums.HandleType;
 import org.khasanof.springbootstarterfluent.core.enums.ProcessType;
 import org.khasanof.springbootstarterfluent.core.executors.HandleFunctionsMatcher;
-import org.khasanof.springbootstarterfluent.core.executors.determination.OrderFunction;
+import org.khasanof.springbootstarterfluent.core.executors.determination.DeterminationFunction;
 import org.khasanof.springbootstarterfluent.core.model.InvokerResult;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
@@ -27,7 +27,7 @@ import java.util.function.BiConsumer;
  */
 @Slf4j
 @Component(HandleUpdateFunction.NAME)
-public class HandleUpdateFunction implements OrderFunction {
+public class HandleUpdateFunction implements DeterminationFunction {
 
     public static final String NAME = "handleUpdateFunction";
 

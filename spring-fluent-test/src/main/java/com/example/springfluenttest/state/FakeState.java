@@ -1,8 +1,8 @@
 package com.example.springfluenttest.state;
 
-import org.khasanof.springbootstarterfluent.core.state.StateActions;
+import org.khasanof.springbootstarterfluent.core.state.StateAction;
 import org.khasanof.springbootstarterfluent.main.inferaces.state.State;
-import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.bots.AbsSender;
@@ -13,7 +13,7 @@ import org.telegram.telegrambots.meta.bots.AbsSender;
  * @since 8/30/2023 11:48 PM
  */
 //@Component
-public class FakeState implements StateActions<com.example.springfluenttest.FakeState> {
+public class FakeState implements StateAction<com.example.springfluenttest.FakeState> {
 
     @Override
     public void onReceive(Update update, AbsSender sender, State state) throws Exception {

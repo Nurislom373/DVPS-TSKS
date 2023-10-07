@@ -2,6 +2,7 @@ package org.khasanof.springbootstarterfluent.core.executors.matcher.impls;
 
 import org.khasanof.springbootstarterfluent.core.executors.matcher.GenericMatcher;
 import org.khasanof.springbootstarterfluent.main.annotation.methods.HandlePhotos;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.PhotoSize;
 
 import java.util.Arrays;
@@ -12,12 +13,12 @@ import java.util.List;
  * @see org.khasanof.core.executors.matcher.impls
  * @since 06.07.2023 22:57
  */
-public class SimplePhotosMatcher extends GenericMatcher<HandlePhotos, List<PhotoSize>> {
+public class SimplePhotosMatcher extends GenericMatcher<HandlePhotos, Message> {
 
     private final SimplePhotoMatcher matcher = new SimplePhotoMatcher();
 
     @Override
-    public boolean matcher(HandlePhotos annotation, List<PhotoSize> value) {
+    public boolean matcher(HandlePhotos annotation, Message value) {
         return Arrays.stream(annotation.values())
                 .anyMatch(handlePhoto -> matcher.matcher(handlePhoto, value));
     }

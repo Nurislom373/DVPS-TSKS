@@ -1,6 +1,5 @@
 package org.khasanof.springbootstarterfluent.main.inferaces;
 
-import java.util.List;
 import java.util.Set;
 
 /**

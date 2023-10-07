@@ -1,9 +1,8 @@
-package org.khasanof.springbootstarterfluent.core.state;
+package org.khasanof.springbootstarterfluent.core.state.collector;
 
 import lombok.extern.slf4j.Slf4j;
-import org.khasanof.springbootstarterfluent.core.exceptions.InvalidParamsException;
 import org.khasanof.springbootstarterfluent.core.exceptions.InvalidValidationException;
-import org.khasanof.springbootstarterfluent.main.inferaces.ObjectCollector;
+import org.khasanof.springbootstarterfluent.core.state.StateAction;
 import org.khasanof.springbootstarterfluent.main.inferaces.ObjectContains;
 import org.springframework.stereotype.Component;
 
@@ -24,12 +23,12 @@ public class StateValidator {
         this.objectContains = objectContains;
     }
 
-    public boolean valid(StateActions stateActions) {
+    public boolean valid(StateAction stateActions) {
         if (Objects.isNull(stateActions.state())) {
             log.warn("state must not be null in this class : {}", stateActions.getClass());
             throw new InvalidValidationException("state must not be null!");
         }
-        if (!objectContains.containsEnum(stateActions.state().getClass())) {
+        if (!objectContains.containsEnum(stateActions.state())) {
             log.warn("An unregistered enum type was introduced! : {}", stateActions.getClass());
             throw new RuntimeException("An unregistered enum type was introduced");
         }

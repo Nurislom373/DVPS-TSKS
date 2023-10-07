@@ -5,7 +5,7 @@ package com.example.springfluenttest;
  * @see com.example.springfluenttest
  * @since 8/15/2023 9:29 PM
  */
-public enum State {
+public enum BotState {
     START,
     MID,
     END

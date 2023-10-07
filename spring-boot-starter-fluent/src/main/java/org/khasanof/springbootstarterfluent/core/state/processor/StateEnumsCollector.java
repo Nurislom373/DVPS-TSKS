@@ -13,7 +13,7 @@ import java.util.Set;
  * @since 8/18/2023 5:46 AM
  */
 @Component(StateEnumsCollector.NAME)
-public class StateEnumsCollector implements ObjectCollector<Class<? extends Enum>>, ObjectContains<Enum> {
+public class StateEnumsCollector implements ObjectCollector<Class<? extends Enum>> {
 
     public static final String NAME = "stateEnumsCollector";
 
@@ -29,8 +29,4 @@ public class StateEnumsCollector implements ObjectCollector<Class<? extends Enum
         this.enums.addAll(enums);
     }
 
-    @Override
-    public boolean containsEnum(Class<? extends Enum> enumClass) {
-        return this.enums.contains(enumClass);
-    }
 }

@@ -2,8 +2,8 @@ package org.khasanof.springbootstarterfluent.core.collector;
 
 import lombok.extern.slf4j.Slf4j;
 import org.khasanof.springbootstarterfluent.core.collector.loader.ResourceLoader;
-import org.khasanof.springbootstarterfluent.core.state.StateActions;
-import org.khasanof.springbootstarterfluent.core.state.StateValidator;
+import org.khasanof.springbootstarterfluent.core.state.StateAction;
+import org.khasanof.springbootstarterfluent.core.state.collector.StateValidator;
 import org.khasanof.springbootstarterfluent.core.utils.MethodUtils;
 import org.springframework.stereotype.Component;
 
@@ -43,7 +43,7 @@ public class StateMethodContext implements GenericMethodContext<Enum, Map.Entry<
 
     @Override
     public void assembleMethods() {
-        resourceLoader.getBeansOfType(StateActions.class).forEach((s, stateActions) -> {
+        resourceLoader.getBeansOfType(StateAction.class).forEach((s, stateActions) -> {
             if (stateValidator.valid(stateActions)) {
                 if (invokerMethodsMap.containsKey(stateActions.state())) {
                     log.warn("this enum already used! state must be unique");

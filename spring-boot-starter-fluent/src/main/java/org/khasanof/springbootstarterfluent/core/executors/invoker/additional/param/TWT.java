@@ -1,7 +1,6 @@
 package org.khasanof.springbootstarterfluent.core.executors.invoker.additional.param;
 
 import org.khasanof.springbootstarterfluent.core.model.AdditionalType;
-import org.khasanof.springbootstarterfluent.core.model.InvokerModel;
 import org.khasanof.springbootstarterfluent.core.model.InvokerModelV2;
 
 import java.lang.reflect.Method;

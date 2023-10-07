@@ -1,7 +1,7 @@
 package com.example.springfluenttest.state;
 
-import com.example.springfluenttest.State;
-import org.khasanof.springbootstarterfluent.core.state.StateActions;
+import com.example.springfluenttest.BotState;
+import org.khasanof.springbootstarterfluent.core.state.StateAction;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -14,11 +14,11 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
  * @since 8/15/2023 9:30 PM
  */
 @Component
-public class StartState implements StateActions<State> {
+public class StartState implements StateAction<BotState> {
 
     @Override
-    public State state() {
-        return State.START;
+    public BotState state() {
+        return BotState.START;
     }
 
     @Override

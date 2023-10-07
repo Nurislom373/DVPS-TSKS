@@ -33,7 +33,7 @@ class TryToCall {
     }
 
     @SuppressWarnings("unchecked")
-    ThenHandler ifRaises(final Class<? extends Throwable>... exceptionsToBeHandle) {
+    public ThenHandler ifRaises(final Class<? extends Throwable>... exceptionsToBeHandle) {
         return new ThenHandler(
                 this.callable,
                 asList(exceptionsToBeHandle),
@@ -41,7 +41,7 @@ class TryToCall {
                 this.resources);
     }
 
-    void done() {
+    public void done() {
         try {
             callable.call();
         } catch (Throwable raisedException) {
@@ -50,7 +50,7 @@ class TryToCall {
         }
     }
 
-    void finallyDone(final Callable finallyCallable) {
+    public void finallyDone(final Callable finallyCallable) {
         try {
             this.callable.call();
         } catch (Throwable raisedException) {
@@ -107,7 +107,7 @@ class TryToCall {
         }
     }
 
-    interface IExceptionHandler {
+    public interface IExceptionHandler {
         void handleException(final Throwable exception);
 
         Class<? extends Throwable> getExceptionToBeHandled();
@@ -153,11 +153,11 @@ class TryToCall {
         }
     }
 
-    interface IElseCall {
+    public interface IElseCall {
         IExecutor elseCall(final Callable onSuccessCallable);
     }
 
-    interface IExecutor {
+    public interface IExecutor {
         void done();
 
         void finallyDone(final Callable finallyCallable);

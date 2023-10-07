@@ -27,7 +27,6 @@ import java.lang.reflect.InvocationTargetException;
 public class ExecutionExceptionAspect {
 
     private final ApplicationEventPublisher publisher;
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     public ExecutionExceptionAspect(ApplicationEventPublisher publisher) {
         this.publisher = publisher;

@@ -13,7 +13,7 @@ import java.util.function.BiConsumer;
  * @see org.khasanof.core.executors.determination
  * @since 16.07.2023 17:43
  */
-public interface OrderFunction extends DefineProcessType {
+public interface DeterminationFunction extends DefineProcessType {
 
     BiConsumer<Update, Set<InvokerResult>> accept(ApplicationContext applicationContext);
 

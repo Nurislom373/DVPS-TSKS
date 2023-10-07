@@ -17,6 +17,7 @@ public class TryTest {
     @Test
     @SuppressWarnings("unchecked")
     void toCallTest() {
+        thrower();
         Try.toCall(this::thrower)
                 .ifRaises(RuntimeException.class)
                 .thenCall(throwable -> {

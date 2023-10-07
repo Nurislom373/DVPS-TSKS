@@ -7,6 +7,6 @@ package org.khasanof.springbootstarterfluent.main.inferaces;
  */
 public interface ObjectContains<T> {
 
-    boolean containsEnum(Class<? extends T> clazz);
+    boolean containsEnum(T t);
 
 }

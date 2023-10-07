@@ -1,8 +1,10 @@
 package org.khasanof.springbootstarterfluent.core.executors.invoker;
 
 import jakarta.annotation.PostConstruct;
+import org.khasanof.condition.Condition;
 import org.khasanof.springbootstarterfluent.core.enums.InvokerType;
 import org.khasanof.springbootstarterfluent.core.executors.expression.VariableExpressionMatcher;
+import org.khasanof.springbootstarterfluent.core.model.InvokerMethod;
 import org.khasanof.springbootstarterfluent.core.model.InvokerModel;
 import org.khasanof.springbootstarterfluent.core.model.InvokerModelV2;
 import org.khasanof.springbootstarterfluent.core.model.additional.checks.ACInvokerMethod;
@@ -12,8 +14,8 @@ import org.khasanof.springbootstarterfluent.core.model.additional.param.APUpdate
 import org.khasanof.springbootstarterfluent.core.model.additional.param.APUpdateState;
 import org.khasanof.springbootstarterfluent.core.model.conditions.ClassCondition;
 import org.khasanof.springbootstarterfluent.core.model.conditions.MethodCondition;
-import org.khasanof.springbootstarterfluent.core.state.StateActions;
-import org.khasanof.springbootstarterfluent.core.state.StateRepository;
+import org.khasanof.springbootstarterfluent.core.state.StateAction;
+import org.khasanof.springbootstarterfluent.core.state.repository.StateRepositoryStrategy;
 import org.khasanof.springbootstarterfluent.core.utils.AnnotationUtils;
 import org.khasanof.springbootstarterfluent.core.utils.UpdateUtils;
 import org.khasanof.springbootstarterfluent.main.FluentBot;
@@ -26,7 +28,6 @@ import org.khasanof.springbootstarterfluent.main.annotation.process.ProcessUpdat
 import org.khasanof.springbootstarterfluent.main.inferaces.state.State;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.bots.AbsSender;
@@ -44,7 +45,7 @@ import java.util.Map;
 public class DefaultInvokerFunctions {
 
     private final InvokerFunctions functions;
-    private final StateRepository stateRepository;
+    private final StateRepositoryStrategy stateRepository;
     private final DefaultInvokerMatcher invokerMatcher;
     private final ApplicationContext applicationContext;
     private final VariableExpressionMatcher matcher = new VariableExpressionMatcher();
@@ -56,7 +57,7 @@ public class DefaultInvokerFunctions {
     public static final String HANDLE_ANY_UPDATE = "handleAnyUpdate";
     public static final String HANDLE_STATE = "handleState";
 
-    public DefaultInvokerFunctions(InvokerFunctions functions, StateRepository stateRepository, DefaultInvokerMatcher invokerMatcher, ApplicationContext applicationContext) {
+    public DefaultInvokerFunctions(InvokerFunctions functions, StateRepositoryStrategy stateRepository, DefaultInvokerMatcher invokerMatcher, ApplicationContext applicationContext) {
         this.functions = functions;
         this.stateRepository = stateRepository;
         this.invokerMatcher = invokerMatcher;
@@ -68,7 +69,8 @@ public class DefaultInvokerFunctions {
         List<Class<?>> classListState = List.of(Update.class, AbsSender.class, State.class);
         InvokerModel invokerModel3 = new InvokerModel(HANDLE_STATE, false, HandleState.class,
                 classListState, true, (APUpdateObject)
-                (update -> stateRepository.getStateById(UpdateUtils.getUserId(update))));
+                (update -> stateRepository.findById(UpdateUtils.getUserId(update))
+                        .orElseThrow(() -> new RuntimeException("State not found by userId!"))));
         functions.addInvokerModel(invokerModel3);
 
         List<Class<?>> classList = List.of(Update.class, AbsSender.class);
@@ -106,10 +108,11 @@ public class DefaultInvokerFunctions {
         InvokerModelV2 stateInvokerModel = InvokerModelV2.builder()
                 .name(HANDLE_STATE)
                 .type(InvokerType.CLASS)
-                .condition((ClassCondition) (invokerClass -> StateActions.class.isAssignableFrom(
+                .condition((ClassCondition) (invokerClass -> StateAction.class.isAssignableFrom(
                         invokerClass.getReference().getClass())))
                 .additionalParam((APUpdateState)
-                        (update -> stateRepository.getStateById(UpdateUtils.getUserId(update))))
+                        (update -> stateRepository.findById(UpdateUtils.getUserId(update))
+                                .orElseThrow(() -> new RuntimeException("State not found by userId!"))))
                 .methodParams(List.of(Update.class, AbsSender.class, State.class))
                 .canBeNoParam(false)
                 .isInputSystem(false)
@@ -155,8 +158,7 @@ public class DefaultInvokerFunctions {
         InvokerModelV2 handleProcessFile = InvokerModelV2.builder()
                 .name(HANDLE_UPDATE_W_PROCESS_FL)
                 .type(InvokerType.METHOD)
-                .condition((MethodCondition) (invokerMethod -> AnnotationUtils.hasAnnotation(invokerMethod.getMethod(),
-                        ProcessFile.class, true)))
+                .condition((MethodCondition) (this::handleUpdateWithProcessFileMethodCondition))
                 .additionalParam((APUpdateObject) (update ->
                         UpdateUtils.getInputStreamWithFileId(UpdateUtils.getFileId(update),
                                 applicationContext.getBean(FluentBot.class))))
@@ -178,4 +180,13 @@ public class DefaultInvokerFunctions {
         functions.addInvokerModelV2(handleUpdates);
 
     }
+
+    private boolean handleUpdateWithProcessFileMethodCondition(InvokerMethod invokerMethod) {
+        return Condition.orElse(() -> {
+            return AnnotationUtils.hasAnnotation(invokerMethod.getMethod(), ProcessFile.class, true) &&
+                    (invokerMethod.getMethod().getParameterCount() > 2);
+        }, true, false);
+
+    }
+
 }

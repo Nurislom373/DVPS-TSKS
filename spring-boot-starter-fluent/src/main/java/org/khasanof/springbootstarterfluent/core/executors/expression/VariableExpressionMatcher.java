@@ -37,7 +37,7 @@ public class VariableExpressionMatcher implements ExpressionMatcher<String>, Exp
 
     @Override
     public boolean isExpression(String expression) {
-        List<String> list = StringTokenizerUtils.getTokenWithList(expression, "{.}");
+        List<String> list = StringTokenizerUtils.getTokenWithList(expression.strip(), "{.}");
         List<String> strings = list.stream().filter(f -> f.contains(":") &&
                 isValidRegex(getRegex(f))).toList();
         return strings.isEmpty();
@@ -61,6 +61,10 @@ public class VariableExpressionMatcher implements ExpressionMatcher<String>, Exp
         boolean hasTwoListNext = true, allMatch = true;
         int expCount = 0, valCount = 0;
         while (hasTwoListNext) {
+            if (expList.size() != valList.size()) {
+                allMatch = false;
+                break;
+            }
             String varExp = null, varVal = null;
             if (expList.size() > expCount) {
                 varExp = expList.get(expCount);
@@ -78,9 +82,7 @@ public class VariableExpressionMatcher implements ExpressionMatcher<String>, Exp
                 allMatch = false;
                 break;
             }
-            assert varExp != null;
             if (strStartAndMatch(varExp, "{", "}")) {
-                assert varVal != null;
                 boolean matches = Pattern.compile(getRegex(varExp)).matcher(varVal).find();
                 if (!matches) {
                     hasTwoListNext = false;
@@ -99,7 +101,7 @@ public class VariableExpressionMatcher implements ExpressionMatcher<String>, Exp
     }
 
     private boolean strStartAndMatch(String var, String start, String end) {
-        return var.startsWith(start) && var.endsWith(end);
+        return Objects.nonNull(var) && var.startsWith(start) && var.endsWith(end);
     }
 
     private boolean isValidRegex(String regex) {

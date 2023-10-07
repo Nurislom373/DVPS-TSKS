@@ -1,14 +1,16 @@
 package org.khasanof.springbootstarterfluent.core.state;
 
-import java.util.Set;
+import java.util.EnumSet;
 
 /**
  * @author Nurislom
  * @see org.khasanof.springbootstarterfluent.core.state
- * @since 8/15/2023 9:09 PM
+ * @since 10/7/2023 9:24 PM
  */
-public interface StateConfigurer {
+public interface StateTransmit {
 
-    Set<Class<? extends Enum>> stateEnums();
+    Enum getInitial();
+
+    EnumSet getStates();
 
 }

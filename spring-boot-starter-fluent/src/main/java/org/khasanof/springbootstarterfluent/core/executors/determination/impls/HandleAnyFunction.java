@@ -8,7 +8,7 @@ import org.khasanof.springbootstarterfluent.core.enums.HandleType;
 import org.khasanof.springbootstarterfluent.core.enums.Proceed;
 import org.khasanof.springbootstarterfluent.core.enums.ProcessType;
 import org.khasanof.springbootstarterfluent.core.executors.HandleFunctionsMatcher;
-import org.khasanof.springbootstarterfluent.core.executors.determination.OrderFunction;
+import org.khasanof.springbootstarterfluent.core.executors.determination.DeterminationFunction;
 import org.khasanof.springbootstarterfluent.core.model.InvokerMethod;
 import org.khasanof.springbootstarterfluent.core.model.InvokerResult;
 import org.khasanof.springbootstarterfluent.main.annotation.methods.HandleAny;
@@ -30,7 +30,7 @@ import java.util.function.BiConsumer;
  */
 @Slf4j
 @Component(HandleAnyFunction.NAME)
-public class HandleAnyFunction implements OrderFunction {
+public class HandleAnyFunction implements DeterminationFunction {
 
     public static final String NAME = "handleAnyFunction";
 
@@ -50,11 +50,10 @@ public class HandleAnyFunction implements OrderFunction {
                     if (Objects.nonNull(allHandleAnyMethods)) {
 
                         invokerResults.addAll(allHandleAnyMethods);
-                        boolean hasValueNotProceedInMethods = hasValueNotProceedInMethods(allHandleAnyMethods);
-
-                        if (hasValueNotProceedInMethods) {
+                        if (hasValueNotProceedInMethods(allHandleAnyMethods)) {
                             FluentContext.determinationServiceBoolean.set(true);
                         }
+
                     }
                 }), () -> log.warn("HandleType not found!"));
             }

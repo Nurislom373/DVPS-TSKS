@@ -36,7 +36,7 @@ public class TryToGet<T> {
     }
 
     @SuppressWarnings("unchecked")
-    ThenHandler<T> ifRaises(final Class<? extends Throwable>... exceptionsToBeHandled) {
+    public ThenHandler<T> ifRaises(final Class<? extends Throwable>... exceptionsToBeHandled) {
         return new ThenHandler<T>(valueProvider, asList(exceptionsToBeHandled), Collections.emptyList(), this.resources);
     }
 
@@ -88,7 +88,7 @@ public class TryToGet<T> {
         }
     }
 
-    interface IExceptionHandler<T> {
+    public interface IExceptionHandler<T> {
         T handleException(final Throwable exception);
 
         Class<? extends Throwable> throwableClass();
@@ -123,11 +123,11 @@ public class TryToGet<T> {
             }
         }
 
-    interface IElseCall<T> {
+    public interface IElseCall<T> {
         IExecutor<T> elseCall(Consumer<T> consumer);
     }
 
-    interface IExecutor<T> {
+    public interface IExecutor<T> {
         T done();
 
         T finallyDone(final Callable finallyCallable);

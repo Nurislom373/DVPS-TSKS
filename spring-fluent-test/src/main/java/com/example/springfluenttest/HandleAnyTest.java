@@ -23,7 +23,7 @@ import java.io.File;
  * @see com.example.springfluenttest
  * @since 8/9/2023 9:44 PM
  */
-@UpdateController
+//@UpdateController
 public class HandleAnyTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -41,8 +41,8 @@ public class HandleAnyTest {
 
     @HandleAny(type = HandleType.MESSAGE, proceed = Proceed.PROCEED)
     private void handleAnyMessagesV2(Update update, AbsSender sender) throws TelegramApiException {
-        String text = "I'm handle any v2 this message : " + update.getMessage().getText();
-        SendMessage message = new SendMessage(update.getMessage().getChatId().toString(), text);
+        String chatId = update.getMessage().getChatId().toString();
+        SendMessage message = new SendMessage(chatId, "Handler Any Message😎");
         sender.execute(message);
     }
 
@@ -54,11 +54,11 @@ public class HandleAnyTest {
         sender.execute(message);
     }
 
-
-    @HandleAny(type = HandleType.PHOTO, proceed = Proceed.NOT_PROCEED)
+    @HandleAny(type = HandleType.PHOTO, proceed = Proceed.PROCEED)
     private void handleAnyPhoto(Update update, AbsSender sender) throws TelegramApiException, JsonProcessingException {
+        System.out.println("update.getMessage().getText() = " + update.getMessage().getCaption());
         String value = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(update.getMessage().getPhoto());
-        String text = "I'm handle this photo : \n" + value;
+        String text = "handle any this photo : \n" + value;
         SendMessage message = new SendMessage(update.getMessage().getChatId().toString(), text);
         sender.execute(message);
     }
