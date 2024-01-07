@@ -1,6 +1,7 @@
 package org.khasanof.springbootstarterfluent.main;
 
 import org.khasanof.springbootstarterfluent.core.config.ApplicationProperties;
+import org.khasanof.springbootstarterfluent.main.inferaces.MainHandler;
 import org.springframework.beans.BeansException;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringBootConfiguration;
@@ -32,10 +33,11 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 public class FluentStarter {
 
     @Bean
-    CommandLineRunner getRunner(ApplicationContext context) {
+    CommandLineRunner getRunner(MainHandler handler, ApplicationProperties properties, FluentBotSingletonBean singletonBean) {
         return (args -> {
             var registry = new TelegramBotsApi(DefaultBotSession.class);
-            var bot = context.getBean(FluentBot.class);
+            FluentBot bot = new FluentBot(handler, properties);
+            singletonBean.setInstance(bot);
             registry.registerBot(bot);
         });
     }

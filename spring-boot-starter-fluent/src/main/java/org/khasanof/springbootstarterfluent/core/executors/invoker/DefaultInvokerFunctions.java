@@ -1,6 +1,5 @@
 package org.khasanof.springbootstarterfluent.core.executors.invoker;
 
-import jakarta.annotation.PostConstruct;
 import org.khasanof.condition.Condition;
 import org.khasanof.springbootstarterfluent.core.enums.InvokerType;
 import org.khasanof.springbootstarterfluent.core.executors.expression.VariableExpressionMatcher;
@@ -27,6 +26,7 @@ import org.khasanof.springbootstarterfluent.main.annotation.process.ProcessFile;
 import org.khasanof.springbootstarterfluent.main.annotation.process.ProcessUpdate;
 import org.khasanof.springbootstarterfluent.main.inferaces.state.State;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -42,7 +42,7 @@ import java.util.Map;
  * @since 8/11/2023 9:43 PM
  */
 @Component
-public class DefaultInvokerFunctions {
+public class DefaultInvokerFunctions implements InitializingBean {
 
     private final InvokerFunctions functions;
     private final StateRepositoryStrategy stateRepository;
@@ -103,8 +103,8 @@ public class DefaultInvokerFunctions {
         functions.addInvokerModel(invokerModel2);
     }
 
-    @PostConstruct
-    void afterPropertiesSet() {
+    @Override
+    public void afterPropertiesSet() {
         InvokerModelV2 stateInvokerModel = InvokerModelV2.builder()
                 .name(HANDLE_STATE)
                 .type(InvokerType.CLASS)

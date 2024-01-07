@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.khasanof.springbootstarterfluent.main.annotation.exception.HandleException;
 import org.khasanof.springbootstarterfluent.main.annotation.extra.HandleState;
 import org.khasanof.springbootstarterfluent.main.annotation.methods.*;
+import org.khasanof.springbootstarterfluent.main.annotation.methods.chat.HandleMyChatMember;
 import org.khasanof.springbootstarterfluent.main.annotation.methods.inline.HandleInlineQuery;
 
 import java.lang.annotation.Annotation;
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public enum HandleClasses {
 
+    HANDLE_MY_CHAT_MEMBER(HandleMyChatMember.class, false),
     HANDLE_STATE(HandleState.class, false),
     HANDLE_ANY(HandleAny.class, false),
     HANDLE_INLINE_QUERY(HandleInlineQuery.class, false),

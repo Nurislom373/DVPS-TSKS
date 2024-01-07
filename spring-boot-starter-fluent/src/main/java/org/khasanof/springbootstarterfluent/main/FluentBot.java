@@ -14,7 +14,6 @@ import org.telegram.telegrambots.meta.api.objects.Update;
  * <br/>
  * Package: org.khasanof.main
  */
-@Service
 public class FluentBot extends FluentBotFactory {
 
     public FluentBot(MainHandler handler, ApplicationProperties properties) {

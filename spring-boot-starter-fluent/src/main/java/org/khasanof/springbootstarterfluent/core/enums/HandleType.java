@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum HandleType {
 
+    MY_CHAT_MEMBER(HandleClasses.HANDLE_MY_CHAT_MEMBER),
     MESSAGE(HandleClasses.HANDLE_MESSAGE),
     CALLBACK(HandleClasses.HANDLE_CALLBACK), STICKER,
     PHOTO(HandleClasses.HANDLE_PHOTO),

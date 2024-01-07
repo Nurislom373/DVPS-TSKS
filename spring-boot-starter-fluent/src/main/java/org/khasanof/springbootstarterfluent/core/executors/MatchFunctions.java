@@ -79,6 +79,8 @@ public enum MatchFunctions {
     enum MatchType {
 
         MESSAGE(Update::hasMessage, true),
+        MY_CHAT_MEMBER(Update::hasMyChatMember, false,
+                (update -> setSupplyMethod(update.getMyChatMember(), HandleType.MY_CHAT_MEMBER))),
         INLINE_QUERY(Update::hasInlineQuery, false,
                 (update -> setSupplyMethod(update.getInlineQuery(), HandleType.INLINE_QUERY))),
         CALLBACK(Update::hasCallbackQuery, false,

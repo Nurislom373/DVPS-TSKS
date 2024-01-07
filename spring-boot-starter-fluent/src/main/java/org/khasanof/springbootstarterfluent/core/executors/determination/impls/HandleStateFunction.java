@@ -14,6 +14,7 @@ import org.khasanof.springbootstarterfluent.core.utils.UpdateUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.User;
 
 import java.util.Objects;
 import java.util.Set;
@@ -37,7 +38,12 @@ public class HandleStateFunction implements DeterminationFunction {
             Long id = UpdateUtils.getUserId(update);
 
             Condition.isFalseThen(repository.existById(id))
-                    .thenCall(() -> repository.addState(UpdateUtils.getFrom(update).getId()));
+                    .thenCall(() -> {
+                        User from = UpdateUtils.getFrom(update);
+                        if (Objects.nonNull(from)) {
+                            repository.addState(from.getId());
+                        }
+                    });
 
             repository.findById(id).ifPresent(state -> {
                 Collector<Enum> collector = applicationContext.getBean(StateCollector.NAME, Collector.class);

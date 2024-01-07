@@ -6,7 +6,9 @@ import org.khasanof.springbootstarterfluent.core.enums.Proceed;
 import org.khasanof.springbootstarterfluent.main.annotation.UpdateController;
 import org.khasanof.springbootstarterfluent.main.annotation.methods.HandleAny;
 import org.khasanof.springbootstarterfluent.main.annotation.methods.HandleMessage;
+import org.khasanof.springbootstarterfluent.main.annotation.methods.chat.HandleMyChatMember;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.ChatMemberUpdated;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -26,6 +28,12 @@ public class SimpleController {
         String chatId = update.getMessage().getChatId().toString();
         SendMessage message = new SendMessage(chatId, "Handler Any Message😎");
         sender.execute(message);
+    }
+
+    @HandleMyChatMember
+    public void checkMyChatMember(Update update, AbsSender sender) {
+        ChatMemberUpdated myChatMember = update.getMyChatMember();
+        System.out.println("myChatMember = " + myChatMember);
     }
 
     @HandleMessage(value = "abs", scope = MatchScope.START_WITH)
